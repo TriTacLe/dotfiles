@@ -4,4 +4,5 @@ return {
   -- { import = "plugins.tools.hidden-files" },
   { import = "plugins.tools.markdown-preview" },
   { import = "plugins.tools.wakatime" },
+  { import = "plugins.tools.visual" },
 }
