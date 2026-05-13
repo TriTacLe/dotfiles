@@ -8,7 +8,7 @@
 }
 
 window#waybar {
-  background: rgba(21, 18, 27, 0);
+  background: #1e1e2e;
   color: #cdd6f4;
 }
 
@@ -28,6 +28,8 @@ tooltip {
 #pulseaudio,
 #network,
 #bluetooth,
+#cpu,
+#memory,
 #temperature,
 #workspaces,
 #tray,
@@ -141,8 +143,18 @@ tooltip {
 
 #bluetooth {
   color: #89b4fa;
-  border-radius: 0px 10px 10px 0px;
+  border-radius: 10px;
   margin-right: 0px;
+}
+
+#cpu {
+  color: #a6e3a1;
+  border-radius: 10px;
+}
+
+#memory {
+  color: #cba6f7;
+  border-radius: 10px;
 }
 
 #pulseaudio {

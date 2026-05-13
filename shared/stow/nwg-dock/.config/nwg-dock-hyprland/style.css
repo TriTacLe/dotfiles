@@ -1,6 +1,6 @@
 window {
   background: #1e1e2e;
-  border-radius: 15px;
+  border-radius: 15px 15px 0 0;
   border-style: solid;
   border-width: 1px;
   border-color: rgba(50, 50, 50, 0.9);
