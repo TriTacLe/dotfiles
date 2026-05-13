@@ -13,7 +13,7 @@ mkdir -p ~/.config
 
 stow -d "$DOTFILES/shared/stow" -t ~ --no-folding git nvim starship lazygit backgrounds zsh
 stow -d "$DOTFILES/ubuntu/stow" -t ~ --no-folding \
-    zsh tmux alacritty ghostty rofi swaylock swaync wlogout fontconfig zathura
+    zsh tmux alacritty ghostty kitty rofi swaylock swaync wlogout fontconfig zathura systemd
 
 # Uncomment if claude-config is used on this machine:
 # stow -d "$DOTFILES" -t ~/.claude -R claude-config

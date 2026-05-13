@@ -1,0 +1,12 @@
+[Unit]
+Description=Wallpaper Rotation Service
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.config/backgrounds/wallpaper-rotate.sh
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

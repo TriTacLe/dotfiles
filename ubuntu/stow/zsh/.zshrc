@@ -25,6 +25,8 @@ fi
 export ZSH="$HOME/.oh-my-zsh"
 export TERMINAL_EMULATOR="ghostty"
 
+export GLOUD_CONFIG_PATH="$HOME/.config/gcloud/"
+
 if [ -d "$ZSH/custom/themes/powerlevel10k" ] || [ -f "/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme" ]; then
     ZSH_THEME="powerlevel10k/powerlevel10k"
 else
@@ -99,14 +101,19 @@ alias ~='cd ~'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias please='sudo'
-alias fking='sudo'
 alias py='python3'
 
-alias dotfiles='cd ~/dotfiles'
+alias dotfiles='cd ~/Desktop/dotfiles'
 alias project='cd ~/Desktop/projects'
 alias desktop='cd ~/Desktop'
 alias documents='cd ~/Documents'
 alias downloads='cd ~/Downloads'
+alias home='cd ~'
+alias orbit='cd ~/Desktop/orbit/'
+alias timeseriesapi='cd ~/Desktop/moenmarin/timeseries-api/'
+alias monitor5='cd ~/Desktop/moenmarin/monitor-5.0/'
+
+alias claudd='claude --dangerously-skip-permissions'
 
 alias zshconf='nvim ~/.zshrc && source ~/.zshrc'
 alias bashconf='nvim ~/.bashrc && source ~/.bashrc'
@@ -165,6 +172,25 @@ fi
 # ============================================
 [ -f ~/.config/zsh/shared.zsh ] && source ~/.config/zsh/shared.zsh
 [ -f ~/.zshenv.secrets ] && source ~/.zshenv.secrets
+
+# ============================================
+# Google Cloud SDK
+# ============================================
+[ -f "$HOME/Downloads/google-cloud-sdk/path.zsh.inc" ] && source "$HOME/Downloads/google-cloud-sdk/path.zsh.inc"
+[ -f "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc" ] && source "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc"
+
+# ============================================
+# NVM
+# ============================================
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# ============================================
+# SDKMAN — must stay last initializer
+# ============================================
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 # ============================================
 # Welcome Message
