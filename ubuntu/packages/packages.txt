@@ -31,7 +31,9 @@ gnome-shell-extension-prefs
 gnome-terminal
 gnome-tweaks
 gnupg
+gobject-introspection
 golang
+golang-go
 google-chrome-stable
 grep
 grub-efi-amd64
@@ -50,7 +52,10 @@ libcairo2-dev
 libchewing3
 libchewing3-data
 libgdk-pixbuf2.0-dev
+libgirepository1.0-dev
 libglib2.0-dev
+libgtk-3-dev
+libgudev-1.0-dev
 libinput-tools
 libm17n-0
 libmarisa0
@@ -60,6 +65,7 @@ libotf1
 libpango1.0-dev
 libpinyin15
 libpinyin-data
+libpulse-dev
 libwayland-dev
 libxkbcommon-dev
 libxkbcommon-x11-dev
@@ -79,6 +85,7 @@ openssh-client
 pkg-config
 python3.12-venv
 sassc
+scdoc
 shim-signed
 snap
 software-properties-common
@@ -92,6 +99,7 @@ ubuntu-minimal
 ubuntu-restricted-addons
 ubuntu-standard
 ubuntu-wallpapers
+valac
 wayland-protocols
 wbritish
 wget
