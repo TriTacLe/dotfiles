@@ -5,7 +5,7 @@ INTERVAL=30  # 30 sekunder
 
 # Finn alle bildefiler
 get_wallpapers() {
-    find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) | sort
+    find -L "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) | sort
 }
 
 # Sett bakgrunn basert på desktop-miljø
