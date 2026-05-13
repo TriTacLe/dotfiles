@@ -1,5 +1,15 @@
 # macOS Zsh Configuration
 
+# Source per-machine .env if present (paths, prefs)
+for _df in "$DOTFILES_DIR" "$HOME/dotfiles" "$HOME/Desktop/dotfiles" "$HOME/.dotfiles"; do
+    if [[ -n "$_df" && -f "$_df/.env" ]]; then
+        set -a; source "$_df/.env"; set +a
+        export DOTFILES_DIR="$_df"
+        break
+    fi
+done
+unset _df
+
 # ============================================
 # Oh My Zsh
 # ============================================
@@ -90,13 +100,14 @@ alias home='cd ~'
 alias desktop='cd ~/Desktop'
 alias downloads='cd ~/Downloads'
 alias documents='cd ~/Documents'
-alias dotfiles='cd ~/dotfiles'
-alias dev='cd ~/dev'
-alias personal='cd ~/dev/personal'
-alias ntnu='cd ~/dev/ntnu'
-alias orbit='cd ~/dev/orbit'
-alias duxpace='cd ~/dev/duxpace'
-alias work='cd ~/dev/work'
+# Dev-dir aliases: guard on existence (paths from .env override defaults)
+[[ -d "${DOTFILES_DIR:-$HOME/dotfiles}" ]] && alias dotfiles="cd ${DOTFILES_DIR:-$HOME/dotfiles}"
+[[ -d "${DEV_DIR:-$HOME/dev}" ]] && alias dev="cd ${DEV_DIR:-$HOME/dev}"
+[[ -d "${DEV_DIR:-$HOME/dev}/personal" ]] && alias personal="cd ${DEV_DIR:-$HOME/dev}/personal"
+[[ -d "${DEV_DIR:-$HOME/dev}/ntnu" ]] && alias ntnu="cd ${DEV_DIR:-$HOME/dev}/ntnu"
+[[ -d "${ORBIT_DIR:-${DEV_DIR:-$HOME/dev}/orbit}" ]] && alias orbit="cd ${ORBIT_DIR:-${DEV_DIR:-$HOME/dev}/orbit}"
+[[ -d "${DEV_DIR:-$HOME/dev}/duxpace" ]] && alias duxpace="cd ${DEV_DIR:-$HOME/dev}/duxpace"
+[[ -d "${DEV_DIR:-$HOME/dev}/work" ]] && alias work="cd ${DEV_DIR:-$HOME/dev}/work"
 
 # ============================================
 # System Aliases
@@ -163,7 +174,7 @@ copy() { cat "$1" | pbcopy }
 # ============================================
 # Stow Management
 # ============================================
-DOTFILES_DIR="$HOME/dotfiles"
+: "${DOTFILES_DIR:=$HOME/dotfiles}"
 
 stow-all() {
     stow -d "$DOTFILES_DIR/shared/stow" -t ~ --no-folding git nvim starship lazygit backgrounds zsh

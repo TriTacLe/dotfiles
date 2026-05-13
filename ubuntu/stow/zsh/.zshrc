@@ -1,9 +1,19 @@
 # Ubuntu Zsh Configuration
 
-# Enable Powerlevel10k instant prompt — must stay near top
+# Enable Powerlevel10k instant prompt - must stay near top
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+
+# Source per-machine .env if present (paths, prefs)
+for _df in "$DOTFILES_DIR" "$HOME/Desktop/dotfiles" "$HOME/dotfiles" "$HOME/.dotfiles"; do
+    if [[ -n "$_df" && -f "$_df/.env" ]]; then
+        set -a; source "$_df/.env"; set +a
+        export DOTFILES_DIR="$_df"
+        break
+    fi
+done
+unset _df
 
 # ============================================
 # PATH
@@ -24,8 +34,6 @@ fi
 # ============================================
 export ZSH="$HOME/.oh-my-zsh"
 export TERMINAL_EMULATOR="ghostty"
-
-export GLOUD_CONFIG_PATH="$HOME/.config/gcloud/"
 
 if [ -d "$ZSH/custom/themes/powerlevel10k" ] || [ -f "/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme" ]; then
     ZSH_THEME="powerlevel10k/powerlevel10k"
@@ -103,15 +111,17 @@ alias ...='cd ../..'
 alias please='sudo'
 alias py='python3'
 
-alias dotfiles='cd ~/Desktop/dotfiles'
-alias project='cd ~/Desktop/projects'
 alias desktop='cd ~/Desktop'
 alias documents='cd ~/Documents'
 alias downloads='cd ~/Downloads'
 alias home='cd ~'
-alias orbit='cd ~/Desktop/orbit/'
-alias timeseriesapi='cd ~/Desktop/moenmarin/timeseries-api/'
-alias monitor5='cd ~/Desktop/moenmarin/monitor-5.0/'
+
+# Dev-dir aliases: guard on existence (paths from .env override defaults)
+[[ -d "${DOTFILES_DIR:-$HOME/Desktop/dotfiles}" ]] && alias dotfiles="cd ${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
+[[ -d "${PROJECTS_DIR:-$HOME/Desktop/projects}" ]] && alias project="cd ${PROJECTS_DIR:-$HOME/Desktop/projects}"
+[[ -d "${ORBIT_DIR:-$HOME/Desktop/orbit}" ]] && alias orbit="cd ${ORBIT_DIR:-$HOME/Desktop/orbit}"
+[[ -n "$MOENMARIN_DIR" && -d "$MOENMARIN_DIR/timeseries-api" ]] && alias timeseriesapi="cd $MOENMARIN_DIR/timeseries-api"
+[[ -n "$MOENMARIN_DIR" && -d "$MOENMARIN_DIR/monitor-5.0" ]] && alias monitor5="cd $MOENMARIN_DIR/monitor-5.0"
 
 alias claudd='claude --dangerously-skip-permissions'
 
@@ -187,7 +197,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # ============================================
-# SDKMAN — must stay last initializer
+# SDKMAN - must stay last initializer
 # ============================================
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

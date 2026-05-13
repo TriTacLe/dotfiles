@@ -8,9 +8,10 @@
 # Arch package cache
 *.pkg.tar.zst
 
-# Secrets (never tracked)
+# Secrets + per-machine config (never tracked)
 .zshenv.secrets
 .env.secrets
+.env
 
 # OS artifacts
 Thumbs.db
