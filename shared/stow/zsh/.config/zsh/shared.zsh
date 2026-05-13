@@ -192,3 +192,54 @@ ssh() {
         command ssh "$@"
     fi
 }
+
+# ============================================
+# Navigation
+# ============================================
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ~='cd ~'
+alias c='clear'
+alias please='sudo'
+
+# ============================================
+# Zoxide
+# ============================================
+if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init zsh)"
+    alias cd='z'
+    alias zi='z -i'
+fi
+
+# ============================================
+# Stow management
+# ============================================
+stow-pkg() {
+    if [ -z "$1" ]; then echo "Usage: stow-pkg <package>"; return 1; fi
+    local pkg="$1"
+    local df="${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
+    if [[ "$pkg" == "claude-config" ]]; then
+        stow -d "$df" -t ~/.claude -R claude-config
+        return
+    fi
+    [[ -d "$df/shared/stow/$pkg" ]] && stow -d "$df/shared/stow" -t ~ --no-folding -R "$pkg"
+    for _osdir in arch ubuntu macos; do
+        [[ -d "$df/$_osdir/stow/$pkg" ]] && stow -d "$df/$_osdir/stow" -t ~ --no-folding -R "$pkg"
+    done
+    unset _osdir
+}
+
+unstow-pkg() {
+    if [ -z "$1" ]; then echo "Usage: unstow-pkg <package>"; return 1; fi
+    local pkg="$1"
+    local df="${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
+    if [[ "$pkg" == "claude-config" ]]; then
+        stow -d "$df" -t ~/.claude -D claude-config
+        return
+    fi
+    [[ -d "$df/shared/stow/$pkg" ]] && stow -d "$df/shared/stow" -t ~ --no-folding -D "$pkg"
+    for _osdir in arch ubuntu macos; do
+        [[ -d "$df/$_osdir/stow/$pkg" ]] && stow -d "$df/$_osdir/stow" -t ~ --no-folding -D "$pkg"
+    done
+    unset _osdir
+}

@@ -78,11 +78,6 @@ bindkey '^I' _accept_or_complete
 [ -f /usr/share/fzf/key-bindings.zsh ] && source /usr/share/fzf/key-bindings.zsh
 [ -f /usr/share/fzf/completion.zsh ] && source /usr/share/fzf/completion.zsh
 
-# ============================================
-# Zoxide
-# ============================================
-eval "$(zoxide init zsh)"
-alias cd='z'
 
 # ============================================
 # The Fuck
@@ -106,13 +101,8 @@ alias fk='fuck'
 # ============================================
 # Arch-specific aliases
 # ============================================
-alias c='clear'
-alias ~='cd ~'
-alias ..='cd ..'
-alias ...='cd ../..'
 alias ..2='cd ../..'
 alias ..3='cd ../../..'
-alias please='sudo'
 alias py='python'
 alias o='opencode'
 alias claudd='claude --dangerously-skip-permissions'
@@ -238,6 +228,18 @@ alias cg='cheat git'
 alias cgz='cheat zsh'
 alias cgp='cheat python'
 alias cgd='cheat docker'
+
+# ============================================
+# Stow management
+# ============================================
+stow-all() {
+    local df="${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
+    stow -d "$df/shared/stow" -t ~ --no-folding git nvim lazygit backgrounds zsh
+    stow -d "$df/arch/stow" -t ~ --no-folding \
+        zsh tmux alacritty ghostty kitty fastfetch \
+        hypr waybar swaync wofi avizo wob nwg-dock nwg-look pacseek wlogout zathura systemd
+    stow -d "$df" -t ~/.claude -R claude-config
+}
 
 # ============================================
 # OpenClaw completions

@@ -182,28 +182,6 @@ stow-all() {
     stow -d "$DOTFILES_DIR" -t ~/.claude -R claude-config
 }
 
-stow-pkg() {
-    if [ -z "$1" ]; then echo "Usage: stow-pkg <package>"; return 1; fi
-    local pkg="$1"
-    if [[ "$pkg" == "claude-config" ]]; then
-        stow -d "$DOTFILES_DIR" -t ~/.claude -R claude-config
-        return
-    fi
-    [[ -d "$DOTFILES_DIR/shared/stow/$pkg" ]] && stow -d "$DOTFILES_DIR/shared/stow" -t ~ --no-folding -R "$pkg"
-    [[ -d "$DOTFILES_DIR/macos/stow/$pkg" ]] && stow -d "$DOTFILES_DIR/macos/stow" -t ~ --no-folding -R "$pkg"
-}
-
-unstow-pkg() {
-    if [ -z "$1" ]; then echo "Usage: unstow-pkg <package>"; return 1; fi
-    local pkg="$1"
-    if [[ "$pkg" == "claude-config" ]]; then
-        stow -d "$DOTFILES_DIR" -t ~/.claude -D claude-config
-        return
-    fi
-    [[ -d "$DOTFILES_DIR/shared/stow/$pkg" ]] && stow -d "$DOTFILES_DIR/shared/stow" -t ~ --no-folding -D "$pkg"
-    [[ -d "$DOTFILES_DIR/macos/stow/$pkg" ]] && stow -d "$DOTFILES_DIR/macos/stow" -t ~ --no-folding -D "$pkg"
-}
-
 # ============================================
 # Shared config + secrets
 # ============================================

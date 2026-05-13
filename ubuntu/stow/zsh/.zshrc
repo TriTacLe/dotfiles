@@ -70,14 +70,6 @@ if command -v fzf &>/dev/null; then
     export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
 fi
 
-# ============================================
-# Zoxide
-# ============================================
-if command -v zoxide &>/dev/null; then
-    eval "$(zoxide init zsh)"
-    alias cd='z'
-    alias zi='z -i'
-fi
 
 # ============================================
 # The Fuck
@@ -104,11 +96,6 @@ alias search='apt search'
 alias autoremove='sudo apt autoremove'
 alias pkgfnd='dpkg -l | grep'
 
-alias c='clear'
-alias ~='cd ~'
-alias ..='cd ..'
-alias ...='cd ../..'
-alias please='sudo'
 alias py='python3'
 
 alias desktop='cd ~/Desktop'
@@ -176,6 +163,17 @@ if command -v fastfetch &>/dev/null; then
 elif command -v neofetch &>/dev/null; then
     alias fetch='neofetch'
 fi
+
+# ============================================
+# Stow management
+# ============================================
+stow-all() {
+    local df="${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
+    stow -d "$df/shared/stow" -t ~ --no-folding git nvim lazygit backgrounds zsh
+    stow -d "$df/ubuntu/stow" -t ~ --no-folding \
+        zsh tmux alacritty ghostty kitty rofi swaylock swaync wlogout fontconfig zathura systemd
+    stow -d "$df" -t ~/.claude -R claude-config
+}
 
 # ============================================
 # Shared config + secrets
