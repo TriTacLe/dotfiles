@@ -1,0 +1,321 @@
+@define-color bg #1e1e2e;
+@define-color bg-alt #313244;
+@define-color fg #cdd6f4;
+@define-color fg-alt #a6adc8;
+@define-color blue #89b4fa;
+@define-color lavender #b4befe;
+@define-color sapphire #74c7ec;
+@define-color sky #89dceb;
+@define-color teal #94e2d5;
+@define-color green #a6e3a1;
+@define-color yellow #f9e2af;
+@define-color peach #fab387;
+@define-color maroon #eba0ac;
+@define-color red #f38ba8;
+@define-color mauve #cba6f7;
+@define-color pink #f5c2e7;
+@define-color flamingo #f2cdcd;
+@define-color rosewater #f5e0dc;
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 14px;
+}
+
+.notification-row {
+    outline: none;
+}
+
+.notification-row:focus,
+.notification-row:hover {
+    background: @bg-alt;
+}
+
+.notification {
+    border-radius: 12px;
+    margin: 6px 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    padding: 0;
+    background: @bg;
+    border: 1px solid @bg-alt;
+}
+
+.notification-content {
+    background: transparent;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.close-button {
+    background: @bg-alt;
+    color: @fg-alt;
+    text-shadow: none;
+    padding: 0;
+    border-radius: 100%;
+    margin-top: 6px;
+    margin-right: 6px;
+    box-shadow: none;
+    border: none;
+    min-width: 24px;
+    min-height: 24px;
+}
+
+.close-button:hover {
+    box-shadow: none;
+    background: @red;
+    color: @bg;
+    transition: all 200ms ease;
+    text-shadow: none;
+}
+
+.notification-default-action,
+.notification-action {
+    padding: 4px;
+    margin: 0;
+    box-shadow: none;
+    background: @bg;
+    border: 1px solid @bg-alt;
+    color: @fg;
+    transition: all 200ms ease;
+}
+
+.notification-default-action:hover,
+.notification-action:hover {
+    background: @bg-alt;
+    border: 1px solid @lavender;
+}
+
+.notification-default-action {
+    border-radius: 12px;
+}
+
+.notification-action {
+    border-radius: 8px;
+    border-top: none;
+    border-right: none;
+}
+
+.notification-action:first-child {
+    border-bottom-left-radius: 12px;
+}
+
+.notification-action:last-child {
+    border-bottom-right-radius: 12px;
+    border-right: 1px solid @bg-alt;
+}
+
+.inline-reply {
+    margin-top: 8px;
+}
+
+.inline-reply-entry {
+    background: @bg-alt;
+    color: @fg;
+    caret-color: @fg;
+    border: 1px solid @bg-alt;
+    border-radius: 8px;
+}
+
+.inline-reply-button {
+    margin-left: 4px;
+    background: @bg;
+    border: 1px solid @bg-alt;
+    border-radius: 8px;
+    color: @fg;
+}
+
+.inline-reply-button:disabled {
+    background: initial;
+    color: @fg-alt;
+    border: 1px solid transparent;
+}
+
+.inline-reply-button:hover {
+    background: @bg-alt;
+}
+
+.body-image {
+    margin-top: 6px;
+    background-color: white;
+    border-radius: 12px;
+}
+
+.summary {
+    font-size: 16px;
+    font-weight: bold;
+    background: transparent;
+    color: @fg;
+    text-shadow: none;
+}
+
+.time {
+    font-size: 12px;
+    font-weight: normal;
+    background: transparent;
+    color: @fg-alt;
+    text-shadow: none;
+    margin-right: 18px;
+}
+
+.body {
+    font-size: 14px;
+    font-weight: normal;
+    background: transparent;
+    color: @fg;
+    text-shadow: none;
+}
+
+.control-center {
+    background: @bg;
+    border-radius: 16px;
+    border: 2px solid @lavender;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    margin: 10px;
+    padding: 12px;
+}
+
+.control-center-list {
+    background: transparent;
+}
+
+.control-center-list-placeholder {
+    opacity: 0.5;
+}
+
+.floating-notifications {
+    background: transparent;
+}
+
+.blank-window {
+    background: alpha(black, 0.25);
+}
+
+.widget-title {
+    color: @fg;
+    margin: 12px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.widget-title > button {
+    font-size: 14px;
+    font-weight: normal;
+    color: @fg;
+    text-shadow: none;
+    background: @bg-alt;
+    box-shadow: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    border: 1px solid @bg-alt;
+}
+
+.widget-title > button:hover {
+    background: @red;
+    color: @bg;
+    border: 1px solid @red;
+}
+
+.widget-dnd {
+    color: @fg;
+    margin: 12px;
+    font-size: 14px;
+}
+
+.widget-dnd > switch {
+    font-size: initial;
+    border-radius: 100px;
+    background: @bg-alt;
+    border: 1px solid @bg-alt;
+    box-shadow: none;
+}
+
+.widget-dnd > switch:checked {
+    background: @lavender;
+    border: 1px solid @lavender;
+}
+
+.widget-dnd > switch slider {
+    background: @fg;
+    border-radius: 100px;
+}
+
+.widget-dnd > switch:checked slider {
+    background: @bg;
+}
+
+.widget-mpris {
+    background: @bg-alt;
+    padding: 12px;
+    margin: 12px;
+    border-radius: 12px;
+    border: 1px solid @bg-alt;
+}
+
+.widget-mpris-player {
+    padding: 12px;
+    margin: 0;
+}
+
+.widget-mpris-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: @fg;
+}
+
+.widget-mpris-subtitle {
+    font-size: 14px;
+    color: @fg-alt;
+}
+
+.widget-mpris > box > button {
+    color: @fg;
+    border-radius: 8px;
+}
+
+.widget-mpris > box > button:hover {
+    background: @bg;
+}
+
+.widget-mpris > box > button:disabled {
+    color: @fg-alt;
+}
+
+.widget-volume {
+    background: @bg-alt;
+    padding: 12px;
+    margin: 12px;
+    border-radius: 12px;
+    border: 1px solid @bg-alt;
+}
+
+.widget-volume > box > button {
+    background: transparent;
+    border: none;
+}
+
+.per-app-volume {
+    background: @bg;
+    padding: 8px;
+    margin-top: 8px;
+    border-radius: 8px;
+}
+
+.widget-buttons-grid {
+    margin: 12px;
+}
+
+.widget-buttons-grid > flowbox > flowboxchild > button {
+    background: @bg-alt;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 4px;
+    border: 1px solid @bg-alt;
+    color: @fg;
+    font-size: 14px;
+}
+
+.widget-buttons-grid > flowbox > flowboxchild > button:hover {
+    background: @lavender;
+    color: @bg;
+    border: 1px solid @lavender;
+}

@@ -1,0 +1,107 @@
+# Brewfile - macOS pakker for dotfiles
+# Kjør: brew bundle
+
+# Taps
+tap "homebrew/bundle"
+tap "homebrew/services"
+
+# Core utilities (bedre enn macOS-defaults)
+brew "coreutils"
+brew "findutils"
+brew "gnu-tar"
+brew "gnu-sed"
+brew "gawk"
+brew "gnutls"
+brew "grep"
+brew "make"
+brew "pkg-config"
+
+# Essentials
+brew "git"
+brew "git-lfs"
+brew "stow"
+brew "zsh"
+brew "zsh-completions"
+brew "zsh-syntax-highlighting"
+brew "zsh-autosuggestions"
+
+# Terminal tools
+brew "eza"
+brew "bat"
+brew "fzf"
+brew "ripgrep"
+brew "fd"
+brew "tree"
+brew "htop"
+brew "btop"
+brew "jq"
+brew "yq"
+brew "tldr"
+brew "thefuck"
+brew "zoxide"
+brew "tmux"
+brew "starship"
+
+# Development
+brew "neovim"
+brew "lazygit"
+brew "node"
+brew "npm"
+brew "nvm"
+brew "python"
+brew "pipx"
+brew "rustup"
+brew "go"
+brew "deno"
+brew "bun"
+brew "openjdk"
+brew "maven"
+brew "gradle"
+brew "docker"
+brew "docker-compose"
+
+# CLI tools
+brew "curl"
+brew "wget"
+brew "httpie"
+brew "gh"
+
+# Fonts
+cask "font-fira-code"
+cask "font-fira-code-nerd-font"
+cask "font-jetbrains-mono"
+cask "font-jetbrains-mono-nerd-font"
+cask "font-hack-nerd-font"
+cask "font-symbols-only-nerd-font"
+
+# Applications
+cask "ghostty"
+cask "kitty"
+cask "alacritty"
+cask "visual-studio-code"
+cask "cursor"
+cask "intellij-idea-ce"
+cask "docker"
+cask "github"
+cask "arc"
+cask "raycast"
+cask "rectangle"
+cask "betterdisplay"
+cask "spotify"
+cask "discord"
+cask "slack"
+cask "obsidian"
+cask "tableplus"
+cask "postman"
+cask "cyberduck"
+cask "the-unarchiver"
+cask "imageoptim"
+cask "keka"
+cask "hiddenbar"
+cask "stats"
+
+# Mac App Store apps
+mas "Xcode", id: 497799835
+mas "Things 3", id: 904280696
+mas "Amphetamine", id: 937984704
+mas "Spark Desktop", id: 6445813049

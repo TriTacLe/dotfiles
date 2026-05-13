@@ -1,0 +1,110 @@
+# Ghostty Configuration - Styled Edition
+# font-family = JetBrainsMono Nerd Font
+font-family = Monocraft
+font-size = 11
+font-thicken = true
+
+# Window styling
+window-padding-x = 15
+window-padding-y = 10
+window-padding-balance = true
+window-decoration = false
+background-opacity = 0.75
+background-blur-radius = 20
+
+# Theme - Catppuccin Mocha (darker, cooler)
+background = 1e1e2e
+foreground = cdd6f4
+
+# Normal colors (Catppuccin)
+palette = 0=45475a
+palette = 1=f38ba8
+palette = 2=a6e3a1
+palette = 3=f9e2af
+palette = 4=89b4fa
+palette = 5=f5c2e7
+palette = 6=94e2d5
+palette = 7=bac2de
+
+# Bright colors
+palette = 8=585b70
+palette = 9=f38ba8
+palette = 10=a6e3a1
+palette = 11=f9e2af
+palette = 12=89b4fa
+palette = 13=f5c2e7
+palette = 14=94e2d5
+palette = 15=a6adc8
+
+# Cursor styling
+cursor-style = bar
+cursor-style-blink = true
+cursor-color = f5c2e7
+cursor-text = 1e1e2e
+cursor-invert-fg-bg = false
+
+# Selection
+selection-background = 353749
+selection-foreground = cdd6f4
+
+# Scrollbar
+mouse-scroll-multiplier = 2
+
+# Window behavior
+confirm-close-surface = false
+window-save-state = always
+resize-overlay = never
+
+# Advanced rendering
+gtk-single-instance = true
+gtk-tabs-location = bottom
+adw-toolbar-style = raised
+
+# Cursor effects (choose one)
+custom-shader = shaders/cursor_smear_fade.glsl
+# custom-shader = shaders/cursor_smear.glsl
+# custom-shader = shaders/bloom.glsl
+# custom-shader = shaders/crt.glsl
+
+# Mouse
+mouse-hide-while-typing = true
+
+# Clipboard
+clipboard-read = allow
+clipboard-write = allow
+clipboard-paste-protection = false
+clipboard-trim-trailing-spaces = true
+
+# URLs
+link-url = true
+
+# Keybindings
+keybind = ctrl+backspace=text:\x1b[127;5u
+keybind = alt+backspace=text:\x1b[127;3u
+keybind = ctrl+left=text:\x1b[1;5D
+keybind = ctrl+right=text:\x1b[1;5C
+keybind = alt+left=text:\x1b[1;3D
+keybind = alt+right=text:\x1b[1;3C
+
+# Font size adjustments
+keybind = ctrl+plus=increase_font_size:1
+keybind = ctrl+minus=decrease_font_size:1
+keybind = ctrl+0=reset_font_size
+
+# Quick tab switching
+keybind = ctrl+tab=next_tab
+keybind = ctrl+shift+tab=previous_tab
+
+# Split panes (like tmux but native)
+keybind = ctrl+shift+o=new_split:right
+keybind = ctrl+shift+e=new_split:down
+keybind = ctrl+shift+w=close_surface
+
+# Navigate splits
+keybind = ctrl+shift+h=goto_split:left
+keybind = ctrl+shift+j=goto_split:bottom
+keybind = ctrl+shift+k=goto_split:top
+keybind = ctrl+shift+l=goto_split:right
+
+# Toggle fullscreen
+keybind = f11=toggle_fullscreen

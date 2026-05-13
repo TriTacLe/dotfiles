@@ -1,0 +1,65 @@
+# General settings
+ignore-empty-password
+show-failed-attempts
+daemonize
+indicator-idle-visible
+
+# Appearance
+font=JetBrainsMono Nerd Font
+font-size=20
+
+# Colors (Catppuccin Mocha)
+color=1e1e2e
+bs-hl-color=f38ba8
+key-hl-color=a6e3a1
+caps-lock-bs-hl-color=f38ba8
+caps-lock-key-hl-color=f9e2af
+
+# Ring
+ring-color=313244
+ring-ver-color=89b4fa
+ring-wrong-color=f38ba8
+ring-clear-color=f9e2af
+
+# Inside
+inside-color=1e1e2eee
+inside-ver-color=1e1e2eee
+inside-wrong-color=1e1e2eee
+inside-clear-color=1e1e2eee
+
+# Line
+line-color=00000000
+line-ver-color=00000000
+line-wrong-color=00000000
+line-clear-color=00000000
+
+# Separator
+separator-color=00000000
+
+# Text
+text-color=cdd6f4
+text-ver-color=89b4fa
+text-wrong-color=f38ba8
+text-clear-color=f9e2af
+
+# Layout
+text-caps-lock-color=f9e2af
+
+# Indicator
+indicator-radius=120
+indicator-thickness=15
+
+# Effects
+fade-in=0.3
+effect-blur=10x10
+screenshots
+clock
+
+# Time
+timestr=%H:%M
+datestr=%A, %B %d
+
+# Position
+text-align=center
+indicator-x-position=960
+indicator-y-position=540

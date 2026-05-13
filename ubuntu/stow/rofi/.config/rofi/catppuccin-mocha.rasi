@@ -1,0 +1,176 @@
+* {
+    bg: #1e1e2e;
+    bg-alt: #313244;
+    fg: #cdd6f4;
+    fg-alt: #a6adc8;
+    
+    blue: #89b4fa;
+    lavender: #b4befe;
+    sapphire: #74c7ec;
+    sky: #89dceb;
+    teal: #94e2d5;
+    green: #a6e3a1;
+    yellow: #f9e2af;
+    peach: #fab387;
+    maroon: #eba0ac;
+    red: #f38ba8;
+    mauve: #cba6f7;
+    pink: #f5c2e7;
+    flamingo: #f2cdcd;
+    rosewater: #f5e0dc;
+    
+    background-color: @bg;
+    text-color: @fg;
+    
+    margin: 0;
+    padding: 0;
+    spacing: 0;
+}
+
+window {
+    width: 800;
+    height: 500;
+    border: 2;
+    border-color: @lavender;
+    border-radius: 12;
+    background-color: @bg;
+    padding: 20;
+    location: center;
+    anchor: center;
+}
+
+mainbox {
+    background-color: transparent;
+    orientation: vertical;
+    children: [inputbar, listview];
+    spacing: 15;
+}
+
+inputbar {
+    background-color: @bg-alt;
+    border-radius: 8;
+    padding: 12 16;
+    spacing: 12;
+    children: [prompt, entry];
+}
+
+prompt {
+    background-color: transparent;
+    text-color: @lavender;
+    font: "JetBrainsMono Nerd Font 14";
+}
+
+entry {
+    background-color: transparent;
+    text-color: @fg;
+    placeholder: "Search...";
+    placeholder-color: @fg-alt;
+    cursor: text;
+    font: "JetBrainsMono Nerd Font 12";
+}
+
+listview {
+    background-color: transparent;
+    spacing: 8;
+    fixed-height: false;
+    dynamic: true;
+    columns: 1;
+    lines: 8;
+    scrollbar: false;
+    border: 0;
+}
+
+element {
+    background-color: transparent;
+    padding: 10 16;
+    border-radius: 8;
+    spacing: 12;
+    children: [element-icon, element-text];
+}
+
+element-icon {
+    background-color: transparent;
+    size: 24;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: @fg;
+    font: "JetBrainsMono Nerd Font 11";
+    vertical-align: 0.5;
+}
+
+element selected {
+    background-color: @bg-alt;
+    border: 1;
+    border-color: @lavender;
+    border-radius: 8;
+}
+
+element selected.normal {
+    background-color: @bg-alt;
+}
+
+element selected.active {
+    background-color: @lavender;
+    text-color: @bg;
+}
+
+element selected.urgent {
+    background-color: @red;
+    text-color: @bg;
+}
+
+element normal.active {
+    background-color: @lavender;
+    text-color: @bg;
+}
+
+element normal.urgent {
+    background-color: @red;
+    text-color: @bg;
+}
+
+element alternate.normal {
+    background-color: transparent;
+}
+
+element alternate.active {
+    background-color: @lavender;
+    text-color: @bg;
+}
+
+element alternate.urgent {
+    background-color: @red;
+    text-color: @bg;
+}
+
+mode-switcher {
+    background-color: transparent;
+    spacing: 8;
+}
+
+button {
+    background-color: @bg-alt;
+    text-color: @fg-alt;
+    padding: 8 16;
+    border-radius: 6;
+    font: "JetBrainsMono Nerd Font 11";
+}
+
+button selected {
+    background-color: @lavender;
+    text-color: @bg;
+}
+
+message {
+    background-color: @bg-alt;
+    border-radius: 8;
+    padding: 12;
+}
+
+textbox {
+    background-color: transparent;
+    text-color: @fg;
+    font: "JetBrainsMono Nerd Font 11";
+}

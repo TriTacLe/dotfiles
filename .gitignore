@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Arch package cache
+*.pkg.tar.zst
+
+# Secrets (never tracked)
+.zshenv.secrets
+.env.secrets
+
+# Neovim generated files
+shared/stow/nvim/.config/nvim/lazy-lock.json
+
+# OS artifacts
+Thumbs.db
+ehthumbs.db

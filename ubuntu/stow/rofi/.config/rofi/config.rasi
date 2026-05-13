@@ -1,0 +1,35 @@
+configuration {
+    modi: "drun,run,window,filebrowser";
+    show-icons: true;
+    display-drun: "Apps";
+    display-run: "Run";
+    display-window: "Windows";
+    display-filebrowser: "Files";
+    drun-display-format: "{name}";
+    window-format: "{w} {c}";
+    font: "JetBrainsMono Nerd Font 12";
+    icon-theme: "Catppuccin-Mocha";
+    
+    location: 0;
+    anchor: center;
+    xoffset: 0;
+    yoffset: 0;
+    
+    disable-history: false;
+    hide-scrollbar: true;
+    sidebar-mode: false;
+    
+    terminal: "ghostty";
+    
+    kb-row-up: "Up,Control+k";
+    kb-row-down: "Down,Control+j";
+    kb-accept-entry: "Control+m,Return,KP_Enter";
+    kb-mode-next: "Shift+Right,Control+Tab";
+    kb-mode-previous: "Shift+Left,Control+Shift+Tab";
+    kb-remove-char-back: "BackSpace";
+    kb-remove-word-back: "Control+BackSpace";
+    kb-clear-line: "Control+w";
+    kb-cancel: "Escape,Control+q,Control+c";
+}
+
+@theme "catppuccin-mocha"

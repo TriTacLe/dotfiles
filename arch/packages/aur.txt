@@ -1,0 +1,9 @@
+avizo
+brave-bin
+geteduroam
+neofetch-git
+visual-studio-code-bin
+yay
+yay-debug
+zsh-defer-git
+zsh-theme-powerlevel10k-git
