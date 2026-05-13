@@ -18,7 +18,6 @@ ZSH_THEME="robbyrussell"
 
 plugins=(
     git
-    zsh-syntax-highlighting
     zsh-autosuggestions
     brew
     macos
@@ -29,7 +28,11 @@ plugins=(
     dirhistory
     history
     sudo
+    fast-syntax-highlighting
 )
+
+# Speed up paste: stop autosuggest rebinding widgets every keystroke
+ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 
 source $ZSH/oh-my-zsh.sh
 
