@@ -100,14 +100,14 @@ alias home='cd ~'
 alias desktop='cd ~/Desktop'
 alias downloads='cd ~/Downloads'
 alias documents='cd ~/Documents'
-# Dev-dir aliases: guard on existence (paths from .env override defaults)
-[[ -d "${DOTFILES_DIR:-$HOME/dotfiles}" ]] && alias dotfiles="cd ${DOTFILES_DIR:-$HOME/dotfiles}"
-[[ -d "${DEV_DIR:-$HOME/dev}" ]] && alias dev="cd ${DEV_DIR:-$HOME/dev}"
-[[ -d "${DEV_DIR:-$HOME/dev}/personal" ]] && alias personal="cd ${DEV_DIR:-$HOME/dev}/personal"
-[[ -d "${DEV_DIR:-$HOME/dev}/ntnu" ]] && alias ntnu="cd ${DEV_DIR:-$HOME/dev}/ntnu"
-[[ -d "${ORBIT_DIR:-${DEV_DIR:-$HOME/dev}/orbit}" ]] && alias orbit="cd ${ORBIT_DIR:-${DEV_DIR:-$HOME/dev}/orbit}"
-[[ -d "${DEV_DIR:-$HOME/dev}/duxpace" ]] && alias duxpace="cd ${DEV_DIR:-$HOME/dev}/duxpace"
-[[ -d "${DEV_DIR:-$HOME/dev}/work" ]] && alias work="cd ${DEV_DIR:-$HOME/dev}/work"
+# Dev-dir aliases: guard on existence (paths from .zshenv.secrets override defaults)
+[[ -d "${DOTFILES_DIR:-$HOME/Desktop/dotfiles}" ]] && alias dotfiles="cd ${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
+[[ -d "${DEV_DIR:-$HOME/Desktop}" ]] && alias dev="cd ${DEV_DIR:-$HOME/Desktop}"
+[[ -d "${DEV_DIR:-$HOME/Desktop}/personal" ]] && alias personal="cd ${DEV_DIR:-$HOME/Desktop}/personal"
+[[ -d "${DEV_DIR:-$HOME/Desktop}/ntnu" ]] && alias ntnu="cd ${DEV_DIR:-$HOME/Desktop}/ntnu"
+[[ -d "${ORBIT_DIR:-${DEV_DIR:-$HOME/Desktop}/orbit}" ]] && alias orbit="cd ${ORBIT_DIR:-${DEV_DIR:-$HOME/Desktop}/orbit}"
+[[ -d "${DEV_DIR:-$HOME/Desktop}/duxpace" ]] && alias duxpace="cd ${DEV_DIR:-$HOME/Desktop}/duxpace"
+[[ -d "${DEV_DIR:-$HOME/Desktop}/moen-marin" ]] && alias moen-marin="cd ${DEV_DIR:-$HOME/Desktop}/moen-marin"
 
 # ============================================
 # System Aliases
@@ -174,7 +174,7 @@ copy() { cat "$1" | pbcopy }
 # ============================================
 # Stow Management
 # ============================================
-: "${DOTFILES_DIR:=$HOME/dotfiles}"
+: "${DOTFILES_DIR:=$HOME/Desktop/dotfiles}"
 
 stow-all() {
     stow -d "$DOTFILES_DIR/shared/stow" -t ~ --no-folding git nvim starship lazygit backgrounds zsh
