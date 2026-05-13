@@ -295,6 +295,7 @@ yazi
 yelp
 yq
 zathura
+zathura-pdf-mupdf
 zip
 zoxide
 zram-generator
