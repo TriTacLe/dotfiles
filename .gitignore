@@ -12,9 +12,6 @@
 .zshenv.secrets
 .env.secrets
 
-# Neovim generated files
-shared/stow/nvim/.config/nvim/lazy-lock.json
-
 # OS artifacts
 Thumbs.db
 ehthumbs.db

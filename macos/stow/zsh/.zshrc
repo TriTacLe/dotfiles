@@ -157,6 +157,9 @@ alias weather='curl wttr.in'
 alias moon='curl wttr.in/moon'
 alias shrug='echo "¯\_(ツ)_/¯" | pbcopy'
 
+# Copy file content to clipboard
+copy() { cat "$1" | pbcopy }
+
 # ============================================
 # Stow Management
 # ============================================
@@ -170,24 +173,24 @@ stow-all() {
 
 stow-pkg() {
     if [ -z "$1" ]; then echo "Usage: stow-pkg <package>"; return 1; fi
-    if [[ "$1" == "claude-config" ]]; then
+    local pkg="$1"
+    if [[ "$pkg" == "claude-config" ]]; then
         stow -d "$DOTFILES_DIR" -t ~/.claude -R claude-config
-    elif [[ "$1" == "shared/"* ]]; then
-        local pkg="${1#shared/}"
-        stow -d "$DOTFILES_DIR/shared/stow" -t ~ --no-folding -R "$pkg"
-    else
-        stow -d "$DOTFILES_DIR/macos/stow" -t ~ --no-folding -R "$1"
+        return
     fi
+    [[ -d "$DOTFILES_DIR/shared/stow/$pkg" ]] && stow -d "$DOTFILES_DIR/shared/stow" -t ~ --no-folding -R "$pkg"
+    [[ -d "$DOTFILES_DIR/macos/stow/$pkg" ]] && stow -d "$DOTFILES_DIR/macos/stow" -t ~ --no-folding -R "$pkg"
 }
 
 unstow-pkg() {
     if [ -z "$1" ]; then echo "Usage: unstow-pkg <package>"; return 1; fi
-    if [[ "$1" == "claude-config" ]]; then
+    local pkg="$1"
+    if [[ "$pkg" == "claude-config" ]]; then
         stow -d "$DOTFILES_DIR" -t ~/.claude -D claude-config
-    else
-        stow -d "$DOTFILES_DIR/macos/stow" -t ~ --no-folding -D "$1" 2>/dev/null || \
-        stow -d "$DOTFILES_DIR/shared/stow" -t ~ --no-folding -D "$1"
+        return
     fi
+    [[ -d "$DOTFILES_DIR/shared/stow/$pkg" ]] && stow -d "$DOTFILES_DIR/shared/stow" -t ~ --no-folding -D "$pkg"
+    [[ -d "$DOTFILES_DIR/macos/stow/$pkg" ]] && stow -d "$DOTFILES_DIR/macos/stow" -t ~ --no-folding -D "$pkg"
 }
 
 # ============================================
