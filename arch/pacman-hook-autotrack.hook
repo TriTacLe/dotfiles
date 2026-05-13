@@ -1,0 +1,20 @@
+# Pacman Hook - Auto-track packages after install/upgrade/remove
+#
+# Install with: ./arch/install-hook.sh
+# That creates /usr/local/bin/dotfiles-pkgtrack as a symlink to arch/scripts/pkgtrack.sh
+# and copies this file to /usr/share/libalpm/hooks/20-dotfiles-autotrack.hook
+#
+# This hook is machine-agnostic: it calls the symlink, which resolves to the
+# pkgtrack.sh inside whichever clone of the dotfiles repo you set up.
+
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Auto-track packages in dotfiles
+When = PostTransaction
+Exec = /usr/local/bin/dotfiles-pkgtrack
