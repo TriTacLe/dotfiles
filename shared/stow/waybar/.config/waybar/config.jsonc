@@ -65,7 +65,7 @@
         "tooltip" : true,
         "format" : "{}",
         "interval" : 30,
-        "exec" : "python ~/.config/waybar/scripts/waybar-wttr.py",
+        "exec" : "python3 ~/.config/waybar/scripts/waybar-wttr.py",
         "return-type" : "json"
     },
 
@@ -248,7 +248,7 @@
         "tooltip" : true,
         "format" : "{}",
         "interval" : 30,
-        "exec" : "python ~/.config/waybar/scripts/waybar-wttr.py",
+        "exec" : "python3 ~/.config/waybar/scripts/waybar-wttr.py",
         "return-type" : "json"
     },
 
@@ -445,7 +445,7 @@
         "tooltip" : true,
         "format" : "{}",
         "interval" : 30,
-        "exec" : "python ~/.config/waybar/scripts/waybar-wttr.py",
+        "exec" : "python3 ~/.config/waybar/scripts/waybar-wttr.py",
         "return-type" : "json"
     },
 
