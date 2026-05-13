@@ -13,7 +13,7 @@ button {
   border-color: black;
   text-decoration-color: #ffffff;
   color: #ffffff;
-  background-color: #011423;
+  background-color: #1e1e2e;
   border-style: solid;
   border-width: 1px;
   background-repeat: no-repeat;
@@ -23,9 +23,9 @@ button {
 }
 
 button:hover {
-  background-color: #0f3f63;
-  box-shadow: 0 0 10px 3px #0f3f63;
-  border-color: #0f3f63;
+  background-color: #313244;
+  box-shadow: 0 0 10px 3px #313244;
+  border-color: #313244;
   outline: none;
 }
 

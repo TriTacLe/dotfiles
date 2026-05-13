@@ -6,7 +6,7 @@ set -e
 
 # Script lives at arch/install-hook.sh, repo root is one level up
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-source "$DOTFILES_DIR/arch/scripts/config.sh"
+source "$DOTFILES_DIR/shared/scripts/config.sh"
 
 PKGTRACK="$DOTFILES_DIR/arch/scripts/pkgtrack.sh"
 SYMLINK="/usr/local/bin/dotfiles-pkgtrack"

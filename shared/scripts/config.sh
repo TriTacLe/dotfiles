@@ -26,8 +26,14 @@ if [[ -z "$DOTFILES_DIR" || ! -d "$DOTFILES_DIR/.git" ]]; then
     unset _path
 fi
 
-# In the unified layout, packages live under arch/packages/
-PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/arch/packages}"
+# OS-aware packages dir: arch uses pacman, ubuntu/debian uses apt
+if command -v pacman &>/dev/null; then
+    PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/arch/packages}"
+    PKG_MANAGER="pacman"
+elif command -v apt &>/dev/null; then
+    PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/ubuntu/packages}"
+    PKG_MANAGER="apt"
+fi
 
 # Color logger
 _dotfiles_color() {
@@ -50,4 +56,4 @@ GIT_REMOTE="${GIT_REMOTE:-origin}"
 GIT_BRANCH="${GIT_BRANCH:-master}"
 AUTO_PUSH="${AUTO_PUSH:-true}"
 
-export DOTFILES_DIR PACKAGES_DIR MACHINE_TYPE GIT_REMOTE GIT_BRANCH AUTO_PUSH
+export DOTFILES_DIR PACKAGES_DIR PKG_MANAGER MACHINE_TYPE GIT_REMOTE GIT_BRANCH AUTO_PUSH

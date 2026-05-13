@@ -11,9 +11,10 @@ fi
 
 mkdir -p ~/.config
 
-stow -d "$DOTFILES/shared/stow" -t ~ --no-folding git nvim lazygit backgrounds zsh
+stow -d "$DOTFILES/shared/stow" -t ~ --no-folding \
+    git nvim lazygit backgrounds zsh tmux alacritty ghostty kitty
 stow -d "$DOTFILES/ubuntu/stow" -t ~ --no-folding \
-    zsh tmux alacritty ghostty kitty rofi swaylock swaync wlogout fontconfig zathura systemd
+    zsh rofi swaylock swaync wlogout fontconfig zathura systemd
 
 stow -d "$DOTFILES" -t ~/.claude -R claude-config
 

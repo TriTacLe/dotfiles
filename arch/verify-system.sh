@@ -70,7 +70,7 @@ check "arch/stow/zsh/.zshrc parses" zsh -n arch/stow/zsh/.zshrc
 
 echo ""
 echo "[5] Required files exist"
-check "arch/scripts/config.sh"              test -f arch/scripts/config.sh
+check "shared/scripts/config.sh"              test -f shared/scripts/config.sh
 check "arch/scripts/pkgtrack.sh"            test -f arch/scripts/pkgtrack.sh
 check "install.sh"                          test -x install.sh
 check "arch/install-hook.sh"               test -x arch/install-hook.sh
@@ -81,11 +81,11 @@ check "arch/templates/env.example"         test -f arch/templates/env.example
 
 echo ""
 echo "[6] Shared library is sourceable"
-if bash -c "source arch/scripts/config.sh && [[ -n \$DOTFILES_DIR ]] && type log >/dev/null" 2>/dev/null; then
-    echo "  ok   arch/scripts/config.sh exposes DOTFILES_DIR + logger"
+if bash -c "source shared/scripts/config.sh && [[ -n \$DOTFILES_DIR ]] && type log >/dev/null" 2>/dev/null; then
+    echo "  ok   shared/scripts/config.sh exposes DOTFILES_DIR + logger"
     PASS=$((PASS+1))
 else
-    echo "  FAIL arch/scripts/config.sh broken or missing helpers"
+    echo "  FAIL shared/scripts/config.sh broken or missing helpers"
     FAIL=$((FAIL+1))
 fi
 

@@ -13,7 +13,7 @@ window#waybar {
 }
 
 tooltip {
-  background: #011423;
+  background: #1e1e2e;
   border-radius: 0px;
   border-width: 1px;
   border-style: solid;
@@ -37,7 +37,7 @@ tooltip {
 #taskbar,
 #mpris,
 #backlight {
-  background: #011423;
+  background: #1e1e2e;
   opacity: 1;
   padding: 0px 20px;
   margin: 11px 0px;
@@ -48,7 +48,7 @@ tooltip {
 }
 
 #workspaces {
-  background: #011423;
+  background: #1e1e2e;
   border-radius: 10px;
   font-weight: normal;
   font-style: normal;

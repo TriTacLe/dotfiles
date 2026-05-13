@@ -4,6 +4,7 @@
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
 # Source per-machine .env if present (paths, prefs)
 for _df in "$DOTFILES_DIR" "$HOME/Desktop/dotfiles" "$HOME/dotfiles" "$HOME/.dotfiles"; do
