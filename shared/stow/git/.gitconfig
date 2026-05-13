@@ -52,3 +52,14 @@
 
 [http]
 	version = HTTP/1.1
+
+# Load NTNU email override in NTNU project dirs.
+# Adjust gitdir path to match where NTNU projects actually live.
+# [includeIf "gitdir:~/Desktop/ntnu/"]
+#   path = ~/.config/git/ntnu.gitconfig
+
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f

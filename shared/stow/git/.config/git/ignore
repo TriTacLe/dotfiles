@@ -1,0 +1,62 @@
+# AI tool state -- never commit these
+**/.claude/settings.local.json
+**/.claude/projects/
+**/.claude/todos/
+**/.claude/statsig/
+.anthropic/
+.openai/
+# Aider
+.aider*
+# Cursor
+.cursor/
+.cursorignore
+.cursorrules
+# Copilot / other editors
+.copilot/
+# Secrets and API keys
+.env
+.env.local
+.env.*.local
+.zshenv.secrets
+*.secrets
+# Node / JS
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+*.dist-info/
+# Rust
+target/
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+# Editor state
+.idea/
+*.swp
+*.swo
+*~
+# Logs and temp
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tmp
+*.temp
+# Build artifacts (language-agnostic)
+*.o
+*.a
+*.so
+*.dylib
