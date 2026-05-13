@@ -185,6 +185,7 @@ nwg-look
 obsidian
 obs-studio
 ocean-sound-theme
+okular
 openbsd-netcat
 openconnect
 orca
