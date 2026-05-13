@@ -3,6 +3,9 @@ set -e
 
 DOTFILES="$(cd "$(dirname "$0")" && pwd)"
 
+# Init submodules (safe to run even if already done)
+git -C "$DOTFILES" submodule update --init --recursive
+
 OS=$(uname -s)
 if [ "$OS" = "Darwin" ]; then
     bash "$DOTFILES/macos/install-macos.sh"

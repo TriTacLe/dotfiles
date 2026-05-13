@@ -3,6 +3,12 @@ set -e
 
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
 
+# Ensure stow is installed
+if ! command -v stow &>/dev/null; then
+    echo "Installing stow..."
+    sudo pacman -S --needed --noconfirm stow
+fi
+
 mkdir -p ~/.config ~/.claude
 
 stow -d "$DOTFILES/shared/stow" -t ~ --no-folding git nvim starship lazygit backgrounds zsh
