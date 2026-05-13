@@ -1,0 +1,10 @@
+[Unit]
+Description=Watch Obsidian vault for changes and trigger RAG reindex
+
+[Path]
+PathChanged=%h/Documents/Obsidian Vault/Claude
+Unit=vault-reindex.service
+MakeDirectory=true
+
+[Install]
+WantedBy=default.target

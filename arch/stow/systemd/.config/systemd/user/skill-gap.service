@@ -1,0 +1,9 @@
+[Unit]
+Description=Weekly skill gap analysis for Claude config
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/Desktop/dotfiles/claude-config/scripts/skill-gap.sh 7
+StandardOutput=append:%h/.claude/telemetry/skill-gap.log
+StandardError=append:%h/.claude/telemetry/skill-gap.log

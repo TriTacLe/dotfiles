@@ -1,0 +1,6 @@
+[Unit]
+Description=Weekly Claude log garbage collection
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/log-gc.sh

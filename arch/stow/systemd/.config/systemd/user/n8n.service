@@ -1,0 +1,16 @@
+[Unit]
+Description=n8n workflow automation (docker compose)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/n8n
+ExecStartPre=-/usr/bin/docker compose -f %h/.local/n8n/compose.yml down
+ExecStart=/usr/bin/docker compose -f %h/.local/n8n/compose.yml up
+ExecStop=/usr/bin/docker compose -f %h/.local/n8n/compose.yml down
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
