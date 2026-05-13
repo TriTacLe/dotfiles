@@ -5,7 +5,7 @@
 dynamic_title = true
 startup_mode = "Windowed"
 padding = { x = 10, y = 8 }
-# opacity = 0.95   # optional — uncomment if supported by your Alacritty build
+# opacity = 0.95   # optional - uncomment if supported by your Alacritty build
 
 [font]
 # Replace "SF Mono" with "Menlo", "Fira Code", "Iosevka", etc. as desired.

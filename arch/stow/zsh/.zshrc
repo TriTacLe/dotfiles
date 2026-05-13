@@ -1,6 +1,6 @@
 # Arch Zsh Configuration
 
-# Enable Powerlevel10k instant prompt — must stay near top
+# Enable Powerlevel10k instant prompt - must stay near top
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -250,6 +250,6 @@ alias cgd='cheat docker'
 [ -f ~/.config/zsh/shared.zsh ] && source ~/.config/zsh/shared.zsh
 [ -f ~/.zshenv.secrets ] && source ~/.zshenv.secrets
 
-# SDKMAN — must stay at end
+# SDKMAN - must stay at end
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

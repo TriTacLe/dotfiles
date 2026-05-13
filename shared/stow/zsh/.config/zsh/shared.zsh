@@ -1,4 +1,4 @@
-# Shared Zsh Configuration — sourced by all OS-specific .zshrc files
+# Shared Zsh Configuration - sourced by all OS-specific .zshrc files
 # Place: ~/.config/zsh/shared.zsh
 
 # ============================================

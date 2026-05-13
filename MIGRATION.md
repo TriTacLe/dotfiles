@@ -1,8 +1,8 @@
-# Migration Guide — Dotfiles on a New or Existing Machine
+# Migration Guide - Dotfiles on a New or Existing Machine
 
 Single repo: `github.com/TriTacLe/dotfiles`
 Works on: macOS, Arch Linux, Ubuntu/Debian
-Entry point: `bash install.sh` — detects OS, handles everything.
+Entry point: `bash install.sh` - detects OS, handles everything.
 
 ---
 
@@ -20,11 +20,11 @@ Entry point: `bash install.sh` — detects OS, handles everything.
 
 Stow creates symlinks: `~/.zshrc → dotfiles/macos/stow/zsh/.zshrc`
 Each OS `.zshrc` sources `~/.config/zsh/shared.zsh` at the end (shared aliases, functions, keybindings).
-Always use `--no-folding` — prevents `~/.config` becoming a symlink when multiple packages share it.
+Always use `--no-folding` - prevents `~/.config` becoming a symlink when multiple packages share it.
 
 ---
 
-## macOS — new machine
+## macOS - new machine
 
 ```bash
 git clone git@github.com:TriTacLe/dotfiles.git ~/dotfiles
@@ -44,12 +44,12 @@ readlink ~/.claude/settings.json
 
 ---
 
-## Arch Linux — migrating from old repo
+## Arch Linux - migrating from old repo
 
 The old arch dotfiles used `stow --dotfiles -t ~` (flat repo root, no `stow/` subdir).
 **Must unstow with the same flag** before switching repos.
 
-### Step 1 — Pre-flight check
+### Step 1 - Pre-flight check
 
 ```bash
 # See what is currently symlinked and where from
@@ -63,21 +63,21 @@ done
 
 Symlinks should point into the old arch repo (e.g. `dotfiles/.zshrc` or `dotfiles/zsh/.zshrc`).
 
-### Step 2 — Archive old repo
+### Step 2 - Archive old repo
 
 ```bash
-# Do NOT delete yet — needed for unstow
+# Do NOT delete yet - needed for unstow
 mv ~/dotfiles ~/dotfiles-arch-archive
-# or wherever your arch dotfiles live — check $DOTFILES_DIR in your .zshrc
+# or wherever your arch dotfiles live - check $DOTFILES_DIR in your .zshrc
 ```
 
-### Step 3 — Clone unified repo
+### Step 3 - Clone unified repo
 
 ```bash
 git clone git@github.com:TriTacLe/dotfiles.git ~/dotfiles
 ```
 
-### Step 4 — Unstow old arch packages
+### Step 4 - Unstow old arch packages
 
 **Must use `--dotfiles` flag** (matches how they were originally stowed):
 
@@ -100,7 +100,7 @@ find ~ -maxdepth 3 -type l ! -exec test -e {} \; -print 2>/dev/null \
     | grep -v ".Trash\|Caches\|Library\|.docker\|debug/latest"
 ```
 
-### Step 5 — Clear any remaining real-file conflicts
+### Step 5 - Clear any remaining real-file conflicts
 
 Stow refuses to overwrite real files. If any of these exist as real files (not symlinks), move them out:
 
@@ -123,7 +123,7 @@ mv ~/.config/nvim ~/.config/nvim.pre-unified
 # ... repeat for each flagged path
 ```
 
-### Step 6 — Run installer
+### Step 6 - Run installer
 
 ```bash
 cd ~/dotfiles
@@ -132,7 +132,7 @@ bash install.sh
 
 Installs stow if missing, inits submodule, stows everything.
 
-### Step 7 — Verify
+### Step 7 - Verify
 
 ```bash
 source ~/.zshrc                          # no errors
@@ -144,7 +144,7 @@ git lg                                   # git alias works
 nvim --version                           # nvim works
 ```
 
-### Post-migration — NTNU repos
+### Post-migration - NTNU repos
 
 Shared `.gitconfig` uses `tritac.le@gmail.com`. For NTNU repos, set per-repo:
 ```bash
@@ -154,11 +154,11 @@ git config --local user.email trile@stud.ntnu.no
 
 ---
 
-## Ubuntu — migrating from manual configs/
+## Ubuntu - migrating from manual configs/
 
-Ubuntu had no stow — configs were real files. Must back them up before stow can link.
+Ubuntu had no stow - configs were real files. Must back them up before stow can link.
 
-### Step 1 — Identify conflicts
+### Step 1 - Identify conflicts
 
 ```bash
 for f in ~/.zshrc ~/.gitconfig ~/.tmux.conf; do
@@ -171,7 +171,7 @@ for d in ~/.config/alacritty ~/.config/fontconfig ~/.config/ghostty \
 done
 ```
 
-### Step 2 — Back up all conflicts
+### Step 2 - Back up all conflicts
 
 ```bash
 BACKUP=~/.dotfiles-backup-$(date +%Y%m%d)
@@ -190,7 +190,7 @@ done
 echo "Backed up to $BACKUP"
 ```
 
-### Step 3 — Clone and install
+### Step 3 - Clone and install
 
 ```bash
 git clone git@github.com:TriTacLe/dotfiles.git ~/dotfiles
@@ -198,7 +198,7 @@ cd ~/dotfiles
 bash install.sh
 ```
 
-### Step 4 — Verify
+### Step 4 - Verify
 
 ```bash
 source ~/.zshrc
@@ -221,7 +221,7 @@ cp -r ~/.dotfiles-backup-YYYYMMDD/.zshrc ~/.zshrc
 
 ## What to do if stow fails mid-install
 
-`install.sh` uses `set -e` — a conflict aborts the run. If it stops early:
+`install.sh` uses `set -e` - a conflict aborts the run. If it stops early:
 
 ```bash
 # See what was already stowed
@@ -274,7 +274,7 @@ bash install.sh            # safe to re-run; stow -R restows cleanly
 
 ---
 
-## Repo is clean — GitHub
+## Repo is clean - GitHub
 
 Single source of truth: `github.com/TriTacLe/dotfiles` (private)
 Old repos (dotfiles-macos, dotfiles-arch, dotfiles-ubuntu) archived.
