@@ -84,6 +84,7 @@ snap
 software-properties-common
 stow
 thefuck
+timeshift
 tmux
 tree
 ubuntu-desktop-minimal
