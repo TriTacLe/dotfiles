@@ -35,6 +35,7 @@ ctags
 dbeaver
 ddcutil
 decibels
+dhcpcd
 direnv
 discover
 docker
