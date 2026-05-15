@@ -31,6 +31,7 @@ cmake
 cmatrix
 cpio
 cpufetch
+cronie
 ctags
 dbeaver
 ddcutil
