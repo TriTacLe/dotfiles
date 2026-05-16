@@ -10,7 +10,7 @@ sleep 2
 
 # Build list of wallpapers
 WALLPAPERS=()
-for wp in "$SPLITTER_DIR"/*.png "$SPLITTER_DIR"/*.jpg "$WALLPAPER_DIR"/*.png "$WALLPAPER_DIR"/*.jpg; do
+for wp in "$SPLITTER_DIR"/*.png "$SPLITTER_DIR"/*.jpg "$SPLITTER_DIR"/*.webp "$WALLPAPER_DIR"/*.png "$WALLPAPER_DIR"/*.jpg "$WALLPAPER_DIR"/*.webp; do
     [[ -f "$wp" ]] && WALLPAPERS+=("$wp")
 done
 

@@ -1,54 +1,59 @@
 # Machines
 
-Reference for per-host dotfiles decisions. Add a row when a new machine joins.
+Per-host dotfiles reference. Add a row when a new machine joins.
 
 ---
 
-## Ubuntu T14s Gen 2i - ThinkPad (primary)
+## Lenovo ThinkPad T14s Gen 2i (Ubuntu)
 
 | Field | Value |
 |---|---|
-| Hostname | tri-thinkpad (Ubuntu) |
+| Hostname | tri-thinkpad |
 | OS | Ubuntu 24.04.4 LTS |
 | Kernel | 6.17.0-23-generic |
-| CPU | Intel Core i5-1135G7 (11th Gen, TigerLake) |
+| CPU | Intel Core i5-1135G7 (4c/8t, TigerLake) |
 | GPU | Intel Iris Xe Graphics (iHD driver) |
 | RAM | 16 GB |
-| Storage | 256 GB NVMe (~55% used) |
+| Storage | 256 GB NVMe |
 | Display | AU Optronics 0x573D, 14", 1920x1080, eDP-1 |
-| DPI | ~157 (scale = 1.0) |
-| Touchpad | Synaptics precision (T14s built-in) |
-| WM | Hyprland 0.55 (from cppiber PPA) + Sway fallback |
-| Display server | Wayland (GDM session) |
+| DPI | 157 (scale 1.0) |
+| Touchpad | Synaptics precision |
+| WM | Hyprland 0.55 (cppiber PPA) + Sway fallback |
+| Display server | Wayland (GDM) |
 | Installer | `ubuntu/install-ubuntu.sh` |
 | Hypr host overlay | `ubuntu/stow/hypr-host/host.conf` |
 
-### Portability notes
+### Notes
 
-- `env = WLR_NO_HARDWARE_CURSORS,1` required (Intel Xe cursor glitch on Wayland)
-- `env = LIBVA_DRIVER_NAME,iHD` + `VDPAU_DRIVER,va_gl` for Intel VA-API
-- Monitor addressed by name `eDP-1` (not description - Intel panels don't expose EDID description reliably)
-- scale = 1.0 currently; bump to 1.25 if UI feels too small after DPI audit
+- `env = WLR_NO_HARDWARE_CURSORS,1` needed (Intel Xe cursor bug on Wayland)
+- `env = LIBVA_DRIVER_NAME,iHD` + `VDPAU_DRIVER,va_gl` for VA-API
+- Monitor by connector name `eDP-1` (Intel panels don't reliably expose EDID description)
+- scale 1.0
 
 ---
 
-## Arch Zenbook (daily driver / server)
+## HP ZBook Studio G7 (Arch, daily driver)
 
 | Field | Value |
 |---|---|
+| Hostname | archlinux |
 | OS | Arch Linux |
-| GPU | AMD (radeonsi driver) |
-| Display | AU Optronics 0x1092 (addressed by EDID description) |
+| Kernel | 6.19.14-arch1-1 |
+| CPU | Intel Core i7-10750H (6c/12t, 2.60 GHz) |
+| GPU | Intel UHD Graphics (CometLake-H) + NVIDIA Quadro T1000 Mobile |
+| RAM | 16 GB |
+| Storage | 512 GB NVMe (46 GB root, 422 GB /home) |
+| Display | AU Optronics 0x1092, 1920x1080, eDP-1 |
 | Touchpad | elan1201:00-04f3:3098 |
-| WM | Hyprland (latest from pacman/AUR) |
+| WM | Hyprland (pacman) |
 | Installer | `arch/install-arch.sh` |
 | Hypr host overlay | `arch/stow/hypr-host/host.conf` |
 
-### Portability notes
+### Notes
 
-- `env = LIBVA_DRIVER_NAME,radeonsi` + `VDPAU_DRIVER,radeonsi` for AMD VA-API
-- Monitor addressed by EDID description `desc:AU Optronics 0x1092` (preferred over eDP-1 for AMD - output name stable)
-- scale = 1.0
+- Monitor by EDID description `desc:AU Optronics 0x1092`, scale 1.0
+- Hybrid GPU: Intel iGPU drives display, Quadro T1000 for compute
+- Root 46 GB (small), home 422 GB - keep root lean
 
 ---
 
@@ -70,13 +75,13 @@ Reference for per-host dotfiles decisions. Add a row when a new machine joins.
 
 ## Future: Arch ThinkPad (pending)
 
-When this machine joins, add a row here and create `arch-thinkpad/stow/hypr-host/host.conf` (or branch on hostname in `arch/stow/hypr-host/host.conf`).
+Add a row here and create `arch-thinkpad/stow/hypr-host/host.conf` when it joins.
 
 ---
 
 ## Waybar DPI guide
 
-Shared `style.css` uses pixel-fixed values. If bar/modules look too small or too large on a display, adjust `scale` in that host's `host.conf`:
+`style.css` uses fixed pixel values. Adjust `scale` in the host's `host.conf` if bar looks wrong:
 
 ```
 monitor = eDP-1, preferred, 0x0, 1.25   # HiDPI 14" panels
@@ -84,7 +89,7 @@ monitor = eDP-1, preferred, 0x0, 1.0    # standard 27"+ at 1440p or lower
 ```
 
 Reference DPIs:
-- 14" 1920x1080 = ~157 DPI
-- 15" 1920x1080 = ~141 DPI
-- 27" 2560x1440 = ~109 DPI
-- 27" 1920x1080 = ~81 DPI
+- 14" 1920x1080 = 157 DPI
+- 15" 1920x1080 = 141 DPI
+- 27" 2560x1440 = 109 DPI
+- 27" 1920x1080 = 81 DPI

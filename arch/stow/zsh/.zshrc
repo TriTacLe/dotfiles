@@ -40,7 +40,6 @@ export TERMINAL_EMULATOR="ghostty"
 export BROWSER=librewolf
 export GH_CONFIG_DIR="$HOME/.config/gh"
 export NVM_DIR=/usr/share/nvm
-export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:/usr/local/share:/usr/share"
 
 ZSH_THEME="powerlevel10k"
 HYPHEN_INSENSITIVE="true"

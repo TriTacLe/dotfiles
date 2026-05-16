@@ -106,6 +106,7 @@ if ! git_as_user commit -m "$COMMIT_MSG"; then
 fi
 
 if [[ "$AUTO_PUSH" == "true" ]]; then
+    git_as_user pull --rebase 2>/dev/null || true
     if git_as_user push 2>/dev/null; then
         echo "Pushed successfully"
     else

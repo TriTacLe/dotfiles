@@ -11,7 +11,7 @@
     "gtk-layer-shell": true,
     "height": 0,
     "modules-left": ["clock", "custom/weather", "hyprland/workspaces"],
-    "modules-center": ["wlr/taskbar"],
+    "modules-center": [],
     "modules-right": ["tray","pulseaudio","pulseaudio#microphone","backlight","battery","custom/laptopwlogout"],
     "hyprland/window": {
         "format": "{}"
