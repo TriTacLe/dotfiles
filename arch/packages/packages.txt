@@ -259,6 +259,7 @@ thunar
 thunar-volman
 tldr
 tmux
+tor
 tree
 ttf-cascadia-code-nerd
 ttf-jetbrains-mono-nerd
