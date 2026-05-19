@@ -238,6 +238,7 @@ rygel
 sd
 sddm
 sddm-kcm
+shellcheck
 showtime
 simple-scan
 slurp
