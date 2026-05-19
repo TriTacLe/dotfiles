@@ -1,0 +1,68 @@
+#!/bin/bash
+# Blocks git push if staged diff contains likely secrets.
+# Checks the diff of commits being pushed (not just staged files).
+
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+remote="$1"
+url="$2"
+
+while read local_ref local_sha remote_ref remote_sha; do
+    if [[ "$local_sha" == "0000000000000000000000000000000000000000" ]]; then
+        continue  # branch deletion
+    fi
+
+    if [[ "$remote_sha" == "0000000000000000000000000000000000000000" ]]; then
+        range="$local_sha"
+    else
+        range="$remote_sha..$local_sha"
+    fi
+
+    diff=$(git diff "$range" 2>/dev/null)
+    [[ -z "$diff" ]] && diff=$(git show "$local_sha" 2>/dev/null)
+
+    found=()
+
+    # High-signal patterns: assignment-style leaks
+    while IFS= read -r line; do
+        [[ "$line" =~ ^\+ ]] || continue  # only added lines
+        line_content="${line:1}"
+
+        # Skip comments and common false positives
+        [[ "$line_content" =~ ^[[:space:]]*# ]] && continue
+        [[ "$line_content" =~ ^[[:space:]]*// ]] && continue
+        fp_re='example|placeholder|your_|<.*>|environ\.get|os\.environ|getenv|process\.env|ENV\['
+        [[ "$line_content" =~ $fp_re ]] && continue
+
+        if echo "$line_content" | grep -qiE \
+            '(password|passwd|secret|api_key|apikey|access_token|auth_token|client_secret|private_key|bearer)\s*[:=]\s*["\x27]?.{6,}'; then
+            found+=("$line_content")
+        fi
+
+        # Service-specific token prefixes
+        if echo "$line_content" | grep -qE \
+            '(ghp_[A-Za-z0-9]{36}|ghs_[A-Za-z0-9]{36}|sk-[A-Za-z0-9]{32,}|xox[baprs]-[A-Za-z0-9-]+|AKIA[A-Z0-9]{16}|eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,})'; then
+            found+=("$line_content")
+        fi
+
+        # SSH private key header
+        if echo "$line_content" | grep -qE -- '-----BEGIN (RSA|EC|DSA|OPENSSH) PRIVATE KEY-----'; then
+            found+=("$line_content")
+        fi
+    done <<< "$diff"
+
+    if [[ ${#found[@]} -gt 0 ]]; then
+        echo -e "${RED}[pre-push] Blocked: possible secret in push to $remote ($url)${NC}" >&2
+        echo -e "${YELLOW}Flagged lines:${NC}" >&2
+        for line in "${found[@]}"; do
+            echo "  $line" >&2
+        done
+        echo "" >&2
+        echo "To push anyway (if false positive): git push --no-verify" >&2
+        exit 1
+    fi
+done
+
+exit 0

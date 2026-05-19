@@ -13,6 +13,7 @@
   autocrlf = input
   editor = vim
   pager = less -FRX
+	hooksPath = /home/tri/.git-hooks
 
 [format]
     pretty="%C(magenta)%h %C(white) %an %ar%C(auto) %D%n%s%n"
