@@ -13,6 +13,9 @@
 .env.secrets
 .env
 
+# Private repo names - not tracked
+claude-config/repos.json
+
 # OS artifacts
 Thumbs.db
 ehthumbs.db
