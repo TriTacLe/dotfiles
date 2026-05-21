@@ -1,94 +1,48 @@
 # server/
 
-Profile for headless Arch hosts running self-hosted apps.
+The headless arch profile. Use this on any box you want to run services on
+instead of sit in front of.
 
-## Install convention
-
-On server hosts the dotfiles repo lives at `~/dotfiles/` (not `~/Desktop/dotfiles/`).
-Headless boxes don't have a Desktop, so the repo lives at a server-conventional path:
+## Setup
 
 ```sh
 git clone https://github.com/TriTacLe/dotfiles.git ~/dotfiles
 cd ~/dotfiles && git submodule update --init --recursive
 echo server > ~/.dotfiles-role
-sudo bash server/scripts/server-init.sh        # root setup (sshd, ufw, /srv, lid)
-bash server/install-server.sh                  # packages + stow + xdg
-sudo bash server/scripts/strip-desktop.sh      # only if reinstalling onto a desktop-flavored Arch
+
+sudo bash server/scripts/bootstrap.sh   # root setup, strip GUI if present
+bash server/install-server.sh           # packages, stow, xdg
 ```
 
-## Layout
+`install.sh` at the repo root picks this profile when `~/.dotfiles-role` is
+`server`.
 
-- `install-server.sh` — pacman packages + CLI-only stow set + XDG user-dirs
-- `scripts/server-init.sh` — one-time root setup (sshd hardening, UFW, /srv, lid policy)
-- `scripts/strip-desktop.sh` — remove Hyprland / GUI / audio packages (idempotent)
-- `scripts/svc-new.sh` — provision a `/srv/<name>/` service slot
-- `packages/packages.txt` — pacman package list
-- `packages/aur.txt` — AUR package list (currently empty)
-- `etc/` — root-owned config (sshd hardening, logind lid policy, XDG user-dirs)
-- `stow/` — server-specific stow packages (placeholder)
+## What's in here
 
-## When the server profile is picked
-
-`install.sh` checks `~/.dotfiles-role`. If it contains `server`, this folder is
-used instead of `arch/install-arch.sh` on Arch hosts.
-
-```sh
-echo server > ~/.dotfiles-role
-```
-
-## What it installs
-
-- Container runtime: `docker`, `docker-compose`, `docker-buildx`
-- Networking: `cloudflared`, `tailscale`, `nginx`, `certbot`
-- Hardening: `fail2ban`
-- Backups: `restic`, `borg`
-- Observability: `atop`, `sysstat`, `htop`, `btop`, `duf`, `iotop`, `lsof`
-- Diagnostics: `bind-tools`, `inetutils`, `rsync`
-
-## Stow set
-
-CLI essentials only — shares the shell, editor, git, tmux, scripts, and prompt
-configs with desktop hosts via `shared/stow/`. Plus `arch/stow/zsh` (zsh-defer)
-and `arch/stow/pacseek`.
-
-No `hypr`, `waybar`, `swaync`, `wofi`, `kitty`, `ghostty`, `alacritty`, etc.
+- `install-server.sh` — packages from `packages.txt`, CLI-only stow, drops a
+  user-dirs.dirs that kills the Desktop/Music/Videos dance.
+- `scripts/bootstrap.sh` — one-shot, idempotent. sshd hardening, lid policy,
+  /srv, UFW (ssh + tailnet), then strips Hyprland/GUI/audio if found.
+- `scripts/svc-new.sh` — `sudo bash svc-new.sh <name>` makes a new service
+  slot under `/srv/<name>/` with its own `svc_<name>` user.
+- `packages/{packages,aur}.txt` — what we install.
+- `etc/` — root-owned configs that `bootstrap.sh` copies into `/etc/`.
 
 ## Service layout
 
-Each Docker-compose stack lives under `/srv/<name>/` and runs as a dedicated
-system user `svc_<name>` (uid <1000, no shell, no home). This isolates
-services from each other and from the admin account — a container escape
-gets you `svc_immich`, not `tri` and not root.
-
-Layout:
-
 ```
 /srv/<name>/
-├── compose.yml   # owned by tri (you edit)
-├── .env                 # PUID/PGID for svc_<name>
-└── data/                # owned by svc_<name>:svc_<name>, mode 750
+├── compose.yml   # you own it, you edit it
+├── .env          # PUID/PGID = svc_<name>
+└── data/         # svc_<name>:svc_<name>, mode 750
 ```
 
-Provision a new slot:
+A container escape gets you `svc_<name>`, not `tri` and not root.
 
-```sh
-sudo bash server/scripts/svc-new.sh <name>
-```
+## Networking
 
-## Root setup (one-time)
+UFW denies inbound, allows ssh from anywhere, trusts everything on
+`tailscale0`. Public web traffic is supposed to come through cloudflared
+(outbound-only, no port forwarding). No 80/443 open by default.
 
-`server/scripts/server-init.sh` (run with sudo) handles:
-
-- `/srv` directory creation
-- sshd hardening drop-in copied from `server/etc/ssh/sshd_config.d/`
-- UFW firewall install + rules (deny incoming, allow ssh from anywhere,
-  allow everything on the tailnet interface)
-
-Re-run safely; it's idempotent.
-
-## Public exposure
-
-No router ports are forwarded. Public web traffic is meant to flow through
-**Cloudflare Tunnel** (`cloudflared`, installed), which dials out and needs
-no inbound firewall rules. Tailnet (`tailscale0`) is fully trusted by UFW so
-admin access just works over tailscale.
+Reach this box from anywhere with `ssh tri@arch-thinkpad` over the tailnet.
