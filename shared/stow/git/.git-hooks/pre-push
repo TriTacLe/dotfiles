@@ -9,6 +9,55 @@ NC='\033[0m'
 remote="$1"
 url="$2"
 
+HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"
+
+ALLOWLIST_FILES=()
+[[ -n "$HOOK_DIR" ]] && ALLOWLIST_FILES+=("$HOOK_DIR/secret-allowlist.regex")
+[[ -n "$REPO_ROOT" ]] && ALLOWLIST_FILES+=(
+    "$REPO_ROOT/.git-hooks/secret-allowlist.regex"
+    "$REPO_ROOT/.secrets.allowlist"
+)
+
+ALLOWLIST_RE=()
+
+load_allowlist_file() {
+    local file="$1"
+    [[ -f "$file" ]] || return 0
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        [[ "$line" =~ ^[[:space:]]*# ]] && continue
+        [[ "$line" =~ ^[[:space:]]*$ ]] && continue
+        ALLOWLIST_RE+=("$line")
+    done < "$file"
+}
+
+for file in "${ALLOWLIST_FILES[@]}"; do
+    load_allowlist_file "$file"
+done
+
+builtin_fp_re='example|placeholder|your_|<.*>|environ\.get|os\.environ|getenv|process\.env|ENV\[|\$\{[A-Z0-9_]+\}'
+assignment_re='(password|passwd|secret|api_key|apikey|access_token|auth_token|client_secret|private_key|bearer)\s*[:=]\s*["\x27]?.{6,}'
+token_prefix_re='(ghp_[A-Za-z0-9]{36}|ghs_[A-Za-z0-9]{36}|sk-[A-Za-z0-9]{32,}|xox[baprs]-[A-Za-z0-9-]+|AKIA[A-Z0-9]{16}|eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,})'
+private_key_re='-----BEGIN (RSA|EC|DSA|OPENSSH) PRIVATE KEY-----'
+
+is_allowlisted() {
+    local line="$1"
+    [[ "$line" =~ $builtin_fp_re ]] && return 0
+    for re in "${ALLOWLIST_RE[@]}"; do
+        [[ "$line" =~ $re ]] && return 0
+    done
+    return 1
+}
+
+should_skip_line() {
+    local line="$1"
+    [[ "$line" =~ ^[[:space:]]*# ]] && return 0
+    [[ "$line" =~ ^[[:space:]]*// ]] && return 0
+    [[ "$line" =~ ^[[:space:]]*$ ]] && return 0
+    is_allowlisted "$line" && return 0
+    return 1
+}
+
 while read local_ref local_sha remote_ref remote_sha; do
     if [[ "$local_sha" == "0000000000000000000000000000000000000000" ]]; then
         continue  # branch deletion
@@ -20,7 +69,7 @@ while read local_ref local_sha remote_ref remote_sha; do
         range="$remote_sha..$local_sha"
     fi
 
-    diff=$(git diff "$range" 2>/dev/null)
+    diff=$(git diff --no-color "$range" 2>/dev/null)
     [[ -z "$diff" ]] && diff=$(git show "$local_sha" 2>/dev/null)
 
     found=()
@@ -30,25 +79,21 @@ while read local_ref local_sha remote_ref remote_sha; do
         [[ "$line" =~ ^\+ ]] || continue  # only added lines
         line_content="${line:1}"
 
-        # Skip comments and common false positives
-        [[ "$line_content" =~ ^[[:space:]]*# ]] && continue
-        [[ "$line_content" =~ ^[[:space:]]*// ]] && continue
-        fp_re='example|placeholder|your_|<.*>|environ\.get|os\.environ|getenv|process\.env|ENV\['
-        [[ "$line_content" =~ $fp_re ]] && continue
+        [[ "$line_content" =~ ^\+\+\+ ]] && continue
+        [[ "$line_content" =~ ^@@ ]] && continue
+        should_skip_line "$line_content" && continue
 
-        if echo "$line_content" | grep -qiE \
-            '(password|passwd|secret|api_key|apikey|access_token|auth_token|client_secret|private_key|bearer)\s*[:=]\s*["\x27]?.{6,}'; then
+        if echo "$line_content" | grep -qiE "$assignment_re"; then
             found+=("$line_content")
         fi
 
         # Service-specific token prefixes
-        if echo "$line_content" | grep -qE \
-            '(ghp_[A-Za-z0-9]{36}|ghs_[A-Za-z0-9]{36}|sk-[A-Za-z0-9]{32,}|xox[baprs]-[A-Za-z0-9-]+|AKIA[A-Z0-9]{16}|eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,})'; then
+        if echo "$line_content" | grep -qE "$token_prefix_re"; then
             found+=("$line_content")
         fi
 
         # SSH private key header
-        if echo "$line_content" | grep -qE -- '-----BEGIN (RSA|EC|DSA|OPENSSH) PRIVATE KEY-----'; then
+        if echo "$line_content" | grep -qE -- "$private_key_re"; then
             found+=("$line_content")
         fi
     done <<< "$diff"

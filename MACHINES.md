@@ -73,9 +73,51 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 
 ---
 
-## Future: Arch ThinkPad (pending)
+## Lenovo ThinkPad L390 Yoga (Arch, server)
 
-Add a row here and create `arch-thinkpad/stow/hypr-host/host.conf` when it joins.
+| Field | Value |
+|---|---|
+| Hostname | arch-thinkpad |
+| OS | Arch Linux |
+| Kernel | 6.19.11-arch1-1 |
+| CPU | Intel Core i3-8145U (2c/4t, 2.10 GHz, WhiskeyLake-U) |
+| GPU | Intel UHD Graphics 620 (integrated) |
+| RAM | 8 GB |
+| Storage | 256 GB NVMe (Toshiba KXG6AZNV256G) |
+| Role pin | `~/.dotfiles-role` = `server` |
+| Installer | `server/install-server.sh` |
+| Dotfiles path | `~/dotfiles/` (server convention, not `~/Desktop/dotfiles/`) |
+| Hypr host overlay | N/A (headless) |
+
+### Role
+
+Headless server pivot from a former Hyprland desktop install. Hosts Dockerized
+apps fronted by Cloudflare Tunnel, with Tailscale for admin access, fail2ban
+for any open ports, and restic/borg for backups.
+
+### Portability notes
+
+- No Hyprland, no waybar, no GUI stow packages.
+- Shares with desktop hosts: git, nvim, lazygit, zsh, tmux, scripts, starship.
+- Selection is by the `server` role pin (`~/.dotfiles-role`), not by hostname,
+  so any Arch host can opt in.
+
+### Service hosting
+
+- Docker stacks live under `/srv/<name>/`, one per service.
+- Each service has a dedicated system user `svc_<name>` (uid <1000, no shell);
+  container processes run as that user via `PUID/PGID`.
+- `tri` owns the compose file and `.env`; the data dir is owned by the
+  service user so a container escape stays scoped to that service.
+- Provision with `sudo bash server/scripts/svc-new.sh <name>`.
+
+### Hardening
+
+- SSH: key-only, no root login, `AllowUsers tri`, 10 min idle timeout
+  (`server/etc/ssh/sshd_config.d/99-hardening.conf`).
+- UFW: deny incoming, allow ssh from anywhere, allow all on `tailscale0`.
+  No public 80/443 — cloudflared dials out.
+- fail2ban watches sshd.
 
 ---
 

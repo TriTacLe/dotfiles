@@ -1,0 +1,40 @@
+# Headless server packages (Arch base).
+# Goal: self-hosted apps via Docker Compose, fronted by Cloudflare Tunnel,
+# with off-site encrypted backups and basic intrusion prevention.
+# Applied on top of arch/packages/packages.txt minimal subset.
+
+# Container runtime + tooling
+docker
+docker-compose
+docker-buildx
+
+# Reverse proxy / TLS (useful for LAN-only services even with cloudflared)
+nginx
+certbot
+
+# Public-network exposure
+cloudflared
+
+# Mesh networking (admin access without opening ports)
+tailscale
+
+# Intrusion prevention for any port you do open (sshd in particular)
+fail2ban
+
+# Backups: restic for off-site encrypted, borg as alternative for local
+restic
+borg
+
+# Observability / system inspection
+atop
+sysstat
+htop
+btop
+duf
+iotop
+lsof
+
+# Networking diagnostics
+bind-tools
+inetutils
+rsync

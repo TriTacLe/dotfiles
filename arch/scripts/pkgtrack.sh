@@ -99,7 +99,7 @@ git_as_user() {
 
 git_as_user add arch/packages/packages.txt arch/packages/aur.txt
 git_as_user diff --cached --quiet && { echo "[pkgtrack] files unchanged after add, skipping commit"; exit 0; }
-if ! git_as_user commit -m "$COMMIT_MSG"; then
+if ! git_as_user commit -m "$COMMIT_MSG" -- arch/packages/packages.txt arch/packages/aur.txt; then
     echo "[pkgtrack] commit failed" >&2
     echo "[pkgtrack] $(date '+%Y-%m-%d %H:%M') commit failed: $COMMIT_MSG" >> "$DOTFILES_DIR/.pkgtrack.log"
     exit 1
