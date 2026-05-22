@@ -11,6 +11,7 @@ brightnessctl
 btop
 btrfs-progs
 certbot
+chromium
 cloudflared
 cmatrix
 cowsay
@@ -109,6 +110,7 @@ xf86-video-amdgpu
 xf86-video-ati
 xf86-video-nouveau
 xorg-server
+xorg-server-xvfb
 xorg-xinit
 yq
 zip
