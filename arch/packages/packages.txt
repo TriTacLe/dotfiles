@@ -11,6 +11,7 @@ brightnessctl
 btop
 btrfs-progs
 certbot
+certbot-nginx
 chromium
 cloudflared
 cmatrix
