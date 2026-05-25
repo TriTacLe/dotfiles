@@ -29,6 +29,7 @@ fail2ban
 fortune-mod
 fzf
 git
+git-filter-repo
 github-cli
 grafana
 gst-plugin-pipewire
