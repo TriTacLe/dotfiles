@@ -82,6 +82,8 @@ libxkbcommon-x11-dev
 linux-generic-hwe-24.04
 login
 lsb-release
+lua5.4
+luarocks
 m17n-db
 meson
 ncurses-base
@@ -92,13 +94,17 @@ ninja-build
 nodejs
 npm
 openssh-client
+pamixer
 papirus-icon-theme
+pavucontrol
 pkg-config
 playerctl
 polkit-kde-agent-1
+postgresql-client
 python3.12-venv
 qt6-wayland
 qtwayland5
+ripgrep
 sassc
 scdoc
 shim-signed
@@ -109,6 +115,7 @@ stow
 sway
 swaybg
 swayidle
+swaylock
 sway-notification-center
 thefuck
 timeshift
