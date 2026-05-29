@@ -204,6 +204,39 @@ if ! command -v swaylock &> /dev/null; then
     sudo apt install -y swaylock
 fi
 
+# Audio control (used by waybar pulseaudio module)
+if ! command -v pamixer &> /dev/null; then
+    echo "Installing pamixer..."
+    sudo apt install -y pamixer
+fi
+
+if ! command -v pavucontrol &> /dev/null; then
+    echo "Installing pavucontrol..."
+    sudo apt install -y pavucontrol
+fi
+
+# Bluetooth tray (waybar exec-once = blueman-applet)
+if ! command -v blueman-applet &> /dev/null; then
+    echo "Installing blueman..."
+    sudo apt install -y blueman
+fi
+
+# Norwegian char keybinds: Super+[/;/' -> å/ø/æ
+if ! command -v wtype &> /dev/null; then
+    echo "Installing wtype..."
+    sudo apt install -y wtype
+fi
+
+# Avizo volume/brightness overlay (build from source - not in apt)
+if ! command -v avizo-client &> /dev/null; then
+    echo "Building avizo from source..."
+    sudo apt install -y meson ninja-build scdoc libgtk-layer-shell-dev \
+        libgirepository1.0-dev valac
+    git clone https://github.com/misterdanb/avizo.git /tmp/avizo
+    (cd /tmp/avizo && meson setup build && ninja -C build && sudo ninja -C build install)
+    rm -rf /tmp/avizo
+fi
+
 # Wlogout
 if ! command -v wlogout &> /dev/null; then
     echo "Installing Wlogout..."
