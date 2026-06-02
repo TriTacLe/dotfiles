@@ -117,6 +117,8 @@ swaybg
 swayidle
 swaylock
 sway-notification-center
+tailscale
+tailscale-archive-keyring
 thefuck
 timeshift
 tmux
