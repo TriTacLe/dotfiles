@@ -41,4 +41,20 @@ fi
 # Lives under arch/ since it's pacman-specific, but servers need it too.
 bash "$DOTFILES/arch/install-hook.sh"
 
+# Nginx vhosts: copy to /etc/nginx/sites-available, enable via symlinks
+NGINX_SRC="$DOTFILES/server/etc/nginx/sites-available"
+if [ -d "$NGINX_SRC" ] && [ -n "$(/bin/ls -A "$NGINX_SRC" 2>/dev/null)" ]; then
+    sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
+    for conf in "$NGINX_SRC"/*; do
+        name="$(basename "$conf")"
+        sudo cp "$conf" "/etc/nginx/sites-available/$name"
+        sudo ln -sf "/etc/nginx/sites-available/$name" "/etc/nginx/sites-enabled/$name"
+    done
+    # update include directive if still pointing to sites-available
+    sudo sed -i 's|include /etc/nginx/sites-available/\*;|include /etc/nginx/sites-enabled/*;|' \
+        /etc/nginx/nginx.conf 2>/dev/null || true
+    sudo nginx -t && sudo systemctl reload nginx
+    echo "Nginx vhosts deployed."
+fi
+
 echo "Server setup complete."

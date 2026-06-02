@@ -19,3 +19,4 @@ claude-config/repos.json
 # OS artifacts
 Thumbs.db
 ehthumbs.db
+server/etc/nginx/
