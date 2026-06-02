@@ -76,6 +76,7 @@ libpango1.0-dev
 libpinyin15
 libpinyin-data
 libpulse-dev
+libreoffice
 libwayland-dev
 libxkbcommon-dev
 libxkbcommon-x11-dev
