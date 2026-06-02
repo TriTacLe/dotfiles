@@ -141,6 +141,7 @@ xclip
 xdg-desktop-portal-gtk
 xdg-desktop-portal-hyprland
 xdotool
+xournal
 zoxide
 zsh
 zsh-autosuggestions
