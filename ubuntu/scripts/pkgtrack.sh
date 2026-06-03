@@ -68,7 +68,22 @@ echo "Commit message: $COMMIT_MSG"
 
 git_as_user() {
     if [[ -n "$SUDO_USER" ]]; then
-        sudo -u "$SUDO_USER" git "$@"
+        local _uid _sock="" _candidate
+        _uid=$(id -u "$SUDO_USER" 2>/dev/null)
+        for _candidate in \
+            "${SSH_AUTH_SOCK:-}" \
+            "/run/user/${_uid}/gcr/ssh" \
+            "/run/user/${_uid}/keyring/ssh"; do
+            if [[ -n "$_candidate" && -S "$_candidate" ]]; then
+                _sock="$_candidate"
+                break
+            fi
+        done
+        if [[ -n "$_sock" ]]; then
+            sudo -u "$SUDO_USER" SSH_AUTH_SOCK="$_sock" git "$@"
+        else
+            sudo -u "$SUDO_USER" git "$@"
+        fi
     else
         git "$@"
     fi
