@@ -35,6 +35,7 @@ grafana
 gst-plugin-pipewire
 htop
 inetutils
+inotify-tools
 intel-media-driver
 intel-ucode
 iotop
