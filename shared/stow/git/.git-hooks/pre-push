@@ -35,7 +35,7 @@ for file in "${ALLOWLIST_FILES[@]}"; do
     load_allowlist_file "$file"
 done
 
-builtin_fp_re='example|placeholder|your_|<.*>|environ\.get|os\.environ|getenv|process\.env|ENV\[|\$\{[A-Z0-9_]+\}'
+builtin_fp_re='example|placeholder|your_|<.*>|environ\.get|os\.environ|getenv|process\.env|ENV\[|\$\{[A-Z0-9_]+\}|\$\{\{|assert\s'
 assignment_re='(password|passwd|secret|api_key|apikey|access_token|auth_token|client_secret|private_key|bearer)\s*[:=]\s*["\x27]?.{6,}'
 token_prefix_re='(ghp_[A-Za-z0-9]{36}|ghs_[A-Za-z0-9]{36}|sk-[A-Za-z0-9]{32,}|xox[baprs]-[A-Za-z0-9-]+|AKIA[A-Z0-9]{16}|eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,})'
 private_key_re='-----BEGIN (RSA|EC|DSA|OPENSSH) PRIVATE KEY-----'
@@ -54,6 +54,7 @@ should_skip_line() {
     [[ "$line" =~ ^[[:space:]]*# ]] && return 0
     [[ "$line" =~ ^[[:space:]]*// ]] && return 0
     [[ "$line" =~ ^[[:space:]]*$ ]] && return 0
+    [[ "$line" =~ \#[[:space:]]*pragma:[[:space:]]*allowlist[[:space:]]*secret ]] && return 0
     is_allowlisted "$line" && return 0
     return 1
 }
@@ -105,7 +106,7 @@ while read local_ref local_sha remote_ref remote_sha; do
             echo "  $line" >&2
         done
         echo "" >&2
-        echo "To push anyway (if false positive): git push --no-verify" >&2
+        echo "To suppress a false positive: add '# pragma: allowlist secret' inline, or add a pattern to .secrets.allowlist" >&2
         exit 1
     fi
 done
