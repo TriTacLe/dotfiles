@@ -103,6 +103,7 @@ playerctl
 polkit-kde-agent-1
 postgresql-client
 python3.12-venv
+python3-pip
 qt6-wayland
 qtwayland5
 ripgrep
