@@ -176,6 +176,7 @@ maven
 milou
 nano
 nautilus
+ncdu
 neovim
 net-tools
 networkmanager
