@@ -15,7 +15,7 @@ BRIGHTNESS_FILE="/tmp/battery_original_brightness"
 
 if [ "$BATTERY_STATE" = "discharging" ]; then
   if [ "$BATTERY_PERCENT" -le 5 ]; then
-    notify-send -u critical "Kun $BATTERY_PERCENT% igjen!"
+    notify-send -u critical -t 10000 "Kun $BATTERY_PERCENT% igjen!"
     # Dim screen to minimum if not already dimmed
     if [ ! -f "$DIMMED_FLAG" ]; then
       brightnessctl g > "$BRIGHTNESS_FILE"
@@ -23,7 +23,7 @@ if [ "$BATTERY_STATE" = "discharging" ]; then
       touch "$DIMMED_FLAG"
     fi
   elif [ "$BATTERY_PERCENT" -le 10 ]; then
-    notify-send -u critical "Batteri lavt: $BATTERY_PERCENT%"
+    notify-send -u critical -t 10000 "Batteri lavt: $BATTERY_PERCENT%"
     # Dim screen if not already dimmed
     if [ ! -f "$DIMMED_FLAG" ]; then
       brightnessctl g > "$BRIGHTNESS_FILE"

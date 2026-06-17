@@ -29,31 +29,18 @@ unset _self _repo
 PACKAGES_FILE="$PACKAGES_DIR/packages.txt"
 AUR_FILE="$PACKAGES_DIR/aur.txt"
 
-is_aur_package() {
-    pacman -Si "$1" &>/dev/null && return 1 || return 0
-}
-
 OLD_PACKAGES_FILE=$(mktemp)
 cp "$PACKAGES_FILE" "$OLD_PACKAGES_FILE" 2>/dev/null || true
 
 OLD_AUR_FILE=$(mktemp)
 cp "$AUR_FILE" "$OLD_AUR_FILE" 2>/dev/null || true
 
+AUR_PACKAGES=$(pacman -Qqme | sort)
 ALL_PACKAGES=$(pacman -Qqe | sort)
+OFFICIAL_PACKAGES=$(comm -23 <(echo "$ALL_PACKAGES") <(echo "$AUR_PACKAGES"))
 
-[[ -f "$PACKAGES_FILE" ]] && > "$PACKAGES_FILE" || touch "$PACKAGES_FILE"
-[[ -f "$AUR_FILE" ]] && > "$AUR_FILE" || touch "$AUR_FILE"
-
-for pkg in $ALL_PACKAGES; do
-    if is_aur_package "$pkg"; then
-        echo "$pkg" >> "$AUR_FILE"
-    else
-        echo "$pkg" >> "$PACKAGES_FILE"
-    fi
-done
-
-sort -u "$PACKAGES_FILE" -o "$PACKAGES_FILE"
-sort -u "$AUR_FILE" -o "$AUR_FILE"
+echo "$OFFICIAL_PACKAGES" > "$PACKAGES_FILE"
+echo "$AUR_PACKAGES" > "$AUR_FILE"
 
 NEW_PKGS=$(comm -13 <(sort "$OLD_PACKAGES_FILE") "$PACKAGES_FILE" | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')
 NEW_AUR=$(comm -13 <(sort "$OLD_AUR_FILE") "$AUR_FILE" | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')

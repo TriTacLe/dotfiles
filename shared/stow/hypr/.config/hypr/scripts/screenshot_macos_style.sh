@@ -7,7 +7,8 @@ TMP_FILE="/tmp/screenshot_$(date +'%Y-%m-%d_%H-%M-%S').png"
 SAVE_DIR="$HOME/Pictures/Screenshots"
 
 # Screenshot til midlertidig fil
-grim -g "$(slurp)" "$TMP_FILE"
+REGION=$(slurp) || exit 0
+grim -g "$REGION" "$TMP_FILE"
 
 # Kopier til clipboard umiddelbart (kan paste med Ctrl+V)
 wl-copy < "$TMP_FILE"
