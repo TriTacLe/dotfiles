@@ -204,10 +204,10 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # ============================================
 # Welcome Message
 # ============================================
-if [[ -o interactive ]]; then
-    if command -v fastfetch &>/dev/null; then
-        fastfetch
-    elif command -v neofetch &>/dev/null; then
-        neofetch
-    fi
-fi
+#if [[ -o interactive ]]; then
+#    if command -v fastfetch &>/dev/null; then
+#        fastfetch
+#    elif command -v neofetch &>/dev/null; then
+#        neofetch
+#    fi
+#fi
