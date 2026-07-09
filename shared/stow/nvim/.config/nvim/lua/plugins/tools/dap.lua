@@ -7,6 +7,15 @@ return {
     "mfussenegger/nvim-dap",
     dependencies = {
       "leoluz/nvim-dap-go",
+      "theHamsta/nvim-dap-virtual-text",
+    },
+    cmd = {
+      "DapContinue",
+      "DapToggleBreakpoint",
+      "DapStepOver",
+      "DapStepInto",
+      "DapStepOut",
+      "DapTerminate",
     },
     config = function()
       local dap = require("dap")

@@ -9,6 +9,7 @@ return {
   {
     "benlubas/molten-nvim",
     build = ":UpdateRemotePlugins",
+    dependencies = { "3rd/image.nvim" },
     init = function()
       vim.g.molten_image_provider = "image.nvim"
       vim.g.molten_output_show_more = true
@@ -55,12 +56,14 @@ return {
   {
     "jmbuhr/otter.nvim",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
+    lazy = true,
     opts = {},
   },
 
   -- Inline images via kitty graphics protocol
   {
     "3rd/image.nvim",
+    ft = { "markdown", "quarto" },
     opts = {
       backend = "kitty",
       integrations = {

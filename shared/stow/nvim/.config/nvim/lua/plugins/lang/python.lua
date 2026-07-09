@@ -8,6 +8,7 @@ return {
       servers = {
         pyright = { enabled = false },
         basedpyright = {
+          enabled = true,
           settings = {
             basedpyright = {
               typeCheckingMode = "standard",
@@ -30,10 +31,8 @@ return {
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, {
-        "basedpyright", -- Type-sjekker og LSP
-        "ruff",         -- Linting + formattering
-        "debugpy",      -- Debugger
-        "mypy",         -- Statisk type-sjekker
+        "debugpy", -- Debugger
+        "mypy",    -- Statisk type-sjekker
       })
     end,
   },

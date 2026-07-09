@@ -193,6 +193,7 @@ return {
   -- Skriv f.eks. "findBy" + Tab så får du mal for metoden
   {
     "L3MON4D3/LuaSnip",
+    event = "InsertEnter",
     dependencies = {
       "rafamadriz/friendly-snippets",
     },

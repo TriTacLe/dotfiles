@@ -63,7 +63,7 @@ return {
   -- Inline variable values during debug sessions
   {
     "theHamsta/nvim-dap-virtual-text",
-    dependencies = { "mfussenegger/nvim-dap" },
+    lazy = true,
     opts = { commented = true },
   },
 
