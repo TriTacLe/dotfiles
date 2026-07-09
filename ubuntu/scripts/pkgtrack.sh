@@ -100,8 +100,15 @@ fi
 if [[ "$AUTO_PUSH" == "true" ]]; then
     if git_as_user push 2>/dev/null; then
         echo "Pushed successfully"
+    # Non-fast-forward (another machine pushed): rebase our commits on top and retry.
+    # --no-autostash on purpose: a dirty tree aborts cleanly instead of resetting
+    # stowed configs that live programs (e.g. Hyprland) may rewrite mid-reset.
+    elif git_as_user pull --rebase --no-autostash 2>/dev/null && git_as_user push 2>/dev/null; then
+        echo "Pushed after rebase onto remote"
     else
-        echo "[pkgtrack] push failed (offline or no remote) - committed locally"
+        git_as_user rebase --abort 2>/dev/null
+        echo "[pkgtrack] push failed (offline, diverged, or dirty tree) - committed locally"
+        echo "[pkgtrack] $(date '+%Y-%m-%d %H:%M') push failed: $COMMIT_MSG" >> "$DOTFILES_DIR/.pkgtrack.log"
     fi
 else
     echo "[pkgtrack] AUTO_PUSH=false - committed locally, skipping push"
