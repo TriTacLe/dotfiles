@@ -6,4 +6,5 @@ return {
   { import = "plugins.lang.rust" },
   { import = "plugins.lang.cpp" },
   { import = "plugins.lang.jupyter" },
+  { import = "plugins.lang.sql" },
 }
