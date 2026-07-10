@@ -26,7 +26,7 @@ install -D -m 0644 "$DOTFILES/server/etc/xdg/user-dirs.dirs" \
 
 # CLI-only stow: no hypr, waybar, alacritty, ghostty, kitty, swaync, etc.
 stow -d "$DOTFILES/shared/stow" -t ~ --no-folding \
-    git nvim lazygit zsh tmux scripts starship
+    git nvim lazygit zsh tmux scripts starship ipython
 stow -d "$DOTFILES/arch/stow" -t ~ --no-folding \
     zsh pacseek
 stow -d "$DOTFILES" -t ~/.claude -R claude-config

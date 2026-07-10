@@ -13,7 +13,7 @@ mkdir -p ~/.config
 
 stow -d "$DOTFILES/shared/stow" -t ~ --no-folding \
     git nvim lazygit backgrounds zsh tmux alacritty ghostty kitty \
-    hypr waybar swaync wofi avizo wob nwg-dock nwg-look wlogout scripts
+    hypr waybar swaync wofi avizo wob nwg-dock nwg-look wlogout scripts ipython
 stow -d "$DOTFILES/ubuntu/stow" -t ~ --no-folding \
     zsh rofi swaylock fontconfig zathura systemd hypr-host sway
 
