@@ -7,4 +7,6 @@ return {
   { import = "plugins.lang.cpp" },
   { import = "plugins.lang.jupyter" },
   { import = "plugins.lang.sql" },
+  { import = "plugins.lang.r" },
+  { import = "plugins.lang.tex" },
 }
