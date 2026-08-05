@@ -10,19 +10,22 @@ return {
           keys = {
             { "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Bytt mellom header og source" },
           },
-          root_dir = function(fname)
-            return require("lspconfig.util").root_pattern(
+          root_dir = function(bufnr, on_dir)
+            local root = vim.fs.root(bufnr, {
               "Makefile",
               "configure.ac",
               "configure.in",
               "config.h.in",
               "meson.build",
               "meson_options.txt",
-              "build.ninja"
-            )(fname) or require("lspconfig.util").root_pattern(
+              "build.ninja",
+            }) or vim.fs.root(bufnr, {
               "compile_commands.json",
-              "compile_flags.txt"
-            )(fname) or require("lspconfig.util").find_git_ancestor(fname)
+              "compile_flags.txt",
+            }) or vim.fs.root(bufnr, ".git")
+            if root then
+              on_dir(root)
+            end
           end,
           capabilities = {
             offsetEncoding = { "utf-16" },
