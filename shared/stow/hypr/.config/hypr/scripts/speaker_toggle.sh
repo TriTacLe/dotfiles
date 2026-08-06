@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 SINK="alsa_output.pci-0000_75_00.6.analog-stereo"
 CURRENT=$(pactl --format=json list sinks | python3 -c "
 import json,sys

@@ -4,8 +4,12 @@
 # Invoked by /usr/share/libalpm/hooks/20-dotfiles-autotrack.hook
 # via the /usr/local/bin/dotfiles-pkgtrack symlink.
 
+# No -e on purpose: pacman -Qqme with no AUR packages and git diff --cached --quiet
+# both return nonzero as normal control flow further down.
+set -uo pipefail
+
 # Handle SUDO_USER (pacman runs as root - rebase HOME so config.sh and git work)
-if [[ -n "$SUDO_USER" ]]; then
+if [[ -n "${SUDO_USER:-}" ]]; then
     HOME="/home/$SUDO_USER"
 elif [[ "$(id -u)" -eq 0 ]]; then
     _real_user=$(logname 2>/dev/null || true)
@@ -25,7 +29,7 @@ _repo="$(cd "$(dirname "$_self")/../.." && pwd)"
 source "$_repo/shared/scripts/config.sh"
 unset _self _repo
 
-[[ -z "$DOTFILES_DIR" ]] && { echo "[pkgtrack] dotfiles dir not found" >&2; exit 1; }
+[[ -z "${DOTFILES_DIR:-}" ]] && { echo "[pkgtrack] dotfiles dir not found" >&2; exit 1; }
 PACKAGES_FILE="$PACKAGES_DIR/packages.txt"
 AUR_FILE="$PACKAGES_DIR/aur.txt"
 
@@ -57,7 +61,10 @@ cd "$DOTFILES_DIR" || exit 1
 
 HOSTNAME=$(cat /etc/hostname 2>/dev/null || echo "unknown")
 DATE=$(date '+%Y-%m-%d')
-[[ -d /sys/class/power_supply/BAT* ]] && MACHINE="laptop" || MACHINE="desktop"
+MACHINE="desktop"
+for bat in /sys/class/power_supply/BAT*; do
+    [[ -d "$bat" ]] && { MACHINE="laptop"; break; }
+done
 
 if [[ "$NEW_AUR" != "none" && "$NEW_PKGS" != "none" ]]; then
     COMMIT_MSG="[AUTO] [$DATE] [$HOSTNAME:$MACHINE] Packages: $NEW_PKGS | AUR: $NEW_AUR"
@@ -77,7 +84,7 @@ echo "AUR packages: $AUR_COUNT"
 echo "Commit message: $COMMIT_MSG"
 
 git_as_user() {
-    if [[ -n "$SUDO_USER" ]]; then
+    if [[ -n "${SUDO_USER:-}" ]]; then
         sudo -u "$SUDO_USER" git "$@"
     else
         git "$@"

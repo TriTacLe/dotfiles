@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 WALLPAPER_DIR="$HOME/.config/backgrounds"
 INTERVAL=30  # 30 sekunder
 
@@ -18,7 +20,7 @@ set_wallpaper() {
         gsettings set org.gnome.desktop.background picture-uri-dark "file://$wallpaper"
     elif command -v swaybg &> /dev/null; then
         # Sway/Wayland
-        pkill swaybg 2>/dev/null
+        pkill swaybg 2>/dev/null || true
         swaybg -i "$wallpaper" -m fill &
     elif command -v feh &> /dev/null; then
         # i3/X11
@@ -30,7 +32,7 @@ set_wallpaper() {
 }
 
 # Hovedløkke
-wallpapers=($(get_wallpapers))
+mapfile -t wallpapers < <(get_wallpapers)
 index=0
 
 if [ ${#wallpapers[@]} -eq 0 ]; then

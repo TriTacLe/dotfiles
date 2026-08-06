@@ -1,3 +1,4 @@
 #!/bin/bash
-grim -g "$(slurp)" ~/Pictures/Screenshots/Screenshot_$(date +'%Y-%m-%d_%H-%M-%S').png
+set -euo pipefail
+grim -g "$(slurp)" "$HOME/Pictures/Screenshots/Screenshot_$(date +'%Y-%m-%d_%H-%M-%S').png"
 

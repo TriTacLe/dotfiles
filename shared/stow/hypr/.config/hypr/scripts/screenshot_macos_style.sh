@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # macOS-style screenshot med preview og auto-lagring
 

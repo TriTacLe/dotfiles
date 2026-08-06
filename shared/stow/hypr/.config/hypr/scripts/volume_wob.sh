@@ -3,7 +3,9 @@
 # Volume control - avizo-daemon auto-shows overlay via pulseaudio dbus
 # Usage: volume_wob.sh [up|down|mute]
 
-ACTION="$1"
+set -euo pipefail
+
+ACTION="${1:-}"
 
 case "$ACTION" in
   up)

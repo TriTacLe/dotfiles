@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # Listens for Hyprland monitor events and reassigns workspaces on change.
 # Requires: jq
 

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Emoji picker med wofi - kopierer valgt emoji til clipboard
 

@@ -22,7 +22,7 @@ echo "Installing ZSH..."
 sudo apt install -y zsh
 if [ "$SHELL" != "/usr/bin/zsh" ] && [ "$SHELL" != "/bin/zsh" ]; then
     echo "Making ZSH the default shell..."
-    chsh -s $(which zsh)
+    chsh -s "$(which zsh)"
 fi
 
 # Install Oh My Zsh if not already installed
@@ -84,7 +84,7 @@ if ! command -v fd &> /dev/null; then
     sudo apt install -y fd-find
     if command -v fdfind &> /dev/null && ! command -v fd &> /dev/null; then
         mkdir -p ~/.local/bin
-        ln -sf $(which fdfind) ~/.local/bin/fd
+        ln -sf "$(which fdfind)" ~/.local/bin/fd
     fi
 fi
 

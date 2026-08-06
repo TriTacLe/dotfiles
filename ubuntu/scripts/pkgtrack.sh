@@ -3,8 +3,12 @@
 # then commits/pushes only if AUTO_PUSH=true (default).
 # Invoked by /etc/apt/apt.conf.d/99dotfiles-autotrack via /usr/local/bin/dotfiles-pkgtrack-ubuntu symlink.
 
+# No -e on purpose: git diff --cached --quiet returns nonzero as normal control
+# flow further down, and the push path relies on failing commands.
+set -uo pipefail
+
 # Handle SUDO_USER (apt runs as root - rebase HOME so config.sh and git work)
-if [[ -n "$SUDO_USER" ]]; then
+if [[ -n "${SUDO_USER:-}" ]]; then
     HOME="/home/$SUDO_USER"
 elif [[ "$(id -u)" -eq 0 ]]; then
     _real_user=$(logname 2>/dev/null || true)
@@ -24,7 +28,7 @@ _repo="$(cd "$(dirname "$_self")/../.." && pwd)"
 source "$_repo/shared/scripts/config.sh"
 unset _self _repo
 
-[[ -z "$DOTFILES_DIR" ]] && { echo "[pkgtrack] dotfiles dir not found" >&2; exit 1; }
+[[ -z "${DOTFILES_DIR:-}" ]] && { echo "[pkgtrack] dotfiles dir not found" >&2; exit 1; }
 PACKAGES_FILE="$PACKAGES_DIR/packages.txt"
 
 mkdir -p "$PACKAGES_DIR"
@@ -52,7 +56,10 @@ cd "$DOTFILES_DIR" || exit 1
 
 HOSTNAME=$(cat /etc/hostname 2>/dev/null || echo "unknown")
 DATE=$(date '+%Y-%m-%d')
-[[ -d /sys/class/power_supply/BAT* ]] && MACHINE="laptop" || MACHINE="desktop"
+MACHINE="desktop"
+for bat in /sys/class/power_supply/BAT*; do
+    [[ -d "$bat" ]] && { MACHINE="laptop"; break; }
+done
 
 if [[ -n "$NEW_PKGS" && -n "$REMOVED_PKGS" ]]; then
     COMMIT_MSG="[AUTO] [$DATE] [$HOSTNAME:$MACHINE] APT +$NEW_PKGS | -$REMOVED_PKGS"
@@ -67,7 +74,7 @@ echo "Total packages: $NEW_COUNT"
 echo "Commit message: $COMMIT_MSG"
 
 git_as_user() {
-    if [[ -n "$SUDO_USER" ]]; then
+    if [[ -n "${SUDO_USER:-}" ]]; then
         local _uid _sock="" _candidate
         _uid=$(id -u "$SUDO_USER" 2>/dev/null)
         for _candidate in \

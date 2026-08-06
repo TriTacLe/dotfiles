@@ -3,7 +3,9 @@
 # Brightness OSD script with progress bar
 # Usage: brightness_osd.sh [up|down]
 
-ACTION="$1"
+set -euo pipefail
+
+ACTION="${1:-}"
 
 # Check if brightnessctl is available
 if ! command -v brightnessctl &> /dev/null; then
@@ -24,15 +26,16 @@ get_max_brightness() {
 # Execute the action
 case "$ACTION" in
   up)
-    brightnessctl set 5%+ 2>/dev/null
+    brightnessctl set 5%+ 2>/dev/null || true
     ;;
   down)
-    brightnessctl set 5%- 2>/dev/null
+    brightnessctl set 5%- 2>/dev/null || true
     ;;
 esac
 
-# Get updated brightness
-BRIGHTNESS=$(get_brightness_percent)
+# Get updated brightness. || true so a failed read falls through to the 0 case
+# below instead of killing the script under set -e.
+BRIGHTNESS=$(get_brightness_percent || true)
 
 # Handle case where brightness detection fails
 if [ -z "$BRIGHTNESS" ]; then

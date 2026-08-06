@@ -3,7 +3,9 @@
 # Volume OSD script with progress bar
 # Usage: volume_osd.sh [up|down|mute]
 
-ACTION="$1"
+set -euo pipefail
+
+ACTION="${1:-}"
 
 # Get current volume info
 get_volume() {
@@ -17,9 +19,10 @@ is_muted() {
 
 # Get volume percentage
 get_volume_percent() {
-  vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | grep -oP '[0-9]+\.[0-9]+' | head -1)
+  vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | grep -oP '[0-9]+\.[0-9]+' | head -1 || true)
   if [ -n "$vol" ]; then
-    echo "$(echo "$vol * 100" | bc | cut -d. -f1)"
+    # awk, not bc: bc is not a base install anywhere we run this
+    awk -v v="$vol" 'BEGIN { printf "%d", v * 100 }'
   else
     echo "0"
   fi

@@ -1,6 +1,8 @@
 #!/bin/bash
 # Wallpaper slideshow - rotates every 30 minutes
 
+set -euo pipefail
+
 WALLPAPER_DIR="$HOME/.config/backgrounds"
 SPLITTER_DIR="$HOME/.config/hypr/scripts/WallpaperSplitter"
 INTERVAL=1800
@@ -31,11 +33,11 @@ set_wallpapers() {
     
     [[ ${#monitors[@]} -eq 0 ]] && return
     
-    hyprctl hyprpaper unload all 2>/dev/null
-    
+    hyprctl hyprpaper unload all 2>/dev/null || true
+
     for monitor in "${monitors[@]}"; do
         wallpaper=${WALLPAPERS[$RANDOM % ${#WALLPAPERS[@]}]}
-        hyprctl hyprpaper wallpaper "$monitor,$wallpaper" 2>/dev/null
+        hyprctl hyprpaper wallpaper "$monitor,$wallpaper" 2>/dev/null || true
     done
 }
 

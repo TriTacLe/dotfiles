@@ -3,7 +3,9 @@
 # Volume control with avizo (macOS-style center overlay with icons)
 # Usage: volume_avizo.sh [up|down|mute]
 
-ACTION="$1"
+set -euo pipefail
+
+ACTION="${1:-}"
 
 # Ensure avizo-daemon is running
 if ! pgrep -x "avizo-daemon" > /dev/null; then

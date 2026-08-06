@@ -3,7 +3,9 @@
 # Brightness control - avizo-daemon auto-shows overlay via dbus
 # Usage: brightness_wob.sh [up|down]
 
-ACTION="$1"
+set -euo pipefail
+
+ACTION="${1:-}"
 
 if ! command -v brightnessctl &> /dev/null; then
   notify-send -u critical "Error" "brightnessctl not found"

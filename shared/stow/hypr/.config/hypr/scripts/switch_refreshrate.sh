@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Machine-specific: Requires eDP-1 monitor at 1920x1200
 # Commented out for cross-PC compatibility

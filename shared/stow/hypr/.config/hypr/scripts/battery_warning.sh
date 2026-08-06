@@ -1,10 +1,12 @@
 #!/bin/bash
 
+set -euo pipefail
+
 if ! upower -e | grep -q "battery"; then
   exit 0
 fi
 
-BATTERY_PATH=$(upower -e | grep battery | head -1)
+BATTERY_PATH=$(upower -e | grep -m1 battery)
 BATTERY_PERCENT=$(upower -i "$BATTERY_PATH" | grep percentage | awk '{print $2}' | tr -d '%')
 BATTERY_STATE=$(upower -i "$BATTERY_PATH" | grep state | awk '{print $2}')
 
