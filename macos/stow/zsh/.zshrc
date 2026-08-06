@@ -180,9 +180,10 @@ copy() { cat "$1" | pbcopy }
 : "${DOTFILES_DIR:=$HOME/Desktop/dotfiles}"
 
 stow-all() {
-    stow -d "$DOTFILES_DIR/shared/stow" -t ~ --no-folding git nvim starship lazygit backgrounds zsh
-    stow -d "$DOTFILES_DIR/macos/stow" -t ~ --no-folding zsh tmux alacritty ghostty kitty neofetch
-    stow -d "$DOTFILES_DIR" -t ~/.claude -R claude-config
+    # Package lists must match macos/install-macos.sh
+    stow -d "$DOTFILES_DIR/shared/stow" -t ~ --no-folding -R git nvim lazygit backgrounds zsh scripts ipython
+    stow -d "$DOTFILES_DIR/macos/stow" -t ~ --no-folding -R zsh tmux alacritty ghostty kitty neofetch starship
+    ln -sfn "$DOTFILES_DIR/claude-config" ~/.claude
 }
 
 # ============================================

@@ -2,6 +2,7 @@
 set -e
 
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
+source "$DOTFILES/shared/scripts/config.sh"
 
 # Ensure stow is installed
 if ! command -v stow &>/dev/null; then
@@ -11,12 +12,14 @@ fi
 
 mkdir -p ~/.config
 
-stow -d "$DOTFILES/shared/stow" -t ~ --no-folding \
+# -R (restow) so renamed or deleted files do not leave stale links behind.
+# --no-folding links every file individually, which makes -R necessary.
+stow -d "$DOTFILES/shared/stow" -t ~ --no-folding -R \
     git nvim lazygit backgrounds zsh tmux alacritty ghostty kitty \
-    hypr waybar swaync wofi avizo wob nwg-dock nwg-look wlogout scripts ipython
-stow -d "$DOTFILES/ubuntu/stow" -t ~ --no-folding \
-    zsh rofi swaylock fontconfig zathura systemd hypr-host sway
+    hypr waybar swaync wofi avizo wob nwg-dock nwg-look wlogout scripts ipython zathura
+stow -d "$DOTFILES/ubuntu/stow" -t ~ --no-folding -R \
+    zsh rofi swaylock fontconfig systemd hypr-host sway
 
-stow -d "$DOTFILES" -t ~/.claude -R claude-config
+link_claude_config "$DOTFILES"
 
 echo "Ubuntu setup complete."

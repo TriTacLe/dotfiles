@@ -2,6 +2,7 @@
 set -e
 
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
+source "$DOTFILES/shared/scripts/config.sh"
 
 if ! command -v stow &>/dev/null; then
     echo "Installing stow..."
@@ -16,7 +17,7 @@ if [ -s "$DOTFILES/server/packages/packages.txt" ]; then
     fi
 fi
 
-mkdir -p ~/.config ~/.claude
+mkdir -p ~/.config
 
 # Server XDG layout: drop a user-dirs.dirs that aliases Desktop/Music/Videos/
 # Pictures/Templates/Public all to $HOME so xdg-user-dirs-update doesn't
@@ -25,16 +26,18 @@ install -D -m 0644 "$DOTFILES/server/etc/xdg/user-dirs.dirs" \
     ~/.config/user-dirs.dirs
 
 # CLI-only stow: no hypr, waybar, alacritty, ghostty, kitty, swaync, etc.
-stow -d "$DOTFILES/shared/stow" -t ~ --no-folding \
-    git nvim lazygit zsh tmux scripts starship ipython
-stow -d "$DOTFILES/arch/stow" -t ~ --no-folding \
+stow -d "$DOTFILES/shared/stow" -t ~ --no-folding -R \
+    git nvim lazygit zsh tmux scripts ipython
+stow -d "$DOTFILES/arch/stow" -t ~ --no-folding -R \
     zsh pacseek
-stow -d "$DOTFILES" -t ~/.claude -R claude-config
+link_claude_config "$DOTFILES"
 
 # Server-specific stow packages (none yet, but ready when added).
-if [ -d "$DOTFILES/server/stow" ] && [ -n "$(/bin/ls -A "$DOTFILES/server/stow" 2>/dev/null)" ]; then
-    stow -d "$DOTFILES/server/stow" -t ~ --no-folding \
-        $(/bin/ls "$DOTFILES/server/stow")
+if [ -d "$DOTFILES/server/stow" ]; then
+    mapfile -t SERVER_STOW < <(find "$DOTFILES/server/stow" -mindepth 1 -maxdepth 1 -type d -printf '%f\n')
+    if [ ${#SERVER_STOW[@]} -gt 0 ]; then
+        stow -d "$DOTFILES/server/stow" -t ~ --no-folding -R "${SERVER_STOW[@]}"
+    fi
 fi
 
 # Pacman post-transaction hook that auto-commits package-list changes.

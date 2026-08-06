@@ -50,6 +50,31 @@ warn()  { echo "$(_dotfiles_color '1;33' '[warn]') $*"; }
 err()   { echo "$(_dotfiles_color '0;31' '[error]') $*" >&2; }
 info()  { echo "$(_dotfiles_color '0;36' '[info]') $*"; }
 
+# ~/.claude is one symlink to the claude-config submodule, not a stow tree.
+# Stowing into it would resolve the target back inside the package itself.
+link_claude_config() {
+    local dotfiles="$1"
+    if [[ -d "$HOME/.claude" && ! -L "$HOME/.claude" ]]; then
+        warn "$HOME/.claude is a real directory, leaving it alone"
+        return 0
+    fi
+    ln -sfn "$dotfiles/claude-config" "$HOME/.claude"
+    ok "$HOME/.claude -> $dotfiles/claude-config"
+}
+
+# Stow only links units into ~/.config/systemd/user; they stay inactive until enabled.
+enable_user_units() {
+    if ! systemctl --user show-environment &>/dev/null; then
+        warn "no user systemd session, skipping unit enable"
+        return 0
+    fi
+    systemctl --user daemon-reload
+    local unit
+    for unit in "$@"; do
+        systemctl --user enable --now "$unit" && ok "enabled $unit"
+    done
+}
+
 # Settings (overridable via env)
 MACHINE_TYPE="${MACHINE_TYPE:-auto}"
 GIT_REMOTE="${GIT_REMOTE:-origin}"

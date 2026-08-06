@@ -82,8 +82,12 @@ fi
 # ============================================
 # Powerlevel10k
 # ============================================
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-[[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
+# Stowed config wins; loose ~/.p10k.zsh is the fallback on machines without it
+if [[ -f ~/.config/zsh/.p10k.zsh ]]; then
+    source ~/.config/zsh/.p10k.zsh
+elif [[ -f ~/.p10k.zsh ]]; then
+    source ~/.p10k.zsh
+fi
 [[ -f /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme ]] && \
     source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 
@@ -170,10 +174,13 @@ fi
 # ============================================
 stow-all() {
     local df="${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
-    stow -d "$df/shared/stow" -t ~ --no-folding git nvim lazygit backgrounds zsh
-    stow -d "$df/ubuntu/stow" -t ~ --no-folding \
-        zsh tmux alacritty ghostty kitty rofi swaylock swaync wlogout fontconfig zathura systemd
-    stow -d "$df" -t ~/.claude -R claude-config
+    # Package lists must match ubuntu/install-ubuntu.sh
+    stow -d "$df/shared/stow" -t ~ --no-folding -R \
+        git nvim lazygit backgrounds zsh tmux alacritty ghostty kitty \
+        hypr waybar swaync wofi avizo wob nwg-dock nwg-look wlogout scripts ipython zathura
+    stow -d "$df/ubuntu/stow" -t ~ --no-folding -R \
+        zsh rofi swaylock fontconfig systemd hypr-host sway
+    ln -sfn "$df/claude-config" ~/.claude
 }
 
 # ============================================

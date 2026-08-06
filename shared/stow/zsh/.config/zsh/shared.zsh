@@ -223,8 +223,9 @@ stow-pkg() {
     if [ -z "$1" ]; then echo "Usage: stow-pkg <package>"; return 1; fi
     local pkg="$1"
     local df="${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
+    # ~/.claude is one symlink to the submodule, not a stow tree of per-file links
     if [[ "$pkg" == "claude-config" ]]; then
-        stow -d "$df" -t ~/.claude -R claude-config
+        ln -sfn "$df/claude-config" ~/.claude
         return
     fi
     [[ -d "$df/shared/stow/$pkg" ]] && stow -d "$df/shared/stow" -t ~ --no-folding -R "$pkg"
@@ -239,7 +240,7 @@ unstow-pkg() {
     local pkg="$1"
     local df="${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
     if [[ "$pkg" == "claude-config" ]]; then
-        stow -d "$df" -t ~/.claude -D claude-config
+        [[ -L ~/.claude ]] && rm ~/.claude
         return
     fi
     [[ -d "$df/shared/stow/$pkg" ]] && stow -d "$df/shared/stow" -t ~ --no-folding -D "$pkg"

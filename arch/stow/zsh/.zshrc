@@ -132,7 +132,7 @@ alias pyvenv='chmod +x .venv/bin/activate && source .venv/bin/activate'
 alias mkvenv='py -m venv .venv && chmod +x .venv/bin/activate && source .venv/bin/activate'
 alias gpt='chatgpt.sh -cc'
 alias hypr-fix='export HYPRLAND_INSTANCE_SIGNATURE=$(\ls -t /run/user/1000/hypr | head -n1)'
-alias hyprconf='cd ~/.config/hypr && nvim ~/.config/hypr/hyprland.conf'
+alias hyprconf='cd ~/.config/hypr && nvim ~/.config/hypr/hyprland.lua'
 alias yt-480='yt-dlp -f "bestvideo[height=480][fps=30]+bestaudio/best[height=480][fps=30]" --cookies-from-browser firefox'
 alias yt-720='yt-dlp -f "bestvideo[height=720][fps=60]+bestaudio/best[height=720][fps=60]" --cookies-from-browser firefox'
 alias yt-1080='yt-dlp -f "bestvideo[height=1080][fps=60]+bestaudio/best[height=1080][fps=60]" --cookies-from-browser firefox'
@@ -182,8 +182,12 @@ esac
 # ============================================
 # Powerlevel10k
 # ============================================
-[[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# Stowed config wins; loose ~/.p10k.zsh is the fallback on machines without it
+if [[ -f ~/.config/zsh/.p10k.zsh ]]; then
+    source ~/.config/zsh/.p10k.zsh
+elif [[ -f ~/.p10k.zsh ]]; then
+    source ~/.p10k.zsh
+fi
 [[ -f /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme ]] && \
     source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 
@@ -233,11 +237,13 @@ alias cgd='cheat docker'
 # ============================================
 stow-all() {
     local df="${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
-    stow -d "$df/shared/stow" -t ~ --no-folding git nvim lazygit backgrounds zsh
-    stow -d "$df/arch/stow" -t ~ --no-folding \
-        zsh tmux alacritty ghostty kitty fastfetch \
-        hypr waybar swaync wofi avizo wob nwg-dock nwg-look pacseek wlogout zathura systemd scripts
-    stow -d "$df" -t ~/.claude -R claude-config
+    # Package lists must match arch/install-arch.sh
+    stow -d "$df/shared/stow" -t ~ --no-folding -R \
+        git nvim lazygit backgrounds zsh tmux alacritty ghostty kitty \
+        hypr waybar swaync wofi avizo wob nwg-dock nwg-look wlogout scripts ipython zathura
+    stow -d "$df/arch/stow" -t ~ --no-folding -R \
+        zsh fastfetch hypr-host pacseek systemd
+    ln -sfn "$df/claude-config" ~/.claude
 }
 
 # ============================================

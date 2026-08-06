@@ -2,6 +2,7 @@
 set -e
 
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
+source "$DOTFILES/shared/scripts/config.sh"
 
 # Homebrew
 if ! command -v brew &>/dev/null; then
@@ -10,10 +11,10 @@ fi
 
 brew bundle install --file="$DOTFILES/macos/Brewfile" --no-lock
 
-mkdir -p ~/.config ~/.claude
+mkdir -p ~/.config
 
-stow -d "$DOTFILES/shared/stow" -t ~ --no-folding git nvim starship lazygit backgrounds zsh scripts ipython
-stow -d "$DOTFILES/macos/stow" -t ~ --no-folding zsh tmux alacritty ghostty kitty neofetch
-stow -d "$DOTFILES" -t ~/.claude -R claude-config
+stow -d "$DOTFILES/shared/stow" -t ~ --no-folding -R git nvim lazygit backgrounds zsh scripts ipython
+stow -d "$DOTFILES/macos/stow" -t ~ --no-folding -R zsh tmux alacritty ghostty kitty neofetch starship
+link_claude_config "$DOTFILES"
 
 echo "Mac setup complete."
