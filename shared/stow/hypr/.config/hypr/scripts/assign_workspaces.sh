@@ -3,10 +3,17 @@
 # Laptop always gets ws 1,4. Leftmost external gets ws 3, rightmost gets ws 2.
 # Add more workspace assignments below as needed.
 
+set -euo pipefail
+
 LAPTOP="eDP-1"
 
 assign() {
-    hyprctl dispatch moveworkspacetomonitor "$1" "$2" 2>/dev/null
+    # Old dispatcher name first, Lua expression as fallback. A Lua config rejects
+    # the old name with exit 7, a hyprlang config rejects the Lua form.
+    # Trailing || true: a monitor that vanished mid-run must not abort the rest.
+    hyprctl dispatch moveworkspacetomonitor "$1" "$2" 2>/dev/null \
+        || hyprctl dispatch "hl.dsp.workspace.move({ workspace = \"$1\", monitor = \"$2\" })" 2>/dev/null \
+        || true
 }
 
 # Laptop workspaces

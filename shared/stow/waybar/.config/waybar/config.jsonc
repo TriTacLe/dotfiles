@@ -19,8 +19,8 @@
 
    "hyprland/workspaces": {
         "disable-scroll": true,
-        "on-scroll-up": "hyprctl dispatch workspace -1",
-        "on-scroll-down": "hyprctl dispatch workspace +1",
+        "on-scroll-up": "hyprctl dispatch workspace -1 || hyprctl dispatch 'hl.dsp.focus({ workspace = \"-1\" })'",
+        "on-scroll-down": "hyprctl dispatch workspace +1 || hyprctl dispatch 'hl.dsp.focus({ workspace = \"+1\" })'",
 		"format": "{name}: {windows}",
 		"on-click": "activate",
 		"format-icons": {
@@ -211,8 +211,8 @@
    "hyprland/workspaces": {
 
         "disable-scroll": true,
-        "on-scroll-up": "hyprctl dispatch workspace -1",
-        "on-scroll-down": "hyprctl dispatch workspace +1",
+        "on-scroll-up": "hyprctl dispatch workspace -1 || hyprctl dispatch 'hl.dsp.focus({ workspace = \"-1\" })'",
+        "on-scroll-down": "hyprctl dispatch workspace +1 || hyprctl dispatch 'hl.dsp.focus({ workspace = \"+1\" })'",
 		"format": "[{name}: {windows}]",
 		"on-click": "activate",
 		"format-icons": {
@@ -388,8 +388,8 @@
    "hyprland/workspaces": {
 
         "disable-scroll": true,
-        "on-scroll-up": "hyprctl dispatch workspace -1",
-        "on-scroll-down": "hyprctl dispatch workspace +1",
+        "on-scroll-up": "hyprctl dispatch workspace -1 || hyprctl dispatch 'hl.dsp.focus({ workspace = \"-1\" })'",
+        "on-scroll-down": "hyprctl dispatch workspace +1 || hyprctl dispatch 'hl.dsp.focus({ workspace = \"+1\" })'",
 		"format": "[{name}: {windows}]",
 		"on-click": "activate",
 		"format-icons": {

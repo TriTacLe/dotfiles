@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # Ask for confirmation before killing active window
 
 WINDOW=$(hyprctl activewindow -j | jq -r '.title')
@@ -12,5 +13,6 @@ fi
 ANSWER=$(echo -e "Yes\nNo" | wofi --dmenu --prompt "Close $CLASS?" --width 300 --height 150)
 
 if [ "$ANSWER" = "Yes" ]; then
-    hyprctl dispatch killactive
+    # Old form first, Lua expression as fallback (Lua configs exit 7 on the old name)
+    hyprctl dispatch killactive || hyprctl dispatch 'hl.dsp.window.close()'
 fi

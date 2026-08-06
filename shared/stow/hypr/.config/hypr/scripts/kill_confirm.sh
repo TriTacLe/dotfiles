@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # Elegant confirmation before closing window
 
 WINDOW_CLASS=$(hyprctl activewindow -j | jq -r '.class')
@@ -20,5 +21,7 @@ CHOICE=$(echo -e "✓ Close window\n✗ Keep open" | wofi \
     --matching fuzzy)
 
 if [[ "$CHOICE" == *"Close"* ]]; then
-    hyprctl dispatch killactive
+    # Lua configs expect a Lua expression here and exit 7 on the old name.
+    # Old form first so the script keeps working on a hyprlang config too.
+    hyprctl dispatch killactive || hyprctl dispatch 'hl.dsp.window.close()'
 fi
