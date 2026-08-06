@@ -21,10 +21,19 @@ bash install.sh
 
 ## What's included
 
-Dotfiles
-Machine-specific display settings (monitor names, DPI, scale) are in per-host Hyprland overlays.
+- `shared/stow/` - packages every machine gets: git, nvim, lazygit, zsh, tmux, kitty,
+  ghostty, alacritty, hypr, waybar, swaync, wofi, avizo, wob, nwg-dock, nwg-look,
+  wlogout, zathura, backgrounds, scripts, ipython.
+- `arch/`, `ubuntu/`, `macos/`, `server/` - per-OS installer plus the packages only that
+  OS uses (fastfetch and pacseek on Arch, rofi and swaylock on Ubuntu, starship on macOS).
+- `<os>/stow/hypr-host/` - per-host Hyprland overlay holding the machine-specific bits:
+  monitor names, resolutions, scale, GPU env, touchpad device.
+- `shared/scripts/` - `config.sh` (shared shell library) and `verify-system.sh`
+  (repo health checks, run before deploying to a fresh machine).
+- `arch/packages/`, `ubuntu/packages/` - package lists, regenerated automatically by the
+  pacman/apt post-transaction hook.
 
 ## Adding a new machine
 
-1. Create a host overlay at `<os>/stow/hypr-host/host.conf` if needed.
+1. Create a host overlay at `<os>/stow/hypr-host/.config/hypr/host.lua` if needed.
 2. Run `install.sh`.

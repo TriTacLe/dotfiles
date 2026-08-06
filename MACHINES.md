@@ -21,12 +21,12 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 | WM | Hyprland 0.55 (cppiber PPA) + Sway fallback |
 | Display server | Wayland (GDM) |
 | Installer | `ubuntu/install-ubuntu.sh` |
-| Hypr host overlay | `ubuntu/stow/hypr-host/host.conf` |
+| Hypr host overlay | `ubuntu/stow/hypr-host/.config/hypr/host.lua` |
 
 ### Notes
 
-- `env = WLR_NO_HARDWARE_CURSORS,1` needed (Intel Xe cursor bug on Wayland)
-- `env = LIBVA_DRIVER_NAME,iHD` + `VDPAU_DRIVER,va_gl` for VA-API
+- `hl.env("WLR_NO_HARDWARE_CURSORS", "1")` kept from the wlroots era; no effect on aquamarine
+- `hl.env("LIBVA_DRIVER_NAME", "iHD")` + `hl.env("VDPAU_DRIVER", "va_gl")` for VA-API
 - Monitor by connector name `eDP-1` (Intel panels don't reliably expose EDID description)
 - scale 1.0
 
@@ -45,9 +45,9 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 | Storage | 512 GB NVMe (46 GB root, 422 GB /home) |
 | Display | AU Optronics 0x1092, 1920x1080, eDP-1 |
 | Touchpad | elan1201:00-04f3:3098 |
-| WM | Hyprland (pacman) |
+| WM | Hyprland 0.56.1 (pacman) |
 | Installer | `arch/install-arch.sh` |
-| Hypr host overlay | `arch/stow/hypr-host/host.conf` |
+| Hypr host overlay | `arch/stow/hypr-host/.config/hypr/host.lua` |
 
 ### Notes
 
@@ -98,7 +98,8 @@ for any open ports, and restic/borg for backups.
 ### Portability notes
 
 - No Hyprland, no waybar, no GUI stow packages.
-- Shares with desktop hosts: git, nvim, lazygit, zsh, tmux, scripts, starship.
+- Shares with desktop hosts: git, nvim, lazygit, zsh, tmux, scripts, ipython. Prompt is
+  powerlevel10k via the Arch `.zshrc`; starship is macOS-only.
 - Selection is by the `server` role pin (`~/.dotfiles-role`), not by hostname,
   so any Arch host can opt in.
 
@@ -123,11 +124,11 @@ for any open ports, and restic/borg for backups.
 
 ## Waybar DPI guide
 
-`style.css` uses fixed pixel values. Adjust `scale` in the host's `host.conf` if bar looks wrong:
+`style.css` uses fixed pixel values. Adjust `scale` in the host's `host.lua` if bar looks wrong:
 
-```
-monitor = eDP-1, preferred, 0x0, 1.25   # HiDPI 14" panels
-monitor = eDP-1, preferred, 0x0, 1.0    # standard 27"+ at 1440p or lower
+```lua
+hl.monitor({ output = "eDP-1", mode = "preferred", position = "0x0", scale = 1.25 })  -- HiDPI 14" panels
+hl.monitor({ output = "eDP-1", mode = "preferred", position = "0x0", scale = 1 })     -- standard 27"+ at 1440p or lower
 ```
 
 Reference DPIs:
