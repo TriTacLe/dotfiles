@@ -16,7 +16,11 @@
 # Private repo names - not tracked
 claude-config/repos.json
 
+# Claude config lives in the claude-config submodule, never at repo root
+.claude/
+
 # OS artifacts
 Thumbs.db
 ehthumbs.db
 server/etc/nginx/
+*.log
