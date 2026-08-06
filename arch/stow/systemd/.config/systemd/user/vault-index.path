@@ -2,7 +2,7 @@
 Description=Watch Obsidian vault for changes and trigger RAG reindex
 
 [Path]
-PathChanged=%h/Documents/Obsidian Vault/Claude
+PathChanged=%h/vault/claude
 Unit=vault-reindex.service
 MakeDirectory=true
 
