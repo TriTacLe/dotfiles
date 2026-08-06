@@ -4,9 +4,9 @@
 
 set -uo pipefail
 
-# Script lives at arch/verify-system.sh, repo root is one level up
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$DOTFILES_DIR"
+# Script lives at shared/scripts/verify-system.sh, repo root is two levels up
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$DOTFILES_DIR" || exit 1
 
 PASS=0
 FAIL=0
@@ -26,27 +26,34 @@ echo "=== Dotfiles verification ==="
 
 echo ""
 echo "[1] Hardcoded user paths"
-_hc_args=(
-    --include="*.sh" --include="*.hook" --include=".zshrc" --include="Makefile"
-    --include="*.conf" --include="*.toml" --include="*.json"
-    --exclude-dir=archived-scripts --exclude-dir=claude-config --exclude-dir=.claude --exclude-dir=.git
-    --exclude=verify-system.sh
-)
-HARDCODES=$(grep -rn "/home/tri" "${_hc_args[@]}" . 2>/dev/null | wc -l)
+# Scans every tracked file rather than a list of extensions, so new file types
+# (.lua, .jsonc, .gitconfig, systemd units) are covered without touching this.
+# Filtered out: the claude-config submodule entry, this script (which has to contain
+# the pattern it searches for), and .p10k.zsh (wizard output, example paths in comments).
+_hc_home_re='/home/[a-z_][a-z0-9_-]*/'
+_hc_skip='^(claude-config|shared/scripts/verify-system\.sh|shared/stow/zsh/\.config/zsh/\.p10k\.zsh)$'
+_hc_hits() {
+    git ls-files -z | grep -zvE "$_hc_skip" \
+        | xargs -0 grep -InsE "$_hc_home_re" 2>/dev/null
+}
+HARDCODES=$(_hc_hits | wc -l)
 if [[ "$HARDCODES" -eq 0 ]]; then
-    echo "  ok   no /home/tri hardcodes"
+    echo "  ok   no absolute /home/<user> paths in tracked files"
     PASS=$((PASS+1))
 else
-    echo "  FAIL $HARDCODES /home/tri hardcode(s) found:"
-    grep -rn "/home/tri" "${_hc_args[@]}" . 2>/dev/null | sed 's/^/    /'
+    echo "  FAIL $HARDCODES /home/<user> hardcode(s) found:"
+    _hc_hits | sed 's/^/    /'
     FAIL=$((FAIL+1))
 fi
-unset _hc_args
 
 echo ""
 echo "[2] Hyprland active hardcodes (monitor names, resolutions)"
-ACTIVE_MON=$(grep -rn "^[^#]*monitor.*=.*\(eDP-[0-9]\|DP-[0-9]\)" arch/stow/hypr/ --include="*.conf" 2>/dev/null | wc -l)
-ACTIVE_RES=$(grep -rn "^[^#]*\(1920x1200\|2560x1440\)" arch/stow/hypr/ --include="*.conf" 2>/dev/null | wc -l)
+# Only the cross-machine config. The per-host hypr-host overlays exist precisely
+# to hold connector names and resolutions, so they are exempt.
+_hypr_dirs=(shared/stow/hypr/)
+ACTIVE_MON=$(grep -rn "^[^#-]*monitor.*\(eDP-[0-9]\|DP-[0-9]\)" "${_hypr_dirs[@]}" 2>/dev/null | wc -l)
+ACTIVE_RES=$(grep -rn "^[^#-]*\(1920x1200\|2560x1440\)" "${_hypr_dirs[@]}" 2>/dev/null | wc -l)
+unset _hypr_dirs
 [[ "$ACTIVE_MON" -eq 0 ]] && { echo "  ok   no active monitor hardcodes"; PASS=$((PASS+1)); } || { echo "  FAIL $ACTIVE_MON monitor hardcode(s)"; FAIL=$((FAIL+1)); }
 [[ "$ACTIVE_RES" -eq 0 ]] && { echo "  ok   no active resolution hardcodes"; PASS=$((PASS+1)); } || { echo "  FAIL $ACTIVE_RES resolution hardcode(s)"; FAIL=$((FAIL+1)); }
 
