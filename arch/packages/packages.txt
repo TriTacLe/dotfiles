@@ -199,6 +199,7 @@ oxygen
 oxygen-sounds
 pacman-contrib
 papers
+pass
 pavucontrol
 pipewire
 pipewire-alsa
