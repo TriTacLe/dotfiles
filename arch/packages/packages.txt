@@ -231,6 +231,7 @@ python-pip
 python-pipx
 python-pynvim
 python-requests
+qemu-base
 qqc2-breeze-style
 qt5-wayland
 qt6ct
