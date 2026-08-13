@@ -11,7 +11,7 @@
 #   1. $DOTFILES_DIR env var (if set and valid)
 #   2. Search list of common clone locations
 
-if [[ -z "$DOTFILES_DIR" || ! -d "$DOTFILES_DIR/.git" ]]; then
+if [[ -z "${DOTFILES_DIR:-}" || ! -d "${DOTFILES_DIR:-}/.git" ]]; then
     for _path in \
         "$HOME/Desktop/dotfiles" \
         "$HOME/dotfiles" \
@@ -37,7 +37,7 @@ fi
 
 # Color logger
 _dotfiles_color() {
-    if [[ -n "$NO_COLOR" || ! -t 1 ]]; then
+    if [[ -n "${NO_COLOR:-}" || ! -t 1 ]]; then
         printf "%s" "$2"
     else
         printf "\033[%sm%s\033[0m" "$1" "$2"
