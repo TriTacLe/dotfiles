@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# MATLAB installs under ~/MATLAB and puts nothing on PATH. The installer only
+# offers to symlink into /usr/local/bin, which it cannot write when it runs
+# unprivileged, so stand in for that symlink here.
+# Resolving the newest release means a version bump needs no edit.
+set -u
+
+root=$(printf '%s\n' "$HOME"/MATLAB/R* | sort -V | tail -1)
+
+if [[ ! -x "$root/bin/matlab" ]]; then
+    echo "matlab: nothing installed under $HOME/MATLAB" >&2
+    exit 1
+fi
+
+exec "$root/bin/matlab" "$@"

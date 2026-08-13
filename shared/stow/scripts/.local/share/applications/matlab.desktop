@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=MATLAB
+GenericName=Numerical Computing Environment
+Comment=Numerical computing with Simulink
+Exec=matlab -desktop
+Icon=matlab
+Terminal=false
+Categories=Development;Science;Math;
+Keywords=matlab;simulink;
+StartupNotify=true
