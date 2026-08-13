@@ -164,6 +164,7 @@ libplasma
 libpulse
 libreoffice-fresh
 libva-intel-driver
+libxcrypt-compat
 linux
 linux-firmware
 linux-lts
