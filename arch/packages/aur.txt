@@ -4,11 +4,9 @@ catppuccin-gtk-theme-mocha
 cheat
 checkstyle
 claude-desktop-appimage
-docker-desktop
 espanso-wayland-bin
 google-chrome
 hyprswitch
-intellij-idea-ultimate-edition
 jql
 neofetch-git
 ngrok
