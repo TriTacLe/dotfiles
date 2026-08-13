@@ -48,6 +48,8 @@ echo "$AUR_PACKAGES" > "$AUR_FILE"
 
 NEW_PKGS=$(comm -13 <(sort "$OLD_PACKAGES_FILE") "$PACKAGES_FILE" | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')
 NEW_AUR=$(comm -13 <(sort "$OLD_AUR_FILE") "$AUR_FILE" | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')
+DEL_PKGS=$(comm -23 <(sort "$OLD_PACKAGES_FILE") "$PACKAGES_FILE" | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')
+DEL_AUR=$(comm -23 <(sort "$OLD_AUR_FILE") "$AUR_FILE" | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')
 
 rm -f "$OLD_PACKAGES_FILE" "$OLD_AUR_FILE"
 
@@ -56,6 +58,8 @@ AUR_COUNT=$(wc -l < "$AUR_FILE" 2>/dev/null || echo "0")
 
 [[ -n "$NEW_PKGS" ]] && echo "[+] New official packages: $NEW_PKGS" || NEW_PKGS="none"
 [[ -n "$NEW_AUR" ]] && echo "[+] New AUR packages: $NEW_AUR" || NEW_AUR="none"
+[[ -n "$DEL_PKGS" ]] && echo "[-] Removed official packages: $DEL_PKGS" || DEL_PKGS="none"
+[[ -n "$DEL_AUR" ]] && echo "[-] Removed AUR packages: $DEL_AUR" || DEL_AUR="none"
 
 cd "$DOTFILES_DIR" || exit 1
 
@@ -66,17 +70,28 @@ for bat in /sys/class/power_supply/BAT*; do
     [[ -d "$bat" ]] && { MACHINE="laptop"; break; }
 done
 
-if [[ "$NEW_AUR" != "none" && "$NEW_PKGS" != "none" ]]; then
-    COMMIT_MSG="[AUTO] [$DATE] [$HOSTNAME:$MACHINE] Packages: $NEW_PKGS | AUR: $NEW_AUR"
-elif [[ "$NEW_AUR" != "none" ]]; then
-    COMMIT_MSG="[AUTO] [$DATE] [$HOSTNAME:$MACHINE] AUR Packages: $NEW_AUR"
-else
-    COMMIT_MSG="[AUTO] [$DATE] [$HOSTNAME:$MACHINE] Packages: $NEW_PKGS"
-fi
-
-if [[ "$NEW_PKGS" == "none" && "$NEW_AUR" == "none" ]]; then
+if [[ "$NEW_PKGS" == "none" && "$NEW_AUR" == "none" && "$DEL_PKGS" == "none" && "$DEL_AUR" == "none" ]]; then
     exit 0
 fi
+
+# A single pacman -Rns can touch 100+ packages, so keep the subject readable
+summarize() {
+    local n
+    n=$(wc -w <<< "$1")
+    if (( n > 5 )); then
+        echo "$(cut -d' ' -f1-5 <<< "$1") and $((n - 5)) more"
+    else
+        echo "$1"
+    fi
+}
+
+parts=()
+[[ "$NEW_PKGS" != "none" ]] && parts+=("+$(summarize "$NEW_PKGS")")
+[[ "$NEW_AUR" != "none" ]] && parts+=("+AUR $(summarize "$NEW_AUR")")
+[[ "$DEL_PKGS" != "none" ]] && parts+=("-$(summarize "$DEL_PKGS")")
+[[ "$DEL_AUR" != "none" ]] && parts+=("-AUR $(summarize "$DEL_AUR")")
+
+COMMIT_MSG="[AUTO] [$DATE] [$HOSTNAME:$MACHINE] $(IFS='|'; echo "${parts[*]}")"
 
 echo "Committing package changes..."
 echo "Official packages: $NEW_COUNT"
