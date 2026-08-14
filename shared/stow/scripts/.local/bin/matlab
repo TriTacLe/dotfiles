@@ -12,4 +12,23 @@ if [[ ! -x "$root/bin/matlab" ]]; then
     exit 1
 fi
 
-exec "$root/bin/matlab" "$@"
+# MATLAB bundles a gcc-12 libstdc++ and searches its own lib dir first. System
+# Mesa needs newer symbols than that copy has, so the DRI driver fails to load
+# and MATLAB silently falls back to SwiftShader on the CPU. MathWorks ships
+# these only "in the event that your distribution does not provide them"
+# (see README.libgcc_s), so move them aside. Updates put them back, hence the
+# check on every launch.
+libdir="$root/sys/os/glnxa64"
+if [[ -e "$libdir/libstdc++.so.6" ]]; then
+    for lib in "$libdir"/libstdc++.so.6*; do
+        [[ "$lib" == *.bak ]] && continue
+        mv "$lib" "$lib.bak" 2>/dev/null ||
+            echo "matlab: could not move $lib aside, expect software rendering" >&2
+    done
+fi
+
+# CEF links an older fontconfig that cannot parse fontconfig 2.18 config files,
+# so every launch prints ~90 warnings about syntax the system handles fine.
+# Drop those lines only; everything else on stderr still comes through.
+exec "$root/bin/matlab" "$@" \
+    2> >(grep --line-buffered -v '^Fontconfig warning: ' >&2)
