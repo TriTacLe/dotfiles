@@ -1,11 +1,16 @@
 [Desktop Entry]
+# Name must stay unique. The MathWorks installer drops a NoDisplay handler for
+# the mw-matlab:// scheme that also calls itself MATLAB, and wofi drops one of
+# two entries sharing a display name.
 Type=Application
-Name=MATLAB
+Name=MATLAB R2026a
 GenericName=Numerical Computing Environment
 Comment=Numerical computing with Simulink
-Exec=matlab -desktop
+# Absolute path on purpose. SDDM starts the session, so no login shell runs and
+# ~/.local/bin never joins PATH. A bare "matlab" here is unresolvable.
+Exec=/home/tri/.local/bin/matlab -desktop
 Icon=matlab
 Terminal=false
-Categories=Development;Science;Math;
+Categories=Science;Math;
 Keywords=matlab;simulink;
 StartupNotify=true
