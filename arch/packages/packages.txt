@@ -265,6 +265,8 @@ systemsettings
 tailscale
 tecla
 television
+texlive-basic
+texlive-latexextra
 thunar
 thunar-volman
 tldr
