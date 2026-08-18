@@ -1,5 +1,8 @@
 alacritty
 ark
+arm-none-eabi-binutils
+arm-none-eabi-gcc
+arm-none-eabi-newlib
 asciinema
 asciiquarium
 aspell
