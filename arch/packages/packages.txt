@@ -266,6 +266,7 @@ tailscale
 tecla
 television
 texlive-basic
+texlive-fontsrecommended
 texlive-latexextra
 thunar
 thunar-volman
