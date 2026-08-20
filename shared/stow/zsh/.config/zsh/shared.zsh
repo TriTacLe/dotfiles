@@ -118,11 +118,11 @@ alias sbr='./mvnw spring-boot:run'
 # File operations (conditional on available tools)
 # ============================================
 if command -v eza &>/dev/null; then
-    alias ls='eza --icons'
-    alias l='eza -la --icons'
-    alias ll='eza -l --icons'
-    alias la='eza -la --icons --group-directories-first --sort=type'
-    alias lt='eza --tree --icons'
+    alias ls='eza --icons=auto --group-directories-first'
+    alias l='eza -la --icons=auto --group-directories-first'
+    alias ll='eza -l --icons=auto --group-directories-first'
+    alias la='eza -la --icons=auto --group-directories-first --sort=type'
+    alias lt='eza --tree --icons=auto'
 fi
 if command -v bat &>/dev/null; then
     alias cat='bat --style=plain --paging=never'
