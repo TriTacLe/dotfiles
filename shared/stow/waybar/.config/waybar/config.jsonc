@@ -21,7 +21,7 @@
         "disable-scroll": true,
         "on-scroll-up": "hyprctl dispatch workspace -1 || hyprctl dispatch 'hl.dsp.focus({ workspace = \"-1\" })'",
         "on-scroll-down": "hyprctl dispatch workspace +1 || hyprctl dispatch 'hl.dsp.focus({ workspace = \"+1\" })'",
-		"format": "{name}: {windows}",
+		"format": "{name} {windows}",
 		"on-click": "activate",
 		"format-icons": {
 			"urgent": "",
@@ -30,24 +30,53 @@
 		},
 
     	"persistent-workspaces": {
-    	         "*": 5
+    	         "*": 6
         },
 
         "window-rewrite-default": "󱓻",
 	    "window-rewrite": {
-		    "title<.*youtube.*>": "", // Windows whose titles contain "youtube"
-		    "class<firefox>": "", // Windows whose classes are "firefox"
-		    "class<none>": "r", // Windows whose classes are "firefox"
-		    "class<librewolf>": "󰈹", // Windows whose classes are "firefox"
-		    "class<librewolf> title<.*github.*>": "", // Windows whose class is "firefox" and title contains "github". Note that "class" always comes first.
-		    "alacritty": "", // Windows that contain "foot" in either class or title. For optimization reasons, it will only match against a title if at least one other window explicitly matches against a title.
-		    "ghostty": "", 
-            "thunar": "󱧶", // Windows that contain "foot" in either class or title. For optimization reasons, it will only match against a title if at least one other window explicitly matches against a title.
-		    "code": "󰨞",
-		    "slack": "",
-		    "youtube-music": "󰎆",
-            "notion": "",
-		    "title<.* - (.*) - VSCodium>": "codium $1"  // captures part of the window title and formats it into output
+		    // Title rules must come before the class rule they override.
+		    "class<com.mitchellh.ghostty> title<.*(nvim|NVIM).*>": "",
+		    "title<.*youtube.*>": "",
+
+		    // Terminals
+		    "class<com.mitchellh.ghostty>": "",
+		    "class<ghostty>": "",
+		    "class<Alacritty>": "",
+		    "class<alacritty>": "",
+
+		    // Browsers
+		    "class<firefox>": "",
+		    "class<librewolf>": "󰈹",
+		    "class<brave-browser>": "󰖟",
+		    "class<brave-beta>": "󰖟",
+		    "class<google-chrome>": "",
+
+		    // Editors and dev tools
+		    "class<Code>": "󰨞",
+		    "class<code-oss>": "󰨞",
+		    "class<md.Obsidian>": "󰠮",
+		    "class<obsidian>": "󰠮",
+		    "class<DBeaver>": "󰆼",
+		    "class<Claude>": "󰚩",
+
+		    // Everything else
+		    "class<Slack>": "",
+		    "class<spotify>": "",
+		    "class<blueman-manager>": "󰂯",
+		    "class<com.cisco.secureclient.gui>": "󰖂",
+		    "class<org.gnome.Nautilus>": "󰉋",
+		    "class<dolphin>": "󰉋",
+		    "class<thunar>": "󱧶",
+
+		    // Apps that set no WM class of their own: match class or title text.
+		    "matlab": "󰄨",
+		    "rstudio": "󰟔",
+		    "libreoffice": "󰈙",
+		    "blueman": "󰂯",
+		    "cisco": "󰖂",
+		    "nautilus": "󰉋",
+		    "nvim": ""
 	    }
     },
 

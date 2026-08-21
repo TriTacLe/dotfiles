@@ -57,7 +57,7 @@ tooltip {
 }
 
 #workspaces button {
-  color: #868da8;
+  color: #cdd6f4;
   /*background-color: #212124;*/
   border-radius: 8px;
   padding: 0px;
@@ -71,10 +71,18 @@ tooltip {
 }
 
 #workspaces button.active {
-  color: #cdd6f4;
+  color: #cba6f7;
+  background: #313244;
   border-radius: 10px;
-  padding-left: 3px;
-  padding-right: 3px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+/* No windows on it: dimmer than an occupied workspace, still readable. */
+#workspaces button.empty {
+  color: #9399b2;
+}
+#workspaces button.empty.active {
+  color: #cba6f7;
 }
 
 #workspaces button.urgent {
