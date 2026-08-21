@@ -101,6 +101,7 @@ hl.bind(mod .. " + CTRL + SHIFT + SPACE", hl.dsp.exec_cmd(scripts .. "/switch_la
 hl.bind(mod .. " + CTRL + SHIFT + 6", hl.dsp.exec_cmd(scripts .. "/switch_refreshrate.sh"))
 hl.bind(mod .. " + CTRL + SHIFT + 7", hl.dsp.exec_cmd(scripts .. "/speaker_toggle.sh"))
 hl.bind(mod .. " + CTRL + SHIFT + 0", hl.dsp.exec_cmd(scripts .. "/screen_manager.sh"))
+hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(scripts .. "/rename_workspace.sh"))      -- Rename workspace
 
 
 -- Special character input
