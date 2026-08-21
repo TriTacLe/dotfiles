@@ -10,12 +10,14 @@ if [ -z "$WINDOW_TITLE" ] || [ "$WINDOW_TITLE" = "null" ]; then
     WINDOW_TITLE="$WINDOW_CLASS"
 fi
 
-# Show elegant wofi dialog (kun popup, ingen varsling)
-CHOICE=$(echo -e "✓ Close window\n✗ Keep open" | wofi \
+# Red dialog. Destructive actions must not look like the launcher.
+CHOICE=$(printf '%s\n' "Close $WINDOW_TITLE" "Keep it open" | wofi \
     --dmenu \
-    --prompt "Close $WINDOW_CLASS?" \
-    --width 350 \
-    --height 150 \
+    --prompt "Close this window?" \
+    --style ~/.config/wofi/confirm.css \
+    --width 460 \
+    --height 210 \
+    --lines 2 \
     --cache-file /dev/null \
     --insensitive \
     --matching fuzzy)
