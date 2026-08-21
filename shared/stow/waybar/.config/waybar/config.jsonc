@@ -58,6 +58,7 @@
 		    "class<md.Obsidian>": "󰠮",
 		    "class<obsidian>": "󰠮",
 		    "class<DBeaver>": "󰆼",
+		    "class<com.anthropic.Claude>": "󰚩",
 		    "class<Claude>": "󰚩",
 
 		    // Everything else
