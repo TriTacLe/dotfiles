@@ -48,6 +48,7 @@ dog
 doggo
 dolphin
 dolphin-plugins
+dolt
 drkonqi
 dunst
 dust
@@ -100,6 +101,7 @@ gnome-tweaks
 gnome-user-docs
 gnome-user-share
 gnome-weather
+go
 gparted
 gping
 grilo-plugins
