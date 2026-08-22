@@ -2,7 +2,7 @@
 
 
 [{
-    "layer": "top",
+    "layer": "bottom",
     "output": "eDP-1",
     "position": "bottom",
     "mod": "dock",
@@ -402,7 +402,7 @@
 }, {
     // EXTRA MONITOR CONFIGS
 
-    "layer": "top",
+    "layer": "bottom",
     "output": ["HDMI-A-1", "DP-2", "DP-3"],
     "position": "bottom",
     "mod": "dock",
