@@ -25,6 +25,7 @@ breeze-gtk
 breeze-plymouth
 brightnessctl
 btop
+bullet
 cava
 chafa
 choose
@@ -71,6 +72,7 @@ git
 git-delta
 github-cli
 git-lfs
+glm
 glow
 gnome-backgrounds
 gnome-calculator
@@ -249,6 +251,7 @@ rygel
 sd
 sddm
 sddm-kcm
+sfml
 shellcheck
 showtime
 simple-scan
