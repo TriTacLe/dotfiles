@@ -273,6 +273,7 @@ television
 texlive-basic
 texlive-fontsrecommended
 texlive-latexextra
+thermald
 thunar
 thunar-volman
 tldr
