@@ -244,6 +244,7 @@ qt5-wayland
 qt6ct
 qt6-wayland
 r
+rclone
 reflector
 rsync
 rustup
