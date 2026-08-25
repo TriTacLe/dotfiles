@@ -2,8 +2,8 @@
 
 window {
   background: @bg_base;
-  /* Dock hangs from the top edge, so round the bottom corners only. */
-  border-radius: 0 0 15px 15px;
+  /* waybar is transparent behind the dock, so all four corners show. */
+  border-radius: 15px;
   border-style: solid;
   border-width: 1px;
   border-color: @border_subtle;
