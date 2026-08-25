@@ -1,35 +1,36 @@
+
 /* Destructive confirmations. Red so it never reads as the launcher or the
    rename prompt: the dialog that can lose your work looks different. */
 
 window {
   margin: 0px;
   border: 3px solid;
-  border-color: #f38ba8;
+  border-color: @red;
   border-radius: 18px;
-  background-color: #181825;
+  background-color: @bg_mantle;
 }
 
 #outer-box {
   margin: 0px;
   border: none;
   border-radius: 18px;
-  background-color: #181825;
+  background-color: @bg_mantle;
 }
 
 #input {
   margin: 14px 16px 4px 16px;
   padding: 10px 16px;
-  border: 2px solid #45475a;
+  border: 2px solid @bg_surface1;
   border-radius: 12px;
-  color: #cdd6f4;
-  background-color: #1e1e2e;
+  color: @text_primary;
+  background-color: @bg_base;
   font-family: system-ui, sans-serif;
   font-size: 16px;
   outline: none;
 }
 
 #input:focus {
-  border: 2px solid #f38ba8;
+  border: 2px solid @red;
 }
 
 #inner-box,
@@ -48,17 +49,17 @@ window {
 }
 
 #entry:selected {
-  background-color: #45475a;
+  background-color: @bg_surface1;
 }
 
 #text {
   margin: 0px;
-  color: #cdd6f4;
+  color: @text_primary;
   font-family: system-ui, sans-serif;
   font-size: 16px;
 }
 
 #text:selected {
-  color: #f38ba8;
+  color: @red;
   font-weight: bold;
 }

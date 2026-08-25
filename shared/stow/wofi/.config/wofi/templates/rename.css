@@ -1,41 +1,42 @@
+
 /* Rename-workspace prompt. Deliberately unlike the launcher and the kill dialog:
    mauve accent, single wide input, no result list. */
 
 window {
   margin: 0px;
   border: 3px solid;
-  border-color: #cba6f7;
+  border-color: @accent;
   border-radius: 18px;
-  background-color: #181825;
+  background-color: @bg_mantle;
 }
 
 #outer-box {
   margin: 0px;
   border: none;
   border-radius: 18px;
-  background-color: #181825;
+  background-color: @bg_mantle;
 }
 
 #input {
   margin: 16px;
   padding: 14px 18px;
-  border: 2px solid #cba6f7;
+  border: 2px solid @accent;
   border-radius: 12px;
-  color: #cdd6f4;
-  background-color: #1e1e2e;
+  color: @text_primary;
+  background-color: @bg_base;
   font-family: system-ui, sans-serif;
   font-size: 18px;
   font-weight: bold;
-  caret-color: #cba6f7;
+  caret-color: @accent;
   outline: none;
 }
 
 #input:focus {
-  border: 2px solid #f5c2e7;
+  border: 2px solid @pink;
 }
 
 #input placeholder {
-  color: #9399b2;
+  color: @overlay2;
   font-weight: normal;
 }
 

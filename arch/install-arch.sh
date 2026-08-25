@@ -20,6 +20,12 @@ stow -d "$DOTFILES/shared/stow" -t ~ --no-folding -R \
 stow -d "$DOTFILES/arch/stow" -t ~ --no-folding -R \
     zsh fastfetch hypr-host pacseek systemd
 
+# Colours are generated rather than stowed, so a fresh clone has none until this
+# runs. waybar, wofi and hyprlock all expect the generated file to exist.
+THEME_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/current-theme"
+"$HOME/.config/hypr/scripts/theme_apply.sh" \
+    "$(cat "$THEME_STATE" 2>/dev/null || echo catppuccin-mocha)" --no-reload
+
 link_claude_config "$DOTFILES"
 enable_user_units battery-warning.timer log-gc.timer skill-gap.timer vault-reindex.timer vault-index.path
 

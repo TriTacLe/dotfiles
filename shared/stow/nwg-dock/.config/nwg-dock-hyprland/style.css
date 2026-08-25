@@ -1,10 +1,12 @@
+@import url("colors.css");
+
 window {
-  background: #1e1e2e;
+  background: @bg_base;
   /* Dock hangs from the top edge, so round the bottom corners only. */
   border-radius: 0 0 15px 15px;
   border-style: solid;
   border-width: 1px;
-  border-color: rgba(50, 50, 50, 0.9);
+  border-color: @border_subtle;
 }
 
 #box {
@@ -16,7 +18,7 @@ window {
   /* This is to underline the button representing the currently active window */
   border-bottom: solid 0px;
   border-color: rgba(255, 255, 255, 0.3);
-  color: #ccc;
+  color: @text_secondary;
 }
 
 button,
@@ -24,14 +26,14 @@ image {
   background: none;
   border-style: none;
   box-shadow: none;
-  color: #aaa;
+  color: @text_muted;
 }
 
 button {
   padding: 4px;
   margin-left: 4px;
   margin-right: 4px;
-  color: #f5f5f5;
+  color: @text_primary;
   font-size: 10px;
 }
 

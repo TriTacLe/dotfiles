@@ -1,19 +1,20 @@
+
 window {
   margin: 0px;
   border: 5px solid;
-  border-color: #11111b;
+  border-color: @bg_crust;
   border-radius: 15px;
-  background-color: #1e1e2e;
+  background-color: @bg_base;
 }
 
 #input {
   padding: 4px;
   margin: 4px;
   padding-left: 20px;
-  border: 0px solid #313244;
-  color: #cdd6f4;
+  border: 0px solid @bg_surface0;
+  color: @text_primary;
   font-weight: bold;
-  background-color: #1e1e2e;
+  background-color: @bg_base;
   outline: none;
   border-radius: 15px;
   margin: 10px;
@@ -21,16 +22,16 @@ window {
 }
 
 #input:focus {
-  border: 0px solid #313244;
+  border: 0px solid @bg_surface0;
   margin-bottom: 0px;
 }
 
 #inner-box {
   margin: 4px;
-  border: 10px solid #1e1e2e;
-  color: #cdd6f4;
+  border: 10px solid @bg_base;
+  color: @text_primary;
   font-weight: bold;
-  background-color: #1e1e2e;
+  background-color: @bg_base;
   border-radius: 15px;
 }
 
@@ -38,7 +39,7 @@ window {
   margin: 0px;
   border: none;
   border-radius: 15px;
-  background-color: #1e1e2e;
+  background-color: @bg_base;
 }
 
 #scroll {
@@ -53,7 +54,7 @@ window {
   padding-left: 3px;
 }
 #img:selected {
-  background-color: #313244;
+  background-color: @bg_surface0;
   border-radius: 15px;
 }
 
@@ -62,10 +63,10 @@ window {
 }
 
 #text:selected {
-  color: #cdd6f4;
+  color: @text_primary;
   border: none;
   border-radius: 15px;
-  background-color: #313244;
+  background-color: @bg_surface0;
 }
 
 #entry {
@@ -79,5 +80,5 @@ window {
   margin: 0px 0px;
   border: none;
   border-radius: 15px;
-  background-color: #313244;
+  background-color: @bg_surface0;
 }
