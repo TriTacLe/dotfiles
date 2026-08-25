@@ -297,7 +297,7 @@ done
 if pgrep -x nwg-dock-hyprla >/dev/null 2>&1; then
     pkill -x nwg-dock-hyprla || true
     sleep 0.3
-    setsid nwg-dock-hyprland -i 32 -nolauncher -l top -p top -o eDP-1 \
+    setsid nwg-dock-hyprland -i 32 -nolauncher -l top -p bottom -o eDP-1 \
         </dev/null >/dev/null 2>&1 &
 fi
 

@@ -20,8 +20,19 @@ hl.device({
 })
 
 -- Dock (nwg-dock works correctly on Arch, use wlr/taskbar in waybar on Ubuntu instead)
-hl.on("hyprland.start", function()
-    -- Top edge, since waybar owns the bottom and the dock widens as windows open.
-    hl.exec_cmd("nwg-dock-hyprland -i 32 -nolauncher -l top -p top -o eDP-1")
-end)
+--
+-- It rests on waybar at the bottom, so any window on the workspace sits under
+-- it. Run it only while the workspace is empty: start it when the last window
+-- goes, kill it when the first one arrives.
+local dock = "nwg-dock-hyprland -i 32 -nolauncher -l top -p bottom -o eDP-1"
+local sync_dock = 'if [ "$(hyprctl activeworkspace -j | jq .windows)" -eq 0 ]; then '
+    .. "pgrep -x nwg-dock-hyprla >/dev/null || setsid "
+    .. dock
+    .. " >/dev/null 2>&1 & else pkill -x nwg-dock-hyprla; fi"
+
+for _, event in ipairs({ "hyprland.start", "window.open", "window.close", "workspace.active" }) do
+    hl.on(event, function()
+        hl.exec_cmd(sync_dock)
+    end)
+end
 
