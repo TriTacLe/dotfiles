@@ -30,7 +30,6 @@ local ERROR_SIGNATURES = {
   "attempt to index",
   "attempt to perform",
   "nil value",
-  "stack traceback",
   "query error",
   "error executing",
   "e5108",
@@ -47,6 +46,9 @@ local function is_noise(line)
   return false
 end
 
+-- Matched per line, so a signature has to be meaningful on its own. A bare
+-- "stack traceback:" is not: it belongs to the error above it, which is either
+-- already noise or already matched.
 local function is_error(line)
   if is_noise(line) then
     return false
