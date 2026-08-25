@@ -45,7 +45,7 @@ return {
         volar = {
           init_options = {
             vue = {
-              hybridMode = true,  -- Bedre ytelse
+              hybridMode = true, -- Bedre ytelse
             },
           },
         },
@@ -59,14 +59,14 @@ return {
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, {
-        "vtsls",                      -- TypeScript språkserver
-        "eslint-lsp",                 -- ESLint
-        "prettier",                   -- Formattering
-        "vue-language-server",        -- Vue
-        "css-lsp",                    -- CSS
+        "vtsls", -- TypeScript språkserver
+        "eslint-lsp", -- ESLint
+        "prettier", -- Formattering
+        "vue-language-server", -- Vue
+        "css-lsp", -- CSS
         "cssmodules-language-server", -- CSS Modules
-        "html-lsp",                   -- HTML
-        "json-lsp",                   -- JSON
+        "html-lsp", -- HTML
+        "json-lsp", -- JSON
         "tailwindcss-language-server", -- Tailwind
         "graphql-language-service-cli", -- GraphQL
       })

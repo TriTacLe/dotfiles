@@ -32,7 +32,7 @@ return {
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, {
         "debugpy", -- Debugger
-        "mypy",    -- Statisk type-sjekker
+        "mypy", -- Statisk type-sjekker
       })
     end,
   },
@@ -71,9 +71,30 @@ return {
       require("dap-python").setup(vim.fn.filereadable(venv) == 1 and venv or fallback)
     end,
     keys = {
-      { "<leader>td", function() require("dap-python").debug_selection() end, desc = "Debug Python utvalg", ft = "python" },
-      { "<leader>tm", function() require("dap-python").test_method() end, desc = "Debug pytest metode", ft = "python" },
-      { "<leader>tc", function() require("dap-python").test_class() end, desc = "Debug pytest klasse", ft = "python" },
+      {
+        "<leader>td",
+        function()
+          require("dap-python").debug_selection()
+        end,
+        desc = "Debug Python utvalg",
+        ft = "python",
+      },
+      {
+        "<leader>tm",
+        function()
+          require("dap-python").test_method()
+        end,
+        desc = "Debug pytest metode",
+        ft = "python",
+      },
+      {
+        "<leader>tc",
+        function()
+          require("dap-python").test_class()
+        end,
+        desc = "Debug pytest klasse",
+        ft = "python",
+      },
     },
   },
 
@@ -125,8 +146,22 @@ return {
       },
     },
     keys = {
-      { "<leader>cn", function() require("neogen").generate() end, desc = "Generate docstring", ft = "python" },
-      { "<leader>cN", function() require("neogen").generate({ type = "class" }) end, desc = "Generate class docstring", ft = "python" },
+      {
+        "<leader>cn",
+        function()
+          require("neogen").generate()
+        end,
+        desc = "Generate docstring",
+        ft = "python",
+      },
+      {
+        "<leader>cN",
+        function()
+          require("neogen").generate({ type = "class" })
+        end,
+        desc = "Generate class docstring",
+        ft = "python",
+      },
     },
   },
 
@@ -195,9 +230,33 @@ return {
     ft = "python",
     opts = {},
     keys = {
-      { "<leader>re", function() require("refactoring").refactor("Extract Function") end, desc = "Extract function", mode = "v", ft = "python" },
-      { "<leader>rv", function() require("refactoring").refactor("Extract Variable") end, desc = "Extract variable", mode = "v", ft = "python" },
-      { "<leader>ri", function() require("refactoring").refactor("Inline Variable") end, desc = "Inline variable", mode = { "n", "v" }, ft = "python" },
+      {
+        "<leader>re",
+        function()
+          require("refactoring").refactor("Extract Function")
+        end,
+        desc = "Extract function",
+        mode = "v",
+        ft = "python",
+      },
+      {
+        "<leader>rv",
+        function()
+          require("refactoring").refactor("Extract Variable")
+        end,
+        desc = "Extract variable",
+        mode = "v",
+        ft = "python",
+      },
+      {
+        "<leader>ri",
+        function()
+          require("refactoring").refactor("Inline Variable")
+        end,
+        desc = "Inline variable",
+        mode = { "n", "v" },
+        ft = "python",
+      },
     },
   },
 
@@ -208,11 +267,15 @@ return {
       table.insert(opts.sections.lualine_x, 1, {
         function()
           local ok, vs = pcall(require, "venv-selector")
-          if not ok then return "" end
+          if not ok then
+            return ""
+          end
           local v = vs.venv()
           return v and ("venv:" .. vim.fn.fnamemodify(v, ":t")) or ""
         end,
-        cond = function() return vim.bo.filetype == "python" end,
+        cond = function()
+          return vim.bo.filetype == "python"
+        end,
       })
     end,
   },
@@ -247,7 +310,9 @@ return {
             while node and node:type() ~= "string" do
               node = node:parent()
             end
-            if not node then return end
+            if not node then
+              return
+            end
             local sr, sc = node:start()
             local line = vim.api.nvim_buf_get_lines(ev.buf, sr, sr + 1, false)[1]
             local col = sc + 1

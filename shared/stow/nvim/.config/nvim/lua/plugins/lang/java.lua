@@ -106,7 +106,7 @@ return {
           },
         },
       })
-      
+
       return opts
     end,
   },
@@ -117,10 +117,10 @@ return {
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, {
-        "jdtls",                 -- Java språkserver
-        "java-debug-adapter",    -- For debugging
-        "java-test",             -- For å kjøre tester
-        "checkstyle",            -- Linting med checkstyle
+        "jdtls", -- Java språkserver
+        "java-debug-adapter", -- For debugging
+        "java-test", -- For å kjøre tester
+        "checkstyle", -- Linting med checkstyle
       })
     end,
   },
@@ -138,8 +138,9 @@ return {
           -- Ellers bruk standard Google Checkstyle
           args = {
             "-c",
-            "/google_checks.xml",  -- Standard Google checks
-            "-f", "xml",  -- XML format for parsing
+            "/google_checks.xml", -- Standard Google checks
+            "-f",
+            "xml", -- XML format for parsing
             "--",
           },
           parser = function(output, bufnr)
@@ -149,7 +150,8 @@ return {
             end
             -- Parse XML output from checkstyle
             for line in output:gmatch("[^\r\n]+") do
-              local file, line_nr, col, severity, msg = line:match('<error line="(%d+)" column="(%d+)" severity="(%w+)" message="([^"]+)"')
+              local file, line_nr, col, severity, msg =
+                line:match('<error line="(%d+)" column="(%d+)" severity="(%w+)" message="([^"]+)"')
               if line_nr then
                 table.insert(diagnostics, {
                   lnum = tonumber(line_nr) - 1,
@@ -203,99 +205,237 @@ return {
     },
     config = function(_, opts)
       require("luasnip").setup(opts)
-      
+
       -- Last inn standard snippets
       require("luasnip.loaders.from_vscode").lazy_load()
-      
+
       -- Mine egne JPA snippets for Spring Boot
       local ls = require("luasnip")
       local s = ls.snippet
       local t = ls.text_node
       local i = ls.insert_node
-      
+
       ls.add_snippets("java", {
         -- Basis CRUD
         s("findById", {
-          t("Optional<"), i(1, "Entity"), t("> findById(Long id);")
+          t("Optional<"),
+          i(1, "Entity"),
+          t("> findById(Long id);"),
         }),
         s("findAll", {
-          t("List<"), i(1, "Entity"), t("> findAll();")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findAll();"),
         }),
         s("save", {
-          i(1, "Entity"), t(" save("), i(1), t(" entity);")
+          i(1, "Entity"),
+          t(" save("),
+          i(1),
+          t(" entity);"),
         }),
         s("deleteById", {
-          t("void deleteById(Long id);")
+          t("void deleteById(Long id);"),
         }),
-        
+
         -- Spørringer med findBy
         s("findBy", {
-          t("Optional<"), i(1, "Entity"), t("> findBy"), i(2, "Field"), t("("), i(3, "Type"), t(" "), i(4, "field"), t(");")
+          t("Optional<"),
+          i(1, "Entity"),
+          t("> findBy"),
+          i(2, "Field"),
+          t("("),
+          i(3, "Type"),
+          t(" "),
+          i(4, "field"),
+          t(");"),
         }),
         s("findAllBy", {
-          t("List<"), i(1, "Entity"), t("> findAllBy"), i(2, "Field"), t("("), i(3, "Type"), t(" "), i(4, "field"), t(");")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findAllBy"),
+          i(2, "Field"),
+          t("("),
+          i(3, "Type"),
+          t(" "),
+          i(4, "field"),
+          t(");"),
         }),
         s("findByAnd", {
-          t("Optional<"), i(1, "Entity"), t("> findBy"), i(2, "Field1"), t("And"), i(3, "Field2"), 
-          t("("), i(4, "Type1"), t(" "), i(5, "field1"), t(", "), i(6, "Type2"), t(" "), i(7, "field2"), t(");")
+          t("Optional<"),
+          i(1, "Entity"),
+          t("> findBy"),
+          i(2, "Field1"),
+          t("And"),
+          i(3, "Field2"),
+          t("("),
+          i(4, "Type1"),
+          t(" "),
+          i(5, "field1"),
+          t(", "),
+          i(6, "Type2"),
+          t(" "),
+          i(7, "field2"),
+          t(");"),
         }),
         s("findByOr", {
-          t("List<"), i(1, "Entity"), t("> findBy"), i(2, "Field1"), t("Or"), i(3, "Field2"), 
-          t("("), i(4, "Type1"), t(" "), i(5, "field1"), t(", "), i(6, "Type2"), t(" "), i(7, "field2"), t(");")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findBy"),
+          i(2, "Field1"),
+          t("Or"),
+          i(3, "Field2"),
+          t("("),
+          i(4, "Type1"),
+          t(" "),
+          i(5, "field1"),
+          t(", "),
+          i(6, "Type2"),
+          t(" "),
+          i(7, "field2"),
+          t(");"),
         }),
         s("findByLike", {
-          t("List<"), i(1, "Entity"), t("> findBy"), i(2, "Field"), t("Containing(String "), i(3, "search"), t(");")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findBy"),
+          i(2, "Field"),
+          t("Containing(String "),
+          i(3, "search"),
+          t(");"),
         }),
         s("findByStartingWith", {
-          t("List<"), i(1, "Entity"), t("> findBy"), i(2, "Field"), t("StartingWith(String "), i(3, "prefix"), t(");")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findBy"),
+          i(2, "Field"),
+          t("StartingWith(String "),
+          i(3, "prefix"),
+          t(");"),
         }),
         s("findByEndingWith", {
-          t("List<"), i(1, "Entity"), t("> findBy"), i(2, "Field"), t("EndingWith(String "), i(3, "suffix"), t(");")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findBy"),
+          i(2, "Field"),
+          t("EndingWith(String "),
+          i(3, "suffix"),
+          t(");"),
         }),
         s("findByGreaterThan", {
-          t("List<"), i(1, "Entity"), t("> findBy"), i(2, "Field"), t("GreaterThan("), i(3, "Type"), t(" "), i(4, "value"), t(");")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findBy"),
+          i(2, "Field"),
+          t("GreaterThan("),
+          i(3, "Type"),
+          t(" "),
+          i(4, "value"),
+          t(");"),
         }),
         s("findByLessThan", {
-          t("List<"), i(1, "Entity"), t("> findBy"), i(2, "Field"), t("LessThan("), i(3, "Type"), t(" "), i(4, "value"), t(");")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findBy"),
+          i(2, "Field"),
+          t("LessThan("),
+          i(3, "Type"),
+          t(" "),
+          i(4, "value"),
+          t(");"),
         }),
         s("findByBetween", {
-          t("List<"), i(1, "Entity"), t("> findBy"), i(2, "Field"), t("Between("), i(3, "Type"), t(" start, "), i(3), t(" end);")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findBy"),
+          i(2, "Field"),
+          t("Between("),
+          i(3, "Type"),
+          t(" start, "),
+          i(3),
+          t(" end);"),
         }),
         s("findByIsNull", {
-          t("List<"), i(1, "Entity"), t("> findBy"), i(2, "Field"), t("IsNull();")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findBy"),
+          i(2, "Field"),
+          t("IsNull();"),
         }),
         s("findByIsNotNull", {
-          t("List<"), i(1, "Entity"), t("> findBy"), i(2, "Field"), t("IsNotNull();")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findBy"),
+          i(2, "Field"),
+          t("IsNotNull();"),
         }),
         s("findByOrderBy", {
-          t("List<"), i(1, "Entity"), t("> findAllByOrderBy"), i(2, "Field"), t("Asc();")
+          t("List<"),
+          i(1, "Entity"),
+          t("> findAllByOrderBy"),
+          i(2, "Field"),
+          t("Asc();"),
         }),
         s("findTopBy", {
-          t("Optional<"), i(1, "Entity"), t("> findTopByOrderBy"), i(2, "Field"), t("Desc();")
+          t("Optional<"),
+          i(1, "Entity"),
+          t("> findTopByOrderBy"),
+          i(2, "Field"),
+          t("Desc();"),
         }),
         s("findFirstBy", {
-          t("Optional<"), i(1, "Entity"), t("> findFirstBy"), i(2, "Field"), t("("), i(3, "Type"), t(" "), i(4, "value"), t(");")
+          t("Optional<"),
+          i(1, "Entity"),
+          t("> findFirstBy"),
+          i(2, "Field"),
+          t("("),
+          i(3, "Type"),
+          t(" "),
+          i(4, "value"),
+          t(");"),
         }),
-        
+
         -- Count og exists
         s("countBy", {
-          t("long countBy"), i(1, "Field"), t("("), i(2, "Type"), t(" "), i(3, "value"), t(");")
+          t("long countBy"),
+          i(1, "Field"),
+          t("("),
+          i(2, "Type"),
+          t(" "),
+          i(3, "value"),
+          t(");"),
         }),
         s("existsBy", {
-          t("boolean existsBy"), i(1, "Field"), t("("), i(2, "Type"), t(" "), i(3, "value"), t(");")
+          t("boolean existsBy"),
+          i(1, "Field"),
+          t("("),
+          i(2, "Type"),
+          t(" "),
+          i(3, "value"),
+          t(");"),
         }),
-        
+
         -- Egne SQL spørringer med @Query
         s("query", {
-          t("@Query(\""), i(1, "SELECT e FROM Entity e WHERE e.field = ?1"), t("\")"),
-          t({"", ""}),
-          i(2, "ReturnType"), t(" "), i(3, "methodName"), t("("), i(4, "Params"), t(");")
+          t('@Query("'),
+          i(1, "SELECT e FROM Entity e WHERE e.field = ?1"),
+          t('")'),
+          t({ "", "" }),
+          i(2, "ReturnType"),
+          t(" "),
+          i(3, "methodName"),
+          t("("),
+          i(4, "Params"),
+          t(");"),
         }),
-        
+
         -- Mal for hele repository interfacet
         s("repo", {
-          t("public interface "), i(1, "Entity"), t("Repository extends JpaRepository<"), i(1), t(", Long> {"),
-          t({"", "}"})
+          t("public interface "),
+          i(1, "Entity"),
+          t("Repository extends JpaRepository<"),
+          i(1),
+          t(", Long> {"),
+          t({ "", "}" }),
         }),
       })
     end,
@@ -322,7 +462,7 @@ return {
       "nvim-lua/plenary.nvim",
       "antoinemadec/FixCursorHold.nvim",
       "nvim-neotest/neotest-plenary",
-      "rcasia/neotest-java",  -- For Java tester
+      "rcasia/neotest-java", -- For Java tester
     },
     opts = {
       adapters = {
@@ -331,14 +471,62 @@ return {
       },
     },
     keys = {
-      { "<leader>tt", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Kjør fil" },
-      { "<leader>tT", function() require("neotest").run.run(vim.uv.cwd()) end, desc = "Kjør alle test-filer" },
-      { "<leader>tr", function() require("neotest").run.run() end, desc = "Kjør nærmeste test" },
-      { "<leader>tl", function() require("neotest").run.run_last() end, desc = "Kjør siste test igjen" },
-      { "<leader>ts", function() require("neotest").summary.toggle() end, desc = "Vis test-oversikt" },
-      { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "Vis test output" },
-      { "<leader>tO", function() require("neotest").output_panel.toggle() end, desc = "Toggle output panel" },
-      { "<leader>tS", function() require("neotest").run.stop() end, desc = "Stopp test" },
+      {
+        "<leader>tt",
+        function()
+          require("neotest").run.run(vim.fn.expand("%"))
+        end,
+        desc = "Kjør fil",
+      },
+      {
+        "<leader>tT",
+        function()
+          require("neotest").run.run(vim.uv.cwd())
+        end,
+        desc = "Kjør alle test-filer",
+      },
+      {
+        "<leader>tr",
+        function()
+          require("neotest").run.run()
+        end,
+        desc = "Kjør nærmeste test",
+      },
+      {
+        "<leader>tl",
+        function()
+          require("neotest").run.run_last()
+        end,
+        desc = "Kjør siste test igjen",
+      },
+      {
+        "<leader>ts",
+        function()
+          require("neotest").summary.toggle()
+        end,
+        desc = "Vis test-oversikt",
+      },
+      {
+        "<leader>to",
+        function()
+          require("neotest").output.open({ enter = true, auto_close = true })
+        end,
+        desc = "Vis test output",
+      },
+      {
+        "<leader>tO",
+        function()
+          require("neotest").output_panel.toggle()
+        end,
+        desc = "Toggle output panel",
+      },
+      {
+        "<leader>tS",
+        function()
+          require("neotest").run.stop()
+        end,
+        desc = "Stopp test",
+      },
     },
   },
 
@@ -356,12 +544,48 @@ return {
       },
     },
     keys = {
-      { "<leader>ha", function() require("harpoon"):list():add() end, desc = "Legg til bokmerke" },
-      { "<leader>hh", function() require("harpoon").ui:toggle_quick_menu(require("harpoon"):list()) end, desc = "Åpne bokmerker" },
-      { "<leader>h1", function() require("harpoon"):list():select(1) end, desc = "Bokmerke 1" },
-      { "<leader>h2", function() require("harpoon"):list():select(2) end, desc = "Bokmerke 2" },
-      { "<leader>h3", function() require("harpoon"):list():select(3) end, desc = "Bokmerke 3" },
-      { "<leader>h4", function() require("harpoon"):list():select(4) end, desc = "Bokmerke 4" },
+      {
+        "<leader>ha",
+        function()
+          require("harpoon"):list():add()
+        end,
+        desc = "Legg til bokmerke",
+      },
+      {
+        "<leader>hh",
+        function()
+          require("harpoon").ui:toggle_quick_menu(require("harpoon"):list())
+        end,
+        desc = "Åpne bokmerker",
+      },
+      {
+        "<leader>h1",
+        function()
+          require("harpoon"):list():select(1)
+        end,
+        desc = "Bokmerke 1",
+      },
+      {
+        "<leader>h2",
+        function()
+          require("harpoon"):list():select(2)
+        end,
+        desc = "Bokmerke 2",
+      },
+      {
+        "<leader>h3",
+        function()
+          require("harpoon"):list():select(3)
+        end,
+        desc = "Bokmerke 3",
+      },
+      {
+        "<leader>h4",
+        function()
+          require("harpoon"):list():select(4)
+        end,
+        desc = "Bokmerke 4",
+      },
     },
   },
 }

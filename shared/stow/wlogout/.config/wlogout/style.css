@@ -1,3 +1,5 @@
+@import url("colors.css");
+
 * {
   background-image: none;
   box-shadow: none;
@@ -11,9 +13,9 @@ button {
   border-radius: 30px;
   margin: 172px 25px;
   border-color: black;
-  text-decoration-color: #ffffff;
-  color: #ffffff;
-  background-color: #1e1e2e;
+  text-decoration-color: @text_primary;
+  color: @text_primary;
+  background-color: @bg_base;
   border-style: solid;
   border-width: 1px;
   background-repeat: no-repeat;
@@ -23,9 +25,9 @@ button {
 }
 
 button:hover {
-  background-color: #313244;
-  box-shadow: 0 0 10px 3px #313244;
-  border-color: #313244;
+  background-color: @bg_surface0;
+  box-shadow: 0 0 10px 3px @bg_surface0;
+  border-color: @bg_surface0;
   outline: none;
 }
 

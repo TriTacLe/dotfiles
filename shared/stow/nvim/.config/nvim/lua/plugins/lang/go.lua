@@ -18,13 +18,13 @@ return {
               -- Kodelinser (små knapper i koden)
               codelenses = {
                 gc_details = false,
-                generate = true,           -- For generate directives
+                generate = true, -- For generate directives
                 regenerate_cgo = true,
-                run_govulncheck = true,    -- Sikkerhetssjekk
-                test = true,               -- Kjør test fra koden
-                tidy = true,               -- go mod tidy
+                run_govulncheck = true, -- Sikkerhetssjekk
+                test = true, -- Kjør test fra koden
+                tidy = true, -- go mod tidy
                 upgrade_dependency = true, -- Oppgrader pakker
-                vendor = true,             -- go mod vendor
+                vendor = true, -- go mod vendor
               },
               -- Inlay hints - vis typer inline
               hints = {
@@ -38,11 +38,11 @@ return {
               },
               -- Statisk analyse
               analyses = {
-                fieldalignment = true,  -- Sjekk struct størrelse
-                nilness = true,         -- Sjekk nil feil
-                unusedparams = true,    -- Ubrukte parametere
-                unusedwrite = true,     -- Ubrukte skrivinger
-                useany = true,          -- Foreslå any istedenfor interface{}
+                fieldalignment = true, -- Sjekk struct størrelse
+                nilness = true, -- Sjekk nil feil
+                unusedparams = true, -- Ubrukte parametere
+                unusedwrite = true, -- Ubrukte skrivinger
+                useany = true, -- Foreslå any istedenfor interface{}
               },
               -- Sett inn plassholdere for parametere
               usePlaceholders = true,
@@ -68,16 +68,16 @@ return {
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, {
-        "gopls",           -- Go språkserver
-        "delve",           -- Debugger
-        "gofumpt",         -- Bedre formattering
-        "goimports",       -- Auto-import
-        "gomodifytags",    -- Redigere struct tags
-        "impl",            -- Generere interface implementations
-        "gotests",         -- Generere tester
-        "golangci-lint",   -- Linting
-        "buf",             -- Protocol Buffers
-        "protolint",       -- Protobuf linting
+        "gopls", -- Go språkserver
+        "delve", -- Debugger
+        "gofumpt", -- Bedre formattering
+        "goimports", -- Auto-import
+        "gomodifytags", -- Redigere struct tags
+        "impl", -- Generere interface implementations
+        "gotests", -- Generere tester
+        "golangci-lint", -- Linting
+        "buf", -- Protocol Buffers
+        "protolint", -- Protobuf linting
       })
     end,
   },
@@ -92,7 +92,7 @@ return {
         "gomod",
         "gosum",
         "gowork",
-        "templ",  -- Templating for Go
+        "templ", -- Templating for Go
       })
     end,
   },
@@ -113,8 +113,22 @@ return {
     ft = "go",
     dependencies = { "mfussenegger/nvim-dap" },
     keys = {
-      { "<leader>td", function() require("dap-go").debug_test() end, desc = "Debug Go test", ft = "go" },
-      { "<leader>tD", function() require("dap-go").debug_last_test() end, desc = "Debug forrige test", ft = "go" },
+      {
+        "<leader>td",
+        function()
+          require("dap-go").debug_test()
+        end,
+        desc = "Debug Go test",
+        ft = "go",
+      },
+      {
+        "<leader>tD",
+        function()
+          require("dap-go").debug_last_test()
+        end,
+        desc = "Debug forrige test",
+        ft = "go",
+      },
     },
   },
 
@@ -125,7 +139,7 @@ return {
     config = function()
       require("go").setup({
         notify = false,
-        auto_format = false,  -- Vi bruker conform istedenfor
+        auto_format = false, -- Vi bruker conform istedenfor
         auto_lint = false,
       })
     end,
@@ -147,7 +161,7 @@ return {
       adapters = {
         ["neotest-go"] = {
           experimental = {
-            test_table = true,  -- Støtte for table-driven tests
+            test_table = true, -- Støtte for table-driven tests
           },
           args = { "-count=1", "-timeout=60s" },
         },

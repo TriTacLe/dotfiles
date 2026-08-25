@@ -19,10 +19,10 @@ return {
     },
     config = function()
       local dap = require("dap")
-      
+
       -- Setup Go debugging
       require("dap-go").setup()
-      
+
       -- Add Java debugging configuration if needed
       -- LazyVim's Java extra should handle this
     end,

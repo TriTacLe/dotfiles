@@ -1,0 +1,4 @@
+# Plugin lockfiles and vendored trees are not our code. Marking them keeps
+# GitHub's language stats about this repo rather than its dependencies.
+shared/stow/nvim/.config/nvim/lazy-lock.json linguist-generated
+shared/stow/nvim/.config/nvim/lazyvim.json linguist-generated

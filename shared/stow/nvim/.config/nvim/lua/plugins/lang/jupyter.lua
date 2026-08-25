@@ -18,14 +18,55 @@ return {
       vim.g.molten_virt_text_output = true
     end,
     keys = {
-      { "<leader>mi", "<cmd>MoltenInit<cr>",                                                  desc = "Molten: init kernel",         ft = { "python", "quarto" } },
-      { "<leader>me", "<cmd>MoltenEvaluateOperator<cr>",                                      desc = "Molten: evaluate operator",   ft = { "python", "quarto" } },
-      { "<leader>ml", "<cmd>MoltenEvaluateLine<cr>",                                          desc = "Molten: evaluate line",       ft = { "python", "quarto" } },
-      { "<leader>mv", "<cmd>MoltenEvaluateVisual<cr>",                                        desc = "Molten: evaluate visual",     mode = "v", ft = { "python", "quarto" } },
-      { "<leader>mr", "<cmd>MoltenReevaluateCell<cr>",                                        desc = "Molten: re-evaluate cell",    ft = { "python", "quarto" } },
-      { "<leader>md", "<cmd>MoltenDelete<cr>",                                                desc = "Molten: delete cell",         ft = { "python", "quarto" } },
-      { "<leader>mo", "<cmd>MoltenShowOutput<cr>",                                            desc = "Molten: show output",         ft = { "python", "quarto" } },
-      { "<leader>mh", "<cmd>MoltenHideOutput<cr>",                                            desc = "Molten: hide output",         ft = { "python", "quarto" } },
+      {
+        "<leader>mi",
+        "<cmd>MoltenInit<cr>",
+        desc = "Molten: init kernel",
+        ft = { "python", "quarto" },
+      },
+      {
+        "<leader>me",
+        "<cmd>MoltenEvaluateOperator<cr>",
+        desc = "Molten: evaluate operator",
+        ft = { "python", "quarto" },
+      },
+      {
+        "<leader>ml",
+        "<cmd>MoltenEvaluateLine<cr>",
+        desc = "Molten: evaluate line",
+        ft = { "python", "quarto" },
+      },
+      {
+        "<leader>mv",
+        "<cmd>MoltenEvaluateVisual<cr>",
+        desc = "Molten: evaluate visual",
+        mode = "v",
+        ft = { "python", "quarto" },
+      },
+      {
+        "<leader>mr",
+        "<cmd>MoltenReevaluateCell<cr>",
+        desc = "Molten: re-evaluate cell",
+        ft = { "python", "quarto" },
+      },
+      {
+        "<leader>md",
+        "<cmd>MoltenDelete<cr>",
+        desc = "Molten: delete cell",
+        ft = { "python", "quarto" },
+      },
+      {
+        "<leader>mo",
+        "<cmd>MoltenShowOutput<cr>",
+        desc = "Molten: show output",
+        ft = { "python", "quarto" },
+      },
+      {
+        "<leader>mh",
+        "<cmd>MoltenHideOutput<cr>",
+        desc = "Molten: hide output",
+        ft = { "python", "quarto" },
+      },
     },
   },
 
