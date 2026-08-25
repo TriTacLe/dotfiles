@@ -46,6 +46,11 @@ jobs:
       - name: Install plugins
         run: nvim --headless "+Lazy! sync" +qa
 
+      # Lazy sync starts parser downloads it never finishes, and the leftover
+      # half-written checkout makes the next install fail on a non-empty rename.
+      - name: Clear partial parser downloads
+        run: rm -rf "$HOME/.cache/nvim"/tree-sitter-*
+
       - name: Smoke test
         run: nvim --headless -c "luafile $GITHUB_WORKSPACE/$NVIM_CONFIG/scripts/ci-check.lua"
 
