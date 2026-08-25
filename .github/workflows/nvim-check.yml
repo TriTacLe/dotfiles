@@ -1,0 +1,57 @@
+name: nvim config check
+
+# Catches a broken Neovim config before it reaches a machine. Installs every
+# plugin headless, then opens a buffer per language and fails if anything errors.
+
+on:
+  push:
+    paths:
+      - "shared/stow/nvim/**"
+      - ".github/workflows/nvim-check.yml"
+  pull_request:
+    paths:
+      - "shared/stow/nvim/**"
+      - ".github/workflows/nvim-check.yml"
+  workflow_dispatch: {}
+
+concurrency:
+  group: nvim-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      NVIM_CONFIG: shared/stow/nvim/.config/nvim
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: stable
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+          npm install -g tree-sitter-cli
+
+      - name: Link config into place
+        run: |
+          mkdir -p "$HOME/.config"
+          ln -sfn "$GITHUB_WORKSPACE/$NVIM_CONFIG" "$HOME/.config/nvim"
+
+      # LazyVim resolves its plugin set at startup, so a bad spec fails here.
+      - name: Install plugins
+        run: nvim --headless "+Lazy! sync" +qa
+
+      - name: Smoke test
+        run: nvim --headless -c "luafile $GITHUB_WORKSPACE/$NVIM_CONFIG/scripts/ci-check.lua"
+
+      - name: stylua
+        uses: JohnnyMorganz/stylua-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --check ${{ env.NVIM_CONFIG }}
