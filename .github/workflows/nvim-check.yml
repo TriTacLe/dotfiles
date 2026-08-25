@@ -46,12 +46,13 @@ jobs:
       - name: Install plugins
         run: nvim --headless "+Lazy! sync" +qa
 
-      # Lazy sync starts parser downloads it never finishes, and the leftover
-      # half-written checkout makes the next install fail on a non-empty rename.
-      - name: Clear partial parser downloads
-        run: rm -rf "$HOME/.cache/nvim"/tree-sitter-*
-
+      # Lazy sync starts parser downloads it never finishes. Reusing its cache
+      # makes the real install fail on a rename into a non-empty directory, and
+      # deleting the cache races the downloads that are still writing to it, so
+      # the smoke test gets a cache of its own.
       - name: Smoke test
+        env:
+          XDG_CACHE_HOME: ${{ runner.temp }}/nvim-smoke-cache
         run: nvim --headless -c "luafile $GITHUB_WORKSPACE/$NVIM_CONFIG/scripts/ci-check.lua"
 
       - name: stylua
