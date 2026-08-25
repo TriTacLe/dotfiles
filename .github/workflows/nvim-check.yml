@@ -53,5 +53,7 @@ jobs:
         uses: JohnnyMorganz/stylua-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          version: latest
+          # Pinned to the version mason installs locally. On latest, a formatter
+          # release can turn CI red without anyone touching the config.
+          version: 2.3.1
           args: --check ${{ env.NVIM_CONFIG }}

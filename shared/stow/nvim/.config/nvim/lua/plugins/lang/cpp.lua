@@ -67,8 +67,8 @@ return {
       -- clangd + cmake-language-server handtert av LazyVim extras
       vim.list_extend(opts.ensure_installed, {
         "clang-format", -- Formattering
-        "codelldb",     -- Debugger
-        "cmakelang",    -- CMake formattering + lint
+        "codelldb", -- Debugger
+        "cmakelang", -- CMake formattering + lint
       })
     end,
   },

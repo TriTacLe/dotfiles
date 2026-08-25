@@ -17,12 +17,24 @@ vim.o.more = false
 vim.opt.shortmess:append("aF")
 
 local NOISE = {
-  "language server", "not installed", "executable", "mason",
-  "no project root", "python3 provider", "treesitter cli",
+  "language server",
+  "not installed",
+  "executable",
+  "mason",
+  "no project root",
+  "python3 provider",
+  "treesitter cli",
 }
 local ERROR_SIGNATURES = {
-  "attempt to call", "attempt to index", "attempt to perform", "nil value",
-  "stack traceback", "query error", "error executing", "e5108", "e5113",
+  "attempt to call",
+  "attempt to index",
+  "attempt to perform",
+  "nil value",
+  "stack traceback",
+  "query error",
+  "error executing",
+  "e5108",
+  "e5113",
 }
 
 local function is_noise(line)
