@@ -1,0 +1,64 @@
+/* Destructive confirmations. Red so it never reads as the launcher or the
+   rename prompt: the dialog that can lose your work looks different. */
+
+window {
+  margin: 0px;
+  border: 3px solid;
+  border-color: #f38ba8;
+  border-radius: 18px;
+  background-color: #181825;
+}
+
+#outer-box {
+  margin: 0px;
+  border: none;
+  border-radius: 18px;
+  background-color: #181825;
+}
+
+#input {
+  margin: 14px 16px 4px 16px;
+  padding: 10px 16px;
+  border: 2px solid #45475a;
+  border-radius: 12px;
+  color: #cdd6f4;
+  background-color: #1e1e2e;
+  font-family: system-ui, sans-serif;
+  font-size: 16px;
+  outline: none;
+}
+
+#input:focus {
+  border: 2px solid #f38ba8;
+}
+
+#inner-box,
+#scroll {
+  margin: 0px 10px 10px 10px;
+  border: none;
+  background-color: transparent;
+}
+
+#entry {
+  margin: 3px 6px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  background-color: transparent;
+}
+
+#entry:selected {
+  background-color: #45475a;
+}
+
+#text {
+  margin: 0px;
+  color: #cdd6f4;
+  font-family: system-ui, sans-serif;
+  font-size: 16px;
+}
+
+#text:selected {
+  color: #f38ba8;
+  font-weight: bold;
+}

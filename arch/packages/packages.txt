@@ -25,6 +25,7 @@ breeze-gtk
 breeze-plymouth
 brightnessctl
 btop
+bullet
 cava
 chafa
 choose
@@ -48,6 +49,7 @@ dog
 doggo
 dolphin
 dolphin-plugins
+dolt
 drkonqi
 dunst
 dust
@@ -70,6 +72,7 @@ git
 git-delta
 github-cli
 git-lfs
+glm
 glow
 gnome-backgrounds
 gnome-calculator
@@ -100,6 +103,7 @@ gnome-tweaks
 gnome-user-docs
 gnome-user-share
 gnome-weather
+go
 gparted
 gping
 grilo-plugins
@@ -240,6 +244,7 @@ qt5-wayland
 qt6ct
 qt6-wayland
 r
+rclone
 reflector
 rsync
 rustup
@@ -247,6 +252,7 @@ rygel
 sd
 sddm
 sddm-kcm
+sfml
 shellcheck
 showtime
 simple-scan
@@ -268,6 +274,7 @@ television
 texlive-basic
 texlive-fontsrecommended
 texlive-latexextra
+thermald
 thunar
 thunar-volman
 tldr

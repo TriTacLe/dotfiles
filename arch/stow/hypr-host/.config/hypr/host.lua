@@ -21,6 +21,7 @@ hl.device({
 
 -- Dock (nwg-dock works correctly on Arch, use wlr/taskbar in waybar on Ubuntu instead)
 hl.on("hyprland.start", function()
-    hl.exec_cmd("nwg-dock-hyprland -i 32 -nolauncher -l top -mb -49 -o eDP-1")
+    -- Top edge, since waybar owns the bottom and the dock widens as windows open.
+    hl.exec_cmd("nwg-dock-hyprland -i 32 -nolauncher -l top -p top -o eDP-1")
 end)
 
