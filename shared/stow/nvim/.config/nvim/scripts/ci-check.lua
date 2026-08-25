@@ -84,6 +84,10 @@ end
 
 -- 2) Treesitter: parse a sample per language on a scratch buffer. Passing the
 --    language explicitly means no FileType event fires, so no LSP attaches.
+--
+--    Parsers have to be installed synchronously first. Left to itself
+--    vim.treesitter.start kicks off a background download and fails on the spot,
+--    so whichever language happens to be slowest that run goes red.
 local samples = {
   lua = "local a = 1",
   python = "def f():\n    return 1",
@@ -102,7 +106,21 @@ local samples = {
   markdown = "# hi",
   sql = "select 1;",
 }
-for lang, code in pairs(samples) do
+local langs = vim.tbl_keys(samples)
+table.sort(langs)
+
+local ok_ts, ts = pcall(require, "nvim-treesitter")
+if ok_ts and type(ts.install) == "function" then
+  local ok_install, err = pcall(function()
+    ts.install(langs):wait(600000)
+  end)
+  if not ok_install then
+    table.insert(errors, "treesitter install: " .. tostring(err))
+  end
+end
+
+for _, lang in ipairs(langs) do
+  local code = samples[lang]
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(code, "\n"))
   local ok, err = pcall(vim.treesitter.start, buf, lang)
