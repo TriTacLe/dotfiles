@@ -1,0 +1,15 @@
+[Unit]
+# thermald only reacts once the package is already hot. In a chassis this thin
+# that means the fan is pinned before anything throttles, so cap the ceiling up
+# front instead of waiting for the thermal trip.
+Description=Cap CPU boost and bias for lower fan noise
+After=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'echo 80 > /sys/devices/system/cpu/intel_pstate/max_perf_pct'
+ExecStart=/bin/sh -c 'for f in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do echo balance_power > "$f"; done'
+
+[Install]
+WantedBy=multi-user.target
