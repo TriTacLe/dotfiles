@@ -1,3 +1,4 @@
+android-studio
 balena-etcher-bin
 brave-bin
 catppuccin-gtk-theme-mocha
