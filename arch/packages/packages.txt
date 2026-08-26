@@ -233,6 +233,7 @@ plymouth-kcm
 polkit-gnome
 polkit-kde-agent
 powerdevil
+powertop
 print-manager
 procs
 python-pip
