@@ -1,4 +1,5 @@
 alacritty
+android-tools
 ark
 arm-none-eabi-binutils
 arm-none-eabi-gcc
