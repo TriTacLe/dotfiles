@@ -37,6 +37,9 @@ install_system_configs() {
     sudo install -D -m 0644 -o root -g root \
         "$DOTFILES/arch/etc/systemd/oomd.conf.d/thresholds.conf" \
         /etc/systemd/oomd.conf.d/thresholds.conf
+    sudo install -D -m 0644 -o root -g root \
+        "$DOTFILES/arch/etc/systemd/system/cpu-tune.service" \
+        /etc/systemd/system/cpu-tune.service
 
     # Never set ManagedOOMSwap on the root slice. With zram-only swap it trips
     # under normal load and kills the session scope holding the compositor.
@@ -55,7 +58,7 @@ install_system_configs() {
     sudo swapon /home/swapfile 2>/dev/null || true
 
     sudo systemctl daemon-reload
-    sudo systemctl enable --now thermald
+    sudo systemctl enable --now thermald cpu-tune
 }
 
 install_system_configs
