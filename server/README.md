@@ -18,6 +18,7 @@ bash server/install-server.sh           # packages, stow, xdg
 ## Scripts
 
 - `scripts/bootstrap.sh` - one-shot, idempotent. sshd hardening, lid policy, `/srv`, UFW (ssh + tailnet), strips Hyprland/GUI/audio if present.
+- `scripts/sync-prod.sh` - run from the laptop: pulls dotfiles and claude-config master on the server, mirrors `~/vault`, lessons and project memory, installs the claude CLI and its plugins.
 - `scripts/svc-new.sh` - `sudo bash svc-new.sh <name>` creates `/srv/<name>/` with its own `svc_<name>` system user. A container escape gets `svc_<name>`, not `tri`, not root.
 
 ## Networking

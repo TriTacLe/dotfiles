@@ -65,12 +65,14 @@ while read local_ref local_sha remote_ref remote_sha; do
     fi
 
     if [[ "$remote_sha" == "0000000000000000000000000000000000000000" ]]; then
-        range="$local_sha"
+        # New ref on the remote, so there is no range to diff against. Scan the
+        # commits that are not on any remote yet. Passing a single sha to git diff
+        # compares the working tree against that commit rather than the commit
+        # against its parent, which on a large repo walks everything and hangs.
+        diff=$(git log -p --no-color "$local_sha" --not --remotes 2>/dev/null)
     else
-        range="$remote_sha..$local_sha"
+        diff=$(git diff --no-color "$remote_sha..$local_sha" 2>/dev/null)
     fi
-
-    diff=$(git diff --no-color "$range" 2>/dev/null)
     [[ -z "$diff" ]] && diff=$(git show "$local_sha" 2>/dev/null)
 
     found=()
