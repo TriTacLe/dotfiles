@@ -19,6 +19,9 @@ echo "server" > ~/.dotfiles-role
 bash install.sh
 ```
 
+Per-machine shell variables are optional. Copy `arch/templates/env.example` to `.env` in
+the repo root; it is gitignored and sourced by the shell at startup.
+
 ## What's included
 
 - `shared/stow/` - packages every machine gets: git, nvim, lazygit, zsh, tmux, kitty,

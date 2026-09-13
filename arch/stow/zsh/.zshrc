@@ -6,7 +6,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
-# Source per-machine .env if present (monitor layout, paths, prefs)
+# Source per-machine .env if present (project paths, prefs)
 for _df in "$DOTFILES_DIR" "$HOME/dotfiles" "$HOME/Desktop/dotfiles" "$HOME/.dotfiles"; do
     if [[ -n "$_df" && -f "$_df/.env" ]]; then
         set -a; source "$_df/.env"; set +a
