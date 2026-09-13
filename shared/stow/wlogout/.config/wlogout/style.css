@@ -43,8 +43,8 @@ button:hover {
   background-image: none;
 }
 
-#hibernate {
-  background-image: image(url("Icons/hibernate.png"));
+#suspend {
+  background-image: image(url("Icons/suspend.png"));
 }
 
 #shutdown {
