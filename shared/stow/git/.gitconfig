@@ -6,9 +6,6 @@
   defaultBranch = master
  # defaultBranch = main
     
-[pull]
-  rebase
-
 [core]
   autocrlf = input
   editor = vim
@@ -31,6 +28,16 @@
 [rebase]
   autoStash = true
   missingCommitsCheck = warn
+  updateRefs = true
+
+[fetch]
+  prune = true
+
+[diff]
+  algorithm = histogram
+
+[merge]
+  conflictstyle = zdiff3
 
 [branch]
   sort = -committerdate
