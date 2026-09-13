@@ -111,6 +111,10 @@ echo "[8] install.sh is executable"
 check "install.sh executable" test -x install.sh
 
 echo ""
+echo "[9] justfile parses"
+check "just -n stow arch" just --justfile justfile -n stow arch
+
+echo ""
 echo "=== Result ==="
 echo "  passed: $PASS"
 echo "  failed: $FAIL"
