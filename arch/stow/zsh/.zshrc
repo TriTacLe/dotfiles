@@ -6,7 +6,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
-# Source per-machine .env if present (monitor layout, paths, prefs)
+# Source per-machine .env if present (project paths, prefs)
 for _df in "$DOTFILES_DIR" "$HOME/dotfiles" "$HOME/Desktop/dotfiles" "$HOME/.dotfiles"; do
     if [[ -n "$_df" && -f "$_df/.env" ]]; then
         set -a; source "$_df/.env"; set +a
@@ -162,15 +162,8 @@ case "$HOST" in
         alias update='sudo pacman -Syyu && paru && hyprpm update'
         alias refreshmirrors='rate-mirrors arch | sudo tee /etc/pacman.d/mirrorlist'
         alias pkgfnd='pacman -Q | grep'
-
-        case "$HOST" in
-            archflipper)
-                [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-                [ -f ~/.fzf-git.sh ] && source ~/.fzf-git.sh
-                ;;
-        esac
         ;;
-    debian*|i5server)
+    debian*)
         alias inst='sudo apt install'
         alias update='sudo apt update && sudo apt upgrade'
         ;;
@@ -231,20 +224,6 @@ alias cg='cheat git'
 alias cgz='cheat zsh'
 alias cgp='cheat python'
 alias cgd='cheat docker'
-
-# ============================================
-# Stow management
-# ============================================
-stow-all() {
-    local df="${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
-    # Package lists must match arch/install-arch.sh
-    stow -d "$df/shared/stow" -t ~ --no-folding -R \
-        git nvim lazygit backgrounds zsh tmux alacritty ghostty kitty \
-        hypr waybar swaync wofi avizo wob nwg-dock nwg-look wlogout scripts ipython zathura
-    stow -d "$df/arch/stow" -t ~ --no-folding -R \
-        zsh fastfetch hypr-host pacseek systemd
-    ln -sfn "$df/claude-config" ~/.claude
-}
 
 # ============================================
 # OpenClaw completions

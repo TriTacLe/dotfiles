@@ -19,10 +19,13 @@ echo "server" > ~/.dotfiles-role
 bash install.sh
 ```
 
+Per-machine shell variables are optional. Copy `arch/templates/env.example` to `.env` in
+the repo root; it is gitignored and sourced by the shell at startup.
+
 ## What's included
 
 - `shared/stow/` - packages every machine gets: git, nvim, lazygit, zsh, tmux, kitty,
-  ghostty, alacritty, hypr, waybar, swaync, wofi, avizo, wob, nwg-dock, nwg-look,
+  ghostty, alacritty, hypr, waybar, swaync, wofi, avizo, nwg-dock, nwg-look,
   wlogout, zathura, backgrounds, scripts, ipython.
 - `arch/`, `ubuntu/`, `macos/`, `server/` - per-OS installer plus the packages only that
   OS uses (fastfetch and pacseek on Arch, rofi and swaylock on Ubuntu, starship on macOS).
@@ -32,6 +35,8 @@ bash install.sh
   (repo health checks, run before deploying to a fresh machine).
 - `arch/packages/`, `ubuntu/packages/` - package lists, regenerated automatically by the
   pacman/apt post-transaction hook.
+- `justfile` - the stow package lists. `just stow arch` (or ubuntu, macos, server) restows
+  everything on this machine.
 
 ## Adding a new machine
 

@@ -13,8 +13,7 @@ brew bundle install --file="$DOTFILES/macos/Brewfile" --no-lock
 
 mkdir -p ~/.config
 
-stow -d "$DOTFILES/shared/stow" -t ~ --no-folding -R git nvim lazygit backgrounds zsh scripts ipython
-stow -d "$DOTFILES/macos/stow" -t ~ --no-folding -R zsh tmux alacritty ghostty kitty neofetch starship
+just --justfile "$DOTFILES/justfile" stow macos
 link_claude_config "$DOTFILES"
 
 echo "Mac setup complete."

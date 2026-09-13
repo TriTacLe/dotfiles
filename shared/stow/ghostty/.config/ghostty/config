@@ -15,6 +15,10 @@ background-blur-radius = 20
 # Palette. Written by theme_apply.sh, ? means skip it if absent.
 config-file = ?colors
 
+# Install the ghostty terminfo on remote hosts on first ssh. Falls back to
+# xterm-256color where tic is missing.
+shell-integration-features = ssh-terminfo
+
 # Cursor styling
 cursor-style = bar
 cursor-style-blink = true

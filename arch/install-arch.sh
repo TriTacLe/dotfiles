@@ -10,15 +10,8 @@ if ! command -v stow &>/dev/null; then
     sudo pacman -S --needed --noconfirm stow
 fi
 
-mkdir -p ~/.config
-
-# -R (restow) so renamed or deleted files do not leave stale links behind.
-# --no-folding links every file individually, which makes -R necessary.
-stow -d "$DOTFILES/shared/stow" -t ~ --no-folding -R \
-    git nvim lazygit backgrounds zsh tmux alacritty ghostty kitty \
-    hypr waybar swaync wofi avizo wob nwg-dock nwg-look wlogout scripts ipython zathura
-stow -d "$DOTFILES/arch/stow" -t ~ --no-folding -R \
-    zsh fastfetch hypr-host pacseek systemd
+command -v just >/dev/null || sudo pacman -S --needed --noconfirm just
+just --justfile "$DOTFILES/justfile" stow arch
 
 # Colours are generated rather than stowed, so a fresh clone has none until this
 # runs. waybar, wofi and hyprlock all expect the generated file to exist.
