@@ -174,17 +174,7 @@ alias shrug='echo "¯\_(ツ)_/¯" | pbcopy'
 # Copy file content to clipboard
 copy() { cat "$1" | pbcopy }
 
-# ============================================
-# Stow Management
-# ============================================
 : "${DOTFILES_DIR:=$HOME/Desktop/dotfiles}"
-
-stow-all() {
-    # Package lists must match macos/install-macos.sh
-    stow -d "$DOTFILES_DIR/shared/stow" -t ~ --no-folding -R git nvim lazygit backgrounds zsh scripts ipython
-    stow -d "$DOTFILES_DIR/macos/stow" -t ~ --no-folding -R zsh tmux alacritty ghostty kitty neofetch starship
-    ln -sfn "$DOTFILES_DIR/claude-config" ~/.claude
-}
 
 # ============================================
 # Shared config + secrets

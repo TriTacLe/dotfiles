@@ -170,20 +170,6 @@ elif command -v neofetch &>/dev/null; then
 fi
 
 # ============================================
-# Stow management
-# ============================================
-stow-all() {
-    local df="${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
-    # Package lists must match ubuntu/install-ubuntu.sh
-    stow -d "$df/shared/stow" -t ~ --no-folding -R \
-        git nvim lazygit backgrounds zsh tmux alacritty ghostty kitty \
-        hypr waybar swaync wofi avizo wob nwg-dock nwg-look wlogout scripts ipython zathura
-    stow -d "$df/ubuntu/stow" -t ~ --no-folding -R \
-        zsh rofi swaylock fontconfig systemd hypr-host sway
-    ln -sfn "$df/claude-config" ~/.claude
-}
-
-# ============================================
 # Shared config + secrets
 # ============================================
 [ -f ~/.config/zsh/shared.zsh ] && source ~/.config/zsh/shared.zsh
