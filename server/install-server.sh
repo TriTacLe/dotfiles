@@ -25,11 +25,9 @@ mkdir -p ~/.config
 install -D -m 0644 "$DOTFILES/server/etc/xdg/user-dirs.dirs" \
     ~/.config/user-dirs.dirs
 
-# CLI-only stow: no hypr, waybar, alacritty, ghostty, kitty, swaync, etc.
-stow -d "$DOTFILES/shared/stow" -t ~ --no-folding -R \
-    git nvim lazygit zsh tmux scripts ipython
-stow -d "$DOTFILES/arch/stow" -t ~ --no-folding -R \
-    zsh pacseek
+# CLI-only stow set, no desktop packages.
+command -v just >/dev/null || sudo pacman -S --needed --noconfirm just
+just --justfile "$DOTFILES/justfile" stow server
 link_claude_config "$DOTFILES"
 
 # Server-specific stow packages (none yet, but ready when added).

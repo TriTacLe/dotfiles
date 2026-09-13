@@ -35,6 +35,8 @@ the repo root; it is gitignored and sourced by the shell at startup.
   (repo health checks, run before deploying to a fresh machine).
 - `arch/packages/`, `ubuntu/packages/` - package lists, regenerated automatically by the
   pacman/apt post-transaction hook.
+- `justfile` - the stow package lists. `just stow arch` (or ubuntu, macos, server) restows
+  everything on this machine.
 
 ## Adding a new machine
 

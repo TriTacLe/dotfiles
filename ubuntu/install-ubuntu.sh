@@ -12,13 +12,8 @@ fi
 
 mkdir -p ~/.config
 
-# -R (restow) so renamed or deleted files do not leave stale links behind.
-# --no-folding links every file individually, which makes -R necessary.
-stow -d "$DOTFILES/shared/stow" -t ~ --no-folding -R \
-    git nvim lazygit backgrounds zsh tmux alacritty ghostty kitty \
-    hypr waybar swaync wofi avizo nwg-dock nwg-look wlogout scripts ipython zathura
-stow -d "$DOTFILES/ubuntu/stow" -t ~ --no-folding -R \
-    zsh rofi swaylock fontconfig systemd hypr-host sway
+command -v just >/dev/null || sudo apt-get install -y just
+just --justfile "$DOTFILES/justfile" stow ubuntu
 
 link_claude_config "$DOTFILES"
 
