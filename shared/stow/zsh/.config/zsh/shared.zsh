@@ -249,3 +249,11 @@ unstow-pkg() {
     done
     unset _osdir
 }
+
+# ============================================
+# Atuin
+# ============================================
+# Ctrl-R goes to atuin. Up arrow stays plain zsh history.
+if command -v atuin &>/dev/null; then
+    eval "$(atuin init zsh --disable-up-arrow)"
+fi
