@@ -188,17 +188,6 @@ chpwd() {
 }
 
 # ============================================
-# SSH TERM fix for Ghostty connecting to older servers
-# ============================================
-ssh() {
-    if [[ "$TERM" == "xterm-ghostty" ]]; then
-        TERM=xterm-256color command ssh "$@"
-    else
-        command ssh "$@"
-    fi
-}
-
-# ============================================
 # Navigation
 # ============================================
 alias ..='cd ..'
