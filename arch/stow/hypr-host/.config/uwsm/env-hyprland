@@ -1,0 +1,3 @@
+# Per-host GPU env for uwsm-managed Hyprland. Mirrors host.lua.
+export LIBVA_DRIVER_NAME=iHD
+export VDPAU_DRIVER=va_gl

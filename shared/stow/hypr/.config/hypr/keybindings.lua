@@ -4,10 +4,17 @@ local mod = "SUPER"
 local alt = "MOD5" -- alternate modifier, right Alt on some layouts
 local scripts = "~/.config/hypr/scripts"
 
+-- Under uwsm, launch into app.slice as its own scope so the oomd drop-in
+-- there applies. A plain session falls through to the bare command.
+local function app(cmd)
+    return "if systemctl --user -q is-active wayland-wm@*.service; then uwsm app -- "
+        .. cmd .. "; else " .. cmd .. "; fi"
+end
+
 
 -- Window controls
 
-hl.bind(mod .. " + Q", hl.dsp.exec_cmd("ghostty"))                          -- Open terminal
+hl.bind(mod .. " + Q", hl.dsp.exec_cmd(app("ghostty")))                          -- Open terminal
 hl.bind(mod .. " + X", hl.dsp.exec_cmd(scripts .. "/kill_confirm.sh"))      -- Close window with confirmation
 hl.bind(mod .. " + V", hl.dsp.window.float({ action = "toggle" }))          -- Toggle floating
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen())                          -- Toggle fullscreen
@@ -18,17 +25,17 @@ hl.bind(mod .. " + F", hl.dsp.window.fullscreen())                          -- T
 
 -- Application launchers
 
-hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd("wofi"))                         -- App launcher
-hl.bind(mod .. " + E", hl.dsp.exec_cmd("thunar"))                           -- File manager (Thunar)
-hl.bind(mod .. " + W", hl.dsp.exec_cmd("firefox-developer-edition"))        -- Browser (Firefox Dev Edition)
-hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("brave"))                    -- Browser (Brave)
-hl.bind(mod .. " + R", hl.dsp.exec_cmd("obsidian --ozone-platform-hint=auto")) -- Obsidian
+hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd(app("wofi")))                         -- App launcher
+hl.bind(mod .. " + E", hl.dsp.exec_cmd(app("thunar")))                           -- File manager (Thunar)
+hl.bind(mod .. " + W", hl.dsp.exec_cmd(app("firefox-developer-edition")))        -- Browser (Firefox Dev Edition)
+hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd(app("brave")))                    -- Browser (Brave)
+hl.bind(mod .. " + R", hl.dsp.exec_cmd(app("obsidian --ozone-platform-hint=auto"))) -- Obsidian
 
 
 -- System controls
 
-hl.bind(mod .. " + O", hl.dsp.exec_cmd("swaylock"))                         -- Lock screen
-hl.bind(mod .. " + U", hl.dsp.exec_cmd("wlogout --protocol layer-shell"))   -- Logout menu
+hl.bind(mod .. " + O", hl.dsp.exec_cmd(app("swaylock")))                         -- Lock screen
+hl.bind(mod .. " + U", hl.dsp.exec_cmd(app("wlogout --protocol layer-shell")))   -- Logout menu
 hl.bind(mod .. " + SHIFT + M", hl.dsp.exit())                               -- Exit Hyprland
 
 
