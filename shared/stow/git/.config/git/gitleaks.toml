@@ -1,0 +1,16 @@
+# Global gitleaks config for the pre-push hook in ~/.git-hooks/pre-push.
+# Per-repo overrides go in a .gitleaks.toml at that repo's root.
+title = "dotfiles global"
+
+[extend]
+useDefault = true
+
+# Lines that read as credential assignments but carry no literal secret.
+[[allowlists]]
+description = "value comes from a call, a same-named variable or a type annotation"
+regexTarget = "line"
+regexes = [
+  '''(?i)(password|secret|api_key|access_token|auth_token)\s*=\s*[\w.]*\(''',
+  '''(?i)(password|secret|api_key|access_token)\s*=\s*\w*(password|secret|api_key|access_token)\w*''',
+  '''(?i)(password|secret|api_key)\s*:\s*(str|bytes|Optional|str\s*\|)''',
+]
