@@ -145,13 +145,13 @@ hl.bind(alt .. " + A", hl.dsp.focus({ workspace = "r-1" }))
 -- Media and brightness controls (work on any machine with standard keys)
 
 -- Audio controls (macOS-style center overlay)
-hl.bind("code:121", hl.dsp.exec_cmd(scripts .. "/volume_wob.sh mute"))                            -- Mute
-hl.bind("code:122", hl.dsp.exec_cmd(scripts .. "/volume_wob.sh down"), { repeating = true })      -- Volume down (hold)
-hl.bind("code:123", hl.dsp.exec_cmd(scripts .. "/volume_wob.sh up"), { repeating = true })        -- Volume up (hold)
+hl.bind("code:121", hl.dsp.exec_cmd(scripts .. "/volume.sh mute"))                            -- Mute
+hl.bind("code:122", hl.dsp.exec_cmd(scripts .. "/volume.sh down"), { repeating = true })      -- Volume down (hold)
+hl.bind("code:123", hl.dsp.exec_cmd(scripts .. "/volume.sh up"), { repeating = true })        -- Volume up (hold)
 
 -- Brightness controls (macOS-style center overlay)
-hl.bind("code:232", hl.dsp.exec_cmd(scripts .. "/brightness_wob.sh down"), { repeating = true })  -- Brightness down (hold)
-hl.bind("code:233", hl.dsp.exec_cmd(scripts .. "/brightness_wob.sh up"), { repeating = true })    -- Brightness up (hold)
+hl.bind("code:232", hl.dsp.exec_cmd(scripts .. "/brightness.sh down"), { repeating = true })  -- Brightness down (hold)
+hl.bind("code:233", hl.dsp.exec_cmd(scripts .. "/brightness.sh up"), { repeating = true })    -- Brightness up (hold)
 
 -- Screenshot
 hl.bind("code:239", hl.dsp.exec_cmd(scripts .. "/screenshot_keycode.sh 2>/dev/null || true"))

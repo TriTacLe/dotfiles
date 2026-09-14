@@ -25,7 +25,7 @@ the repo root; it is gitignored and sourced by the shell at startup.
 ## What's included
 
 - `shared/stow/` - packages every machine gets: git, nvim, lazygit, zsh, tmux, kitty,
-  ghostty, alacritty, hypr, waybar, swaync, wofi, avizo, nwg-dock, nwg-look,
+  ghostty, alacritty, hypr, waybar, swaync, wofi, nwg-dock, nwg-look,
   wlogout, zathura, backgrounds, scripts, ipython.
 - `arch/`, `ubuntu/`, `macos/`, `server/` - per-OS installer plus the packages only that
   OS uses (fastfetch and pacseek on Arch, rofi and swaylock on Ubuntu, starship on macOS).

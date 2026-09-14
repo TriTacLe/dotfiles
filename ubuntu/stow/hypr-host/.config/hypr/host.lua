@@ -29,7 +29,7 @@ hl.config({
 
 -- Brightness keys, bind both XF86 keycodes and F5/F6 to cover Fn-lock states
 local scripts = "~/.config/hypr/scripts"
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(scripts .. "/brightness_wob.sh down"), { repeating = true })
-hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd(scripts .. "/brightness_wob.sh up"),   { repeating = true })
-hl.bind("F5", hl.dsp.exec_cmd(scripts .. "/brightness_wob.sh down"), { repeating = true })
-hl.bind("F6", hl.dsp.exec_cmd(scripts .. "/brightness_wob.sh up"),   { repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(scripts .. "/brightness.sh down"), { repeating = true })
+hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd(scripts .. "/brightness.sh up"),   { repeating = true })
+hl.bind("F5", hl.dsp.exec_cmd(scripts .. "/brightness.sh down"), { repeating = true })
+hl.bind("F6", hl.dsp.exec_cmd(scripts .. "/brightness.sh up"),   { repeating = true })
