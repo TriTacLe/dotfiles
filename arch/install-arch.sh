@@ -47,6 +47,16 @@ install_system_configs() {
     fi
     sudo swapon /home/swapfile 2>/dev/null || true
 
+    # Root is 46 GB and pacman downloads whole upgrades into its cache before
+    # installing, so the cache lives on the big partition. sed rather than a
+    # shipped file: pacman.conf also carries the repo list that reflector edits.
+    sudo install -d -m 0755 -o root -g root /home/pacman-cache
+    sudo sed -i 's|^#\?CacheDir *=.*|CacheDir    = /home/pacman-cache/|' /etc/pacman.conf
+    sudo install -D -m 0644 -o root -g root \
+        "$DOTFILES/arch/etc/systemd/journald.conf.d/size.conf" \
+        /etc/systemd/journald.conf.d/size.conf
+    sudo systemctl restart systemd-journald
+
     sudo systemctl daemon-reload
     sudo systemctl enable --now thermald
 }
