@@ -1,4 +1,4 @@
--- Python utviklingsoppsett
+-- Python setup on top of LazyVim's python extra.
 
 return {
   -- basedpyright settings. options.lua picks the server via lazyvim_python_lsp.
@@ -23,7 +23,7 @@ return {
     },
   },
 
-  -- Installer Python-verktøy
+  -- Python tools mason installs
   {
     "mason-org/mason.nvim",
     opts = function(_, opts)
@@ -35,7 +35,7 @@ return {
     end,
   },
 
-  -- Python-filer i treesitter
+  -- Extra treesitter parser
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -56,7 +56,7 @@ return {
     },
   },
 
-  -- Debugging med debugpy
+  -- Debugging with debugpy, using the project venv
   {
     "mfussenegger/nvim-dap-python",
     ft = "python",
@@ -72,7 +72,7 @@ return {
         function()
           require("dap-python").debug_selection()
         end,
-        desc = "Debug Python utvalg",
+        desc = "Debug selection",
         ft = "python",
       },
     },
@@ -134,7 +134,8 @@ return {
     },
   },
 
-  -- IPython REPL
+  -- IPython REPL. Keys live under <leader>i so they do not collide with
+  -- the refactoring keys on <leader>r.
   {
     "Vigemus/iron.nvim",
     ft = "python",
@@ -148,27 +149,27 @@ return {
           repl_open_cmd = "horizontal bot 15 split",
         },
         keymaps = {
-          send_motion = "<leader>rc",
-          visual_send = "<leader>rv",
-          send_file = "<leader>rf",
-          send_line = "<leader>rr",
-          send_paragraph = "<leader>rp",
-          cr = "<leader>r<cr>",
-          interrupt = "<leader>ri",
-          exit = "<leader>rq",
-          clear = "<leader>rl",
+          send_motion = "<leader>ic",
+          visual_send = "<leader>iv",
+          send_file = "<leader>if",
+          send_line = "<leader>ir",
+          send_paragraph = "<leader>ip",
+          cr = "<leader>i<cr>",
+          interrupt = "<leader>ii",
+          exit = "<leader>iq",
+          clear = "<leader>il",
         },
         highlight = { italic = true },
         ignore_blank_lines = true,
       })
     end,
     keys = {
-      { "<leader>rs", "<cmd>IronRepl<cr>", desc = "Start IPython REPL", ft = "python" },
-      { "<leader>rr", desc = "Send line to REPL", ft = "python" },
-      { "<leader>rv", desc = "Send visual to REPL", mode = "v", ft = "python" },
-      { "<leader>rf", desc = "Send file to REPL", ft = "python" },
-      { "<leader>rq", desc = "Exit REPL", ft = "python" },
-      { "<leader>rl", desc = "Clear REPL", ft = "python" },
+      { "<leader>is", "<cmd>IronRepl<cr>", desc = "Start IPython REPL", ft = "python" },
+      { "<leader>ir", desc = "Send line to REPL", ft = "python" },
+      { "<leader>iv", desc = "Send visual to REPL", mode = "v", ft = "python" },
+      { "<leader>if", desc = "Send file to REPL", ft = "python" },
+      { "<leader>iq", desc = "Exit REPL", ft = "python" },
+      { "<leader>il", desc = "Clear REPL", ft = "python" },
     },
   },
 
