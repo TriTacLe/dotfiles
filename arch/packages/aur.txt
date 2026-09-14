@@ -18,6 +18,9 @@ sdkmanager
 slack-desktop
 visual-studio-code-bin
 wakatime
+wl-color-picker
+wl-kbptr
+wlogout
 yay
 yay-debug
 zsh-theme-powerlevel10k
