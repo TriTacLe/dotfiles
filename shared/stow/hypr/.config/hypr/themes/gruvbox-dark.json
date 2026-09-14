@@ -1,6 +1,10 @@
 {
-  "_meta": { "name": "Gruvbox Dark", "author": "morhetz", "variant": "dark" },
-
+  "_meta": {
+    "name": "Gruvbox Dark",
+    "author": "morhetz",
+    "variant": "dark",
+    "nvim": "gruvbox"
+  },
   "base": "#282828",
   "mantle": "#1d2021",
   "crust": "#161616",
@@ -13,7 +17,6 @@
   "overlay0": "#7c6f64",
   "overlay1": "#928374",
   "overlay2": "#a89984",
-
   "blue": "#83a598",
   "sapphire": "#458588",
   "peach": "#fe8019",
@@ -24,13 +27,11 @@
   "yellow": "#fabd2f",
   "maroon": "#cc241d",
   "teal": "#8ec07c",
-
   "accent": "#fabd2f",
   "accent_dim": "#d79921",
   "accent_bright": "#fe8019",
   "selection": "#504945",
   "border": "#665c54",
-
   "term_black": "#282828",
   "term_red": "#cc241d",
   "term_green": "#98971a",
@@ -47,7 +48,6 @@
   "term_bright_magenta": "#d3869b",
   "term_bright_cyan": "#8ec07c",
   "term_bright_white": "#ebdbb2",
-
   "radius_small": 4,
   "radius_medium": 10,
   "radius_large": 16,
