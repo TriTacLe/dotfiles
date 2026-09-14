@@ -10,6 +10,11 @@ if ! command -v stow &>/dev/null; then
     sudo pacman -S --needed --noconfirm stow
 fi
 
+# Packages this script itself depends on, installed before anything reaches for
+# them: jq for theme_apply.sh, reflector and pacman-contrib for the timers
+# enabled below, thermald and zram-generator for the tuning further down.
+sudo pacman -S --needed --noconfirm jq reflector pacman-contrib thermald zram-generator
+
 command -v just >/dev/null || sudo pacman -S --needed --noconfirm just
 just --justfile "$DOTFILES/justfile" stow arch
 
@@ -57,13 +62,22 @@ install_system_configs() {
         /etc/systemd/journald.conf.d/size.conf
     sudo systemctl restart systemd-journald
 
-    # Weekly mirror refresh and package cache trim.
-    sudo install -D -m 0644 -o root -g root \
+    # Weekly mirror refresh. reflector owns this path, so writing it before the
+    # package is installed makes pacman abort the whole transaction on a file
+    # conflict. -b keeps a copy of whatever was there.
+    sudo install -D -b -m 0644 -o root -g root \
         "$DOTFILES/arch/etc/xdg/reflector/reflector.conf" \
         /etc/xdg/reflector/reflector.conf
-    sudo pacman -S --needed --noconfirm reflector pacman-contrib
+
+    # Cap coredumps. The default is 10 percent of the filesystem, which on a
+    # 46 GB root let 1.4 GB pile up unnoticed.
+    sudo install -D -m 0644 -o root -g root \
+        "$DOTFILES/arch/etc/systemd/coredump.conf.d/size.conf" \
+        /etc/systemd/coredump.conf.d/size.conf
 
     sudo systemctl daemon-reload
+    # daemon-reload re-runs the zram generator; the device still has to be started.
+    sudo systemctl start systemd-zram-setup@zram0.service
     sudo systemctl enable --now thermald reflector.timer paccache.timer
 }
 
