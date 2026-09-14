@@ -30,5 +30,3 @@ require("keybindings")
 require("windowrules")
 require("autostart")
 
--- require("hyprgrass")  -- re-enable after hyprpm builds on 0.56
--- require("hyprexpo")   -- re-enable after hyprpm builds on 0.56
