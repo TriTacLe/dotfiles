@@ -1,43 +1,17 @@
--- Java og Spring Boot oppsett
--- Dette er hovedkonfigurasjonen for Java-utvikling i Neovim
+-- Java and Spring Boot setup on top of LazyVim's java extra (imported in
+-- config/lazy.lua). Diagnostics, LSP keys and mason entries the extra
+-- already provides are not repeated here.
 
 return {
-  -- LazyVim har allerede Java-støtte, vi importerer den
-  { import = "lazyvim.plugins.extras.lang.java" },
-
-  -- LSP konfigurasjon for bedre feilmeldinger og hjelp
+  -- Rounded diagnostic float; everything else follows LazyVim defaults.
   {
     "neovim/nvim-lspconfig",
     opts = {
       diagnostics = {
-        -- Vis feilmeldinger som små prikker i koden
-        virtual_text = {
-          spacing = 4,
-          source = "if_many",
-          prefix = "●",
-        },
-        -- Vis ikoner i venstre marg
-        signs = true,
-        -- Ikke oppdater feilmeldinger mens jeg skriver
-        update_in_insert = false,
-        -- Runde hjørner på feilmeldings-popup
-        float = {
-          border = "rounded",
-          source = "always",
-        },
+        float = { border = "rounded", source = true },
       },
     },
-    keys = {
-      -- Hurtigtaster for LSP-funksjoner
-      { "<leader>ca", vim.lsp.buf.code_action, desc = "Fiks feil / Code Action", mode = { "n", "v" } },
-      { "K", vim.lsp.buf.hover, desc = "Vis dokumentasjon" },
-      { "gd", vim.lsp.buf.definition, desc = "Gå til definisjon" },
-      { "gD", vim.lsp.buf.type_definition, desc = "Gå til type-definisjon" },
-      { "<leader>rn", vim.lsp.buf.rename, desc = "Gi nytt navn (refactor)" },
-      { "<C-k>", vim.lsp.buf.signature_help, desc = "Parameter-hjelp", mode = "i" },
-    },
   },
-
   -- JDTLS (Java språkserver) med Spring Boot tilpasninger
   {
     "mfussenegger/nvim-jdtls",
@@ -111,17 +85,12 @@ return {
     end,
   },
 
-  -- Installer Java-verktøy automatisk via Mason
+  -- checkstyle is the one tool the java extra does not install.
   {
     "mason-org/mason.nvim",
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, {
-        "jdtls", -- Java språkserver
-        "java-debug-adapter", -- For debugging
-        "java-test", -- For å kjøre tester
-        "checkstyle", -- Linting med checkstyle
-      })
+      vim.list_extend(opts.ensure_installed, { "checkstyle" })
     end,
   },
 
@@ -169,26 +138,10 @@ return {
     },
   },
 
-  -- Auto-import når jeg velger completion
+  -- Signature help while typing; the blink extra leaves it off.
   {
     "saghen/blink.cmp",
-    opts = {
-      completion = {
-        accept = {
-          auto_brackets = {
-            enabled = true,
-          },
-        },
-        -- Vis dokumentasjon automatisk
-        documentation = {
-          auto_show = true,
-          auto_show_delay_ms = 200,
-        },
-      },
-      signature = {
-        enabled = true,
-      },
-    },
+    opts = { signature = { enabled = true } },
   },
 
   -- JPA Repository snippets - dette er gullverdt!
@@ -454,78 +407,14 @@ return {
     opts = {},
   },
 
-  -- Test runner med fin UI
+  -- Java adapter for neotest. Keys come from LazyVim's test extra.
   {
     "nvim-neotest/neotest",
-    dependencies = {
-      "nvim-neotest/nvim-nio",
-      "nvim-lua/plenary.nvim",
-      "antoinemadec/FixCursorHold.nvim",
-      "nvim-neotest/neotest-plenary",
-      "rcasia/neotest-java", -- For Java tester
-    },
+    dependencies = { "nvim-neotest/neotest-plenary", "rcasia/neotest-java" },
     opts = {
       adapters = {
         ["neotest-java"] = {},
         ["neotest-plenary"] = {},
-      },
-    },
-    keys = {
-      {
-        "<leader>tt",
-        function()
-          require("neotest").run.run(vim.fn.expand("%"))
-        end,
-        desc = "Kjør fil",
-      },
-      {
-        "<leader>tT",
-        function()
-          require("neotest").run.run(vim.uv.cwd())
-        end,
-        desc = "Kjør alle test-filer",
-      },
-      {
-        "<leader>tr",
-        function()
-          require("neotest").run.run()
-        end,
-        desc = "Kjør nærmeste test",
-      },
-      {
-        "<leader>tl",
-        function()
-          require("neotest").run.run_last()
-        end,
-        desc = "Kjør siste test igjen",
-      },
-      {
-        "<leader>ts",
-        function()
-          require("neotest").summary.toggle()
-        end,
-        desc = "Vis test-oversikt",
-      },
-      {
-        "<leader>to",
-        function()
-          require("neotest").output.open({ enter = true, auto_close = true })
-        end,
-        desc = "Vis test output",
-      },
-      {
-        "<leader>tO",
-        function()
-          require("neotest").output_panel.toggle()
-        end,
-        desc = "Toggle output panel",
-      },
-      {
-        "<leader>tS",
-        function()
-          require("neotest").run.stop()
-        end,
-        desc = "Stopp test",
       },
     },
   },
