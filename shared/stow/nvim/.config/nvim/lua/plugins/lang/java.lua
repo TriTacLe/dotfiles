@@ -12,38 +12,38 @@ return {
       },
     },
   },
-  -- JDTLS (Java språkserver) med Spring Boot tilpasninger
+  -- jdtls with Spring Boot adjustments
   {
     "mfussenegger/nvim-jdtls",
     opts = function(_, opts)
-      -- Utvid LazyVims standard JDTLS instillinger
+      -- Extend LazyVim's default jdtls settings
       opts.settings = vim.tbl_deep_extend("force", opts.settings or {}, {
         java = {
-          -- Automatisk oppdatering når pom.xml/build.gradle endres
+          -- Reload when pom.xml or build.gradle changes
           configuration = {
             updateBuildConfiguration = "automatic",
           },
-          -- Last ned kildekode for biblioteker (bra for debugging)
+          -- Download library sources for debugging
           maven = {
             downloadSources = true,
           },
-          -- Vis hvor en metode er implementert
+          -- Show where a method is implemented
           implementationsCodeLens = {
             enabled = true,
           },
-          -- Vis hvor en metode blir brukt
+          -- Show where a method is used
           referencesCodeLens = {
             enabled = true,
           },
-          -- Inkluder dekompilerte kilder i søk
+          -- Include decompiled sources in search
           references = {
             includeDecompiledSources = true,
           },
-          -- Bruk Google Java Format
+          -- Use Google Java Format
           format = {
             enabled = true,
           },
-          -- Favoritt-metoder som dukker opp først i completion
+          -- Favourite static members offered first in completion
           completion = {
             favoriteStaticMembers = {
               "org.assertj.core.api.Assertions.assertThat",
@@ -52,7 +52,7 @@ return {
               "org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*",
               "org.springframework.test.web.servlet.result.MockMvcResultMatchers.*",
             },
-            -- Ikke foreslå disse pakkene
+            -- Never suggest these packages
             filteredTypes = {
               "com.sun.*",
               "io.micrometer.shaded.*",
@@ -61,14 +61,14 @@ return {
               "sun.*",
             },
           },
-          -- Organiser imports - aldri bruk wildcard imports
+          -- Organise imports, never wildcards
           sources = {
             organizeImports = {
               starThreshold = 9999,
               staticStarThreshold = 9999,
             },
           },
-          -- Hvordan generere toString, equals, hashCode
+          -- How toString, equals and hashCode are generated
           codeGeneration = {
             toString = {
               template = "${object.className}{${member.name()}=${member.value}, ${otherMembers}}",
@@ -103,8 +103,8 @@ return {
       },
       linters = {
         checkstyle = {
-          -- Bruk checkstyle.xml fra prosjektet hvis det finnes
-          -- Ellers bruk standard Google Checkstyle
+          -- Use the project's checkstyle.xml when present,
+          -- otherwise the Google config
           args = {
             "-c",
             "/google_checks.xml", -- Standard Google checks
@@ -144,8 +144,7 @@ return {
     opts = { signature = { enabled = true } },
   },
 
-  -- JPA Repository snippets - dette er gullverdt!
-  -- Skriv f.eks. "findBy" + Tab så får du mal for metoden
+  -- JPA repository snippets. Type findBy and expand for the method template.
   {
     "L3MON4D3/LuaSnip",
     event = "InsertEnter",
@@ -159,17 +158,17 @@ return {
     config = function(_, opts)
       require("luasnip").setup(opts)
 
-      -- Last inn standard snippets
+      -- Load the stock snippets
       require("luasnip.loaders.from_vscode").lazy_load()
 
-      -- Mine egne JPA snippets for Spring Boot
+      -- JPA snippets for Spring Boot
       local ls = require("luasnip")
       local s = ls.snippet
       local t = ls.text_node
       local i = ls.insert_node
 
       ls.add_snippets("java", {
-        -- Basis CRUD
+        -- Basic CRUD
         s("findById", {
           t("Optional<"),
           i(1, "Entity"),
@@ -190,7 +189,7 @@ return {
           t("void deleteById(Long id);"),
         }),
 
-        -- Spørringer med findBy
+        -- findBy queries
         s("findBy", {
           t("Optional<"),
           i(1, "Entity"),
@@ -347,7 +346,7 @@ return {
           t(");"),
         }),
 
-        -- Count og exists
+        -- count and exists
         s("countBy", {
           t("long countBy"),
           i(1, "Field"),
@@ -367,7 +366,7 @@ return {
           t(");"),
         }),
 
-        -- Egne SQL spørringer med @Query
+        -- Custom queries with @Query
         s("query", {
           t('@Query("'),
           i(1, "SELECT e FROM Entity e WHERE e.field = ?1"),
@@ -381,7 +380,7 @@ return {
           t(");"),
         }),
 
-        -- Mal for hele repository interfacet
+        -- Template for a whole repository interface
         s("repo", {
           t("public interface "),
           i(1, "Entity"),
@@ -394,15 +393,14 @@ return {
     end,
   },
 
-  -- HTTP client for å teste REST API-er
-  -- Bra for Spring Boot Controllers
+  -- HTTP client for exercising REST endpoints from Spring Boot controllers
   {
     "mistweaverco/kulala.nvim",
     ft = { "http", "rest" },
     keys = {
-      { "<leader>th", "<cmd>lua require('kulala').run()<cr>", desc = "Kjør HTTP request" },
-      { "<leader>tj", "<cmd>lua require('kulala').jump_next()<cr>", desc = "Neste HTTP request" },
-      { "<leader>tk", "<cmd>lua require('kulala').jump_prev()<cr>", desc = "Forrige HTTP request" },
+      { "<leader>th", "<cmd>lua require('kulala').run()<cr>", desc = "Run HTTP request" },
+      { "<leader>tj", "<cmd>lua require('kulala').jump_next()<cr>", desc = "Next HTTP request" },
+      { "<leader>tk", "<cmd>lua require('kulala').jump_prev()<cr>", desc = "Previous HTTP request" },
     },
     opts = {},
   },
@@ -419,8 +417,7 @@ return {
     },
   },
 
-  -- Bokmerker for hurtignavigasjon
-  -- F.eks. Controller -> Service -> Repository
+  -- Bookmarks for jumping between controller, service and repository
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
@@ -438,42 +435,42 @@ return {
         function()
           require("harpoon"):list():add()
         end,
-        desc = "Legg til bokmerke",
+        desc = "Add bookmark",
       },
       {
         "<leader>hh",
         function()
           require("harpoon").ui:toggle_quick_menu(require("harpoon"):list())
         end,
-        desc = "Åpne bokmerker",
+        desc = "Open bookmarks",
       },
       {
         "<leader>h1",
         function()
           require("harpoon"):list():select(1)
         end,
-        desc = "Bokmerke 1",
+        desc = "Bookmark 1",
       },
       {
         "<leader>h2",
         function()
           require("harpoon"):list():select(2)
         end,
-        desc = "Bokmerke 2",
+        desc = "Bookmark 2",
       },
       {
         "<leader>h3",
         function()
           require("harpoon"):list():select(3)
         end,
-        desc = "Bokmerke 3",
+        desc = "Bookmark 3",
       },
       {
         "<leader>h4",
         function()
           require("harpoon"):list():select(4)
         end,
-        desc = "Bokmerke 4",
+        desc = "Bookmark 4",
       },
     },
   },
