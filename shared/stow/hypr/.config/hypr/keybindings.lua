@@ -117,7 +117,7 @@ hl.bind(mod .. " + semicolon",   hl.dsp.exec_cmd('wtype "ø"'))
 hl.bind(mod .. " + apostrophe",  hl.dsp.exec_cmd('wtype "æ"'))
 
 -- Menu/Application key writes tilde
-hl.bind("code:135", hl.dsp.exec_cmd('wtype "~"'))
+hl.bind("Menu", hl.dsp.exec_cmd('wtype "~"'))
 hl.bind("Print", hl.dsp.exec_cmd('wtype "~"'))
 
 -- Special characters with Ctrl+Alt
@@ -145,16 +145,16 @@ hl.bind(alt .. " + A", hl.dsp.focus({ workspace = "r-1" }))
 -- Media and brightness controls (work on any machine with standard keys)
 
 -- Audio controls (macOS-style center overlay)
-hl.bind("code:121", hl.dsp.exec_cmd(scripts .. "/volume.sh mute"))                            -- Mute
-hl.bind("code:122", hl.dsp.exec_cmd(scripts .. "/volume.sh down"), { repeating = true })      -- Volume down (hold)
-hl.bind("code:123", hl.dsp.exec_cmd(scripts .. "/volume.sh up"), { repeating = true })        -- Volume up (hold)
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd(scripts .. "/volume.sh mute"))                            -- Mute
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(scripts .. "/volume.sh down"), { repeating = true })      -- Volume down (hold)
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(scripts .. "/volume.sh up"), { repeating = true })        -- Volume up (hold)
 
 -- Brightness controls (macOS-style center overlay)
-hl.bind("code:232", hl.dsp.exec_cmd(scripts .. "/brightness.sh down"), { repeating = true })  -- Brightness down (hold)
-hl.bind("code:233", hl.dsp.exec_cmd(scripts .. "/brightness.sh up"), { repeating = true })    -- Brightness up (hold)
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(scripts .. "/brightness.sh down"), { repeating = true })  -- Brightness down (hold)
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(scripts .. "/brightness.sh up"), { repeating = true })    -- Brightness up (hold)
 
 -- Screenshot
-hl.bind("code:239", hl.dsp.exec_cmd(scripts .. "/screenshot_keycode.sh 2>/dev/null || true"))
+hl.bind("XF86Send", hl.dsp.exec_cmd(scripts .. "/screenshot_keycode.sh 2>/dev/null || true"))
 
 -- Machine-specific bindings (uncomment if you have ASUS laptop)
 -- hl.bind("code:156", hl.dsp.exec_cmd("rog-control-center"))

@@ -13,6 +13,9 @@ unset _df
 : "${DOTFILES_DIR:=$HOME/Desktop/dotfiles}"
 
 # PATH
+# typeset -U keeps path unique, so a shell started inside another shell does not
+# end up with these five entries twice, and again on the one after that.
+typeset -U path PATH
 export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$HOME/.npm-global/bin:$HOME/go/bin:$HOME/.cargo/bin:$PATH"
 # Runtimes: mise when installed (versions in ~/.config/mise/config.toml),
 # else the per-tool initialisers it replaces.
@@ -315,8 +318,11 @@ bindkey '^[[127;3u' backward-kill-line
 
 # Activate a project venv on cd.
 chpwd() {
-    [[ -d .venv ]] && source .venv/bin/activate
-    [[ -d venv ]] && source venv/bin/activate
+    # Guard the file, not the directory. A .venv without bin/activate (an
+    # interrupted create, or one copied from another machine) otherwise makes
+    # every cd into that tree print an error, including in non-interactive zsh.
+    [[ -f .venv/bin/activate ]] && source .venv/bin/activate
+    [[ -f venv/bin/activate ]] && source venv/bin/activate
 }
 
 # Stow one package from whichever tree holds it.
