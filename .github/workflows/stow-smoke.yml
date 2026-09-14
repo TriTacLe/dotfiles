@@ -1,0 +1,28 @@
+name: stow-smoke
+
+on:
+  push:
+    branches: [master]
+    paths: [justfile, 'shared/**', 'arch/**', 'ubuntu/**', 'server/**', '.github/workflows/stow-smoke.yml']
+  pull_request:
+    paths: [justfile, 'shared/**', 'arch/**', 'ubuntu/**', 'server/**', '.github/workflows/stow-smoke.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  arch:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - run: pacman -Sy --noconfirm --needed stow just git zsh
+      - uses: actions/checkout@v4
+      - name: Stow into a scratch home
+        run: |
+          export HOME=/tmp/home
+          mkdir -p "$HOME"
+          just stow arch
+          test -L "$HOME/.zshrc"
+          test -L "$HOME/.config/hypr/hyprland.lua"
+          test -L "$HOME/.config/uwsm/env-hyprland"
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && bash shared/scripts/verify-system.sh

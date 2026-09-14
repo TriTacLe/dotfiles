@@ -8,7 +8,7 @@ GenericName=Numerical Computing Environment
 Comment=Numerical computing with Simulink
 # Absolute path on purpose. SDDM starts the session, so no login shell runs and
 # ~/.local/bin never joins PATH. A bare "matlab" here is unresolvable.
-Exec=/home/tri/.local/bin/matlab -desktop
+Exec=sh -c "$HOME/.local/bin/matlab -desktop"
 Icon=matlab
 Terminal=false
 Categories=Science;Math;
