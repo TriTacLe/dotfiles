@@ -1,10 +1,6 @@
-# antidote bundle, loaded by shared.zsh. use-omz must precede ohmyzsh plugins.
-# kind:defer plugins load after the first prompt through zsh-defer.
-getantidote/use-omz
-ohmyzsh/ohmyzsh path:plugins/git
-ohmyzsh/ohmyzsh path:plugins/sudo
-ohmyzsh/ohmyzsh path:plugins/brew conditional:is_macos
-ohmyzsh/ohmyzsh path:plugins/macos conditional:is_macos
+# antidote bundle, loaded by shared.zsh. Deferred plugins load after the
+# first prompt. Nothing from oh-my-zsh: its clone is 28 MB and the git
+# aliases it would add are already defined in shared.zsh.
 zsh-users/zsh-autosuggestions kind:defer
 zdharma-continuum/fast-syntax-highlighting kind:defer
 romkatv/powerlevel10k conditional:need_p10k
