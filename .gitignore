@@ -42,3 +42,6 @@ Thumbs.db
 ehthumbs.db
 server/etc/nginx/
 *.log
+
+# Go writes telemetry state under the stowed .config; it is per machine.
+shared/stow/nvim/.config/go/
