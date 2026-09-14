@@ -30,11 +30,13 @@ echo "[1] Hardcoded user paths"
 # (.lua, .jsonc, .gitconfig, systemd units) are covered without touching this.
 # Filtered out: the claude-config submodule entry, this script (which has to contain
 # the pattern it searches for), and .p10k.zsh (wizard output, example paths in comments).
+# /home/pacman-cache is the pacman cache dir set by install-arch.sh, not a user home.
 _hc_home_re='/home/[a-z_][a-z0-9_-]*/'
 _hc_skip='^(claude-config|shared/scripts/verify-system\.sh|shared/stow/zsh/\.config/zsh/\.p10k\.zsh)$'
 _hc_hits() {
     git ls-files -z | grep -zvE "$_hc_skip" \
-        | xargs -0 grep -InsE "$_hc_home_re" 2>/dev/null
+        | xargs -0 grep -InsE "$_hc_home_re" 2>/dev/null \
+        | grep -v "/home/pacman-cache/"
 }
 HARDCODES=$(_hc_hits | wc -l)
 if [[ "$HARDCODES" -eq 0 ]]; then
