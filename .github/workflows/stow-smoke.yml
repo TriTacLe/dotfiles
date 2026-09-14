@@ -3,31 +3,56 @@ name: stow-smoke
 on:
   push:
     branches: [master]
-    paths: [justfile, 'shared/**', 'arch/**', 'ubuntu/**', 'server/**', '.github/workflows/stow-smoke.yml']
+    paths: [justfile, 'shared/**', 'arch/**', 'ubuntu/**', 'macos/**', 'server/**', '.github/workflows/stow-smoke.yml']
   pull_request:
-    paths: [justfile, 'shared/**', 'arch/**', 'ubuntu/**', 'server/**', '.github/workflows/stow-smoke.yml']
+    paths: [justfile, 'shared/**', 'arch/**', 'ubuntu/**', 'macos/**', 'server/**', '.github/workflows/stow-smoke.yml']
 
 permissions:
   contents: read
 
 jobs:
-  arch:
+  stow:
     runs-on: ubuntu-latest
     container: archlinux:latest@sha256:b944cc65c5f28665dfd5fdbf5ed2997c88f5bb4a0aefac7ee8a7ef01893e5ed9
+    strategy:
+      fail-fast: false
+      matrix:
+        # Every value the justfile accepts. Only arch used to be exercised, while
+        # the workflow already triggered on ubuntu, macos and server paths.
+        os: [arch, ubuntu, macos, server]
+    env:
+      # One HOME for both steps. The stow step used to export it inline, so the
+      # health checks then ran against a home nothing had been stowed into.
+      HOME: /tmp/home
     steps:
-      - run: pacman -Sy --noconfirm --needed stow just git zsh
+      # -u, not just -y: a partial upgrade against a pinned image can link freshly
+      # synced packages against a newer glibc than the image ships.
+      - run: |
+          pacman -Syu --noconfirm --needed stow just git zsh
+          mkdir -p "$HOME"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
       - name: Stow into a scratch home
         run: |
-          export HOME=/tmp/home
-          mkdir -p "$HOME"
-          just stow arch
+          just stow ${{ matrix.os }}
           test -L "$HOME/.zshrc"
+      - name: Desktop packages land where they should
+        if: matrix.os == 'arch' || matrix.os == 'ubuntu'
+        run: |
           test -L "$HOME/.config/hypr/hyprland.lua"
-          test -L "$HOME/.config/uwsm/env-hyprland"
+          test -L "$HOME/.config/uwsm/env"
+      - name: Per-host arch overlay lands too
+        if: matrix.os == 'arch'
+        # env-hyprland ships in arch/stow/hypr-host, so it is arch only.
+        run: test -L "$HOME/.config/uwsm/env-hyprland"
+      - name: Unstow leaves nothing behind
+        run: |
+          just unstow ${{ matrix.os }}
+          test ! -e "$HOME/.zshrc"
+          test ! -e "$HOME/.claude"
       - name: Repo health checks
+        if: matrix.os == 'arch'
         env:
           DOTFILES_DIR: ${{ github.workspace }}
         run: |

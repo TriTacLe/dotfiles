@@ -34,9 +34,13 @@ echo "[1] Hardcoded user paths"
 _hc_home_re='/home/[a-z_][a-z0-9_-]*/'
 _hc_skip='^(claude-config|shared/scripts/verify-system\.sh|shared/stow/zsh/\.config/zsh/\.p10k\.zsh)$'
 _hc_hits() {
+    # -H so a single-file xargs batch still prints the path. The cache path is
+    # blanked rather than the whole line dropped, or a real hardcode sharing a
+    # line with it would be hidden too.
     git ls-files -z | grep -zvE "$_hc_skip" \
-        | xargs -0 grep -InsE "$_hc_home_re" 2>/dev/null \
-        | grep -v "/home/pacman-cache/"
+        | xargs -0 grep -HInsE "$_hc_home_re" 2>/dev/null \
+        | sed 's|/home/pacman-cache/|<pacman-cache>|g' \
+        | grep -E "$_hc_home_re"
 }
 HARDCODES=$(_hc_hits | wc -l)
 if [[ "$HARDCODES" -eq 0 ]]; then
@@ -52,19 +56,55 @@ echo ""
 echo "[2] Hyprland active hardcodes (monitor names, resolutions)"
 # Only the cross-machine config. The per-host hypr-host overlays exist precisely
 # to hold connector names and resolutions, so they are exempt.
-_hypr_dirs=(shared/stow/hypr/)
-ACTIVE_MON=$(grep -rn "^[^#-]*monitor.*\(eDP-[0-9]\|DP-[0-9]\)" "${_hypr_dirs[@]}" 2>/dev/null | wc -l)
-ACTIVE_RES=$(grep -rn "^[^#-]*\(1920x1200\|2560x1440\)" "${_hypr_dirs[@]}" 2>/dev/null | wc -l)
-unset _hypr_dirs
-[[ "$ACTIVE_MON" -eq 0 ]] && { echo "  ok   no active monitor hardcodes"; PASS=$((PASS+1)); } || { echo "  FAIL $ACTIVE_MON monitor hardcode(s)"; FAIL=$((FAIL+1)); }
-[[ "$ACTIVE_RES" -eq 0 ]] && { echo "  ok   no active resolution hardcodes"; PASS=$((PASS+1)); } || { echo "  FAIL $ACTIVE_RES resolution hardcode(s)"; FAIL=$((FAIL+1)); }
+# The config itself, not scripts/: a helper mentioning an image size in an error
+# string is not a monitor hardcode.
+_hypr_cfg=(shared/stow/hypr/.config/hypr/*.lua shared/stow/hypr/.config/hypr/*.conf)
+# Drop comment lines first. The old "^[^#-]*" prefix was meant to do that, but a
+# character class excluding "-" also refuses to step over the hyphen in DP-1, so
+# no line naming a connector could ever match its own resolution check.
+_hypr_live() { grep -nH -vE '^[[:space:]]*(#|--)' "${_hypr_cfg[@]}" 2>/dev/null; }
+ACTIVE_MON=$(_hypr_live | grep -cE 'monitor.*(eDP-[0-9]|DP-[0-9])')
+# Any WxH, not a two-value allowlist: the old one passed for every resolution
+# except the two it happened to name.
+ACTIVE_RES=$(_hypr_live | grep -cE '[0-9]{3,4}x[0-9]{3,4}')
+if [[ "$ACTIVE_MON" -eq 0 ]]; then
+    echo "  ok   no active monitor hardcodes"; PASS=$((PASS+1))
+else
+    echo "  FAIL $ACTIVE_MON monitor hardcode(s)"; FAIL=$((FAIL+1))
+fi
+if [[ "$ACTIVE_RES" -eq 0 ]]; then
+    echo "  ok   no active resolution hardcodes"; PASS=$((PASS+1))
+else
+    echo "  FAIL $ACTIVE_RES resolution hardcode(s)"; FAIL=$((FAIL+1))
+fi
+
+echo ""
+echo "[2b] systemd units do not hardcode a clone path"
+# %h/Desktop/dotfiles slips past check [1]: that regex looks for /home/<user>/.
+UNIT_PATHS=$(git ls-files '*.service' '*.timer' '*.path' \
+    | xargs grep -HnE '%h/(Desktop|Documents|projects)/' 2>/dev/null | wc -l)
+if [[ "$UNIT_PATHS" -eq 0 ]]; then
+    echo "  ok   units use %h/.local, %h/.config or %h/.claude"; PASS=$((PASS+1))
+else
+    echo "  FAIL $UNIT_PATHS unit(s) hardcode a clone path:"
+    git ls-files '*.service' '*.timer' '*.path' \
+        | xargs grep -HnE '%h/(Desktop|Documents|projects)/' 2>/dev/null | sed 's/^/    /'
+    FAIL=$((FAIL+1))
+fi
 
 echo ""
 echo "[3] Shell script syntax"
 SH_FAIL=0
 while IFS= read -r f; do
     bash -n "$f" 2>/dev/null || { echo "    syntax error: $f"; SH_FAIL=$((SH_FAIL+1)); }
-done < <(find . -name "*.sh" -not -path "./archived-scripts/*" -not -path "./claude-config/*" -not -path "./.git/*" -not -path "*/nvim/*")
+done < <(
+    # Not just *.sh: the git pre-push hook and the matlab wrapper ship executable
+    # with a bash shebang and no extension.
+    { find . -name "*.sh" -not -path "./archived-scripts/*" -not -path "./claude-config/*" \
+        -not -path "./.git/*" -not -path "*/nvim/*"
+      git ls-files 'shared/stow/git/.git-hooks/*' 'shared/stow/scripts/.local/bin/*'
+    } | sort -u
+)
 if [[ "$SH_FAIL" -eq 0 ]]; then
     echo "  ok   all shell scripts parse"
     PASS=$((PASS+1))
@@ -75,7 +115,11 @@ fi
 
 echo ""
 echo "[4] zsh config syntax"
-check "arch/stow/zsh/.zshrc parses" zsh -n arch/stow/zsh/.zshrc
+for _z in shared/stow/zsh/.config/zsh/shared.zsh arch/stow/zsh/.zshrc \
+          ubuntu/stow/zsh/.zshrc macos/stow/zsh/.zshrc; do
+    check "$_z parses" zsh -n "$_z"
+done
+unset _z
 
 echo ""
 echo "[5] Required files exist"
@@ -109,12 +153,11 @@ else
 fi
 
 echo ""
-echo "[8] install.sh is executable"
-check "install.sh executable" test -x install.sh
-
-echo ""
-echo "[9] justfile parses"
-check "just -n stow arch" just --justfile justfile -n stow arch
+echo "[8] justfile parses for every OS"
+for _os in arch ubuntu macos server; do
+    check "just -n stow $_os" just --justfile justfile -n stow "$_os"
+done
+unset _os
 
 echo ""
 echo "=== Result ==="
