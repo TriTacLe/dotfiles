@@ -11,14 +11,14 @@
 #   1. $DOTFILES_DIR env var (if set and valid)
 #   2. Search list of common clone locations
 
-if [[ -z "${DOTFILES_DIR:-}" || ! -d "${DOTFILES_DIR:-}/.git" ]]; then
+if [[ -z "${DOTFILES_DIR:-}" || ! -e "${DOTFILES_DIR:-}/.git" ]]; then
     for _path in \
         "$HOME/Desktop/dotfiles" \
         "$HOME/dotfiles" \
         "$HOME/.dotfiles" \
         "$HOME/Documents/dotfiles" \
         "$HOME/projects/dotfiles"; do
-        if [[ -d "$_path/.git" ]]; then
+        if [[ -e "$_path/.git" ]]; then
             DOTFILES_DIR="$_path"
             break
         fi
@@ -71,7 +71,11 @@ enable_user_units() {
     systemctl --user daemon-reload
     local unit
     for unit in "$@"; do
-        systemctl --user enable --now "$unit" && ok "enabled $unit"
+        if systemctl --user enable --now "$unit"; then
+            ok "enabled $unit"
+        else
+            warn "could not enable $unit"
+        fi
     done
 }
 
