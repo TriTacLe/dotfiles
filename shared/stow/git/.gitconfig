@@ -9,8 +9,16 @@
 [core]
   autocrlf = input
   editor = vim
-  pager = less -FRX
+  pager = delta
 	hooksPath = ~/.git-hooks
+
+[interactive]
+  diffFilter = delta --color-only
+
+[delta]
+  navigate = true
+  dark = true
+  line-numbers = true
 
 [format]
     pretty="%C(magenta)%h %C(white) %an %ar%C(auto) %D%n%s%n"
