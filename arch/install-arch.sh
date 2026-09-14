@@ -60,8 +60,14 @@ install_system_configs() {
         /etc/systemd/journald.conf.d/size.conf
     sudo systemctl restart systemd-journald
 
+    # Weekly mirror refresh and package cache trim.
+    sudo install -D -m 0644 -o root -g root \
+        "$DOTFILES/arch/etc/xdg/reflector/reflector.conf" \
+        /etc/xdg/reflector/reflector.conf
+    sudo pacman -S --needed --noconfirm reflector pacman-contrib
+
     sudo systemctl daemon-reload
-    sudo systemctl enable --now thermald cpu-tune
+    sudo systemctl enable --now thermald cpu-tune reflector.timer paccache.timer
 }
 
 install_system_configs
