@@ -1,14 +1,12 @@
 -- Python utviklingsoppsett
 
 return {
-  -- Bytt til basedpyright (strengere type-inferens enn pyright)
+  -- basedpyright settings. options.lua picks the server via lazyvim_python_lsp.
   {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        pyright = { enabled = false },
         basedpyright = {
-          enabled = true,
           settings = {
             basedpyright = {
               typeCheckingMode = "standard",
@@ -43,8 +41,6 @@ return {
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, {
-        "python",
-        "toml",
         "requirements", -- requirements.txt
       })
     end,
@@ -72,38 +68,19 @@ return {
     end,
     keys = {
       {
-        "<leader>td",
+        "<leader>dPs",
         function()
           require("dap-python").debug_selection()
         end,
         desc = "Debug Python utvalg",
         ft = "python",
       },
-      {
-        "<leader>tm",
-        function()
-          require("dap-python").test_method()
-        end,
-        desc = "Debug pytest metode",
-        ft = "python",
-      },
-      {
-        "<leader>tc",
-        function()
-          require("dap-python").test_class()
-        end,
-        desc = "Debug pytest klasse",
-        ft = "python",
-      },
     },
   },
 
-  -- Test runner med neotest-python (pytest)
+  -- pytest through neotest. The python extra already adds neotest-python.
   {
     "nvim-neotest/neotest",
-    dependencies = {
-      "nvim-neotest/neotest-python",
-    },
     opts = {
       adapters = {
         ["neotest-python"] = {
@@ -118,20 +95,12 @@ return {
     },
   },
 
-  -- Automatisk aktiver venv i prosjektet
+  -- Pick the project venv. The python extra provides the key and filetype.
   {
     "linux-cultist/venv-selector.nvim",
     branch = "regexp",
-    ft = "python",
     opts = {
-      settings = {
-        options = {
-          notify_user_on_venv_activation = false,
-        },
-      },
-    },
-    keys = {
-      { "<leader>cv", "<cmd>VenvSelect<cr>", desc = "Velg Python venv", ft = "python" },
+      options = { notify_user_on_venv_activation = false },
     },
   },
 
