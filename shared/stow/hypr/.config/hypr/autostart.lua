@@ -18,7 +18,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(bg("waybar"))
     hl.dispatch(hl.dsp.focus({ workspace = 3 }))     -- Land on workspace 3 at login
     hl.exec_cmd(bg("hypridle"))
-    hl.exec_cmd(bg("avizo-daemon"))                      -- Volume/brightness overlay
+    hl.exec_cmd(bg("swayosd-server"))                    -- Volume/brightness overlay
     hl.exec_cmd(bg("~/.config/hypr/scripts/assign_workspaces.sh"))
     hl.exec_cmd(bg("~/.config/hypr/scripts/monitor_watch.sh"))
     hl.exec_cmd(bg("~/.config/hypr/scripts/workspace_names.sh"))  -- Restore workspace labels

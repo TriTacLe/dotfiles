@@ -2,7 +2,7 @@
 
 dotfiles := justfile_directory()
 
-shared_desktop := "git nvim lazygit backgrounds zsh tmux alacritty ghostty kitty hypr waybar swaync wofi avizo nwg-dock nwg-look wlogout scripts ipython zathura"
+shared_desktop := "git nvim lazygit backgrounds zsh tmux alacritty ghostty kitty hypr waybar swaync wofi nwg-dock nwg-look wlogout scripts ipython zathura"
 shared_macos := "git nvim lazygit backgrounds zsh scripts ipython"
 shared_cli := "git nvim lazygit zsh tmux scripts ipython"
 arch_pkgs := "zsh fastfetch hypr-host pacseek systemd"
