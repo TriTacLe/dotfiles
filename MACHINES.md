@@ -54,6 +54,7 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 - Monitor by EDID description `desc:AU Optronics 0x1092`, scale 1.0
 - Hybrid GPU: Intel iGPU drives display, Quadro T1000 for compute
 - Root 46 GB (small), home 422 GB - keep root lean
+- Pacman cache at `/home/pacman-cache` and journal capped at 200 MB, both set by `install_system_configs`, so upgrades stop failing the download-space check on root
 
 ---
 
