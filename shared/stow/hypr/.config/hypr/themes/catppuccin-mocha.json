@@ -1,6 +1,10 @@
 {
-  "_meta": { "name": "Catppuccin Mocha", "author": "Catppuccin", "variant": "dark" },
-
+  "_meta": {
+    "name": "Catppuccin Mocha",
+    "author": "Catppuccin",
+    "variant": "dark",
+    "nvim": "catppuccin-mocha"
+  },
   "base": "#1e1e2e",
   "mantle": "#181825",
   "crust": "#11111b",
@@ -13,7 +17,6 @@
   "overlay0": "#6c7086",
   "overlay1": "#7f849c",
   "overlay2": "#9399b2",
-
   "blue": "#89b4fa",
   "sapphire": "#74c7ec",
   "peach": "#fab387",
@@ -24,13 +27,11 @@
   "yellow": "#f9e2af",
   "maroon": "#eba0ac",
   "teal": "#94e2d5",
-
   "accent": "#cba6f7",
   "accent_dim": "#7287fd",
   "accent_bright": "#b4befe",
   "selection": "#45475a",
   "border": "#585b70",
-
   "term_black": "#45475a",
   "term_red": "#f38ba8",
   "term_green": "#a6e3a1",
@@ -47,7 +48,6 @@
   "term_bright_magenta": "#f5c2e7",
   "term_bright_cyan": "#94e2d5",
   "term_bright_white": "#a6adc8",
-
   "radius_small": 4,
   "radius_medium": 10,
   "radius_large": 16,

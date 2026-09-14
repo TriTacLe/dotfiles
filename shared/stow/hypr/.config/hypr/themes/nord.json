@@ -1,6 +1,10 @@
 {
-  "_meta": { "name": "Nord", "author": "Arctic Ice Studio", "variant": "dark" },
-
+  "_meta": {
+    "name": "Nord",
+    "author": "Arctic Ice Studio",
+    "variant": "dark",
+    "nvim": "nord"
+  },
   "base": "#2e3440",
   "mantle": "#272c36",
   "crust": "#21252e",
@@ -13,7 +17,6 @@
   "overlay0": "#5c6a7e",
   "overlay1": "#6b7a92",
   "overlay2": "#7b8aa3",
-
   "blue": "#81a1c1",
   "sapphire": "#5e81ac",
   "peach": "#d08770",
@@ -24,13 +27,11 @@
   "yellow": "#ebcb8b",
   "maroon": "#bf616a",
   "teal": "#8fbcbb",
-
   "accent": "#88c0d0",
   "accent_dim": "#5e81ac",
   "accent_bright": "#8fbcbb",
   "selection": "#434c5e",
   "border": "#4c566a",
-
   "term_black": "#3b4252",
   "term_red": "#bf616a",
   "term_green": "#a3be8c",
@@ -47,7 +48,6 @@
   "term_bright_magenta": "#b48ead",
   "term_bright_cyan": "#8fbcbb",
   "term_bright_white": "#eceff4",
-
   "radius_small": 4,
   "radius_medium": 10,
   "radius_large": 16,

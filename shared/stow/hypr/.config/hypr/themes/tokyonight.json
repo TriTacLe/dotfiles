@@ -1,6 +1,10 @@
 {
-  "_meta": { "name": "Tokyo Night", "author": "Folke", "variant": "dark" },
-
+  "_meta": {
+    "name": "Tokyo Night",
+    "author": "Folke",
+    "variant": "dark",
+    "nvim": "tokyonight-night"
+  },
   "base": "#1a1b26",
   "mantle": "#16161e",
   "crust": "#13131a",
@@ -13,7 +17,6 @@
   "overlay0": "#545c7e",
   "overlay1": "#6b7089",
   "overlay2": "#737aa2",
-
   "blue": "#7aa2f7",
   "sapphire": "#7dcfff",
   "peach": "#ff9e64",
@@ -24,13 +27,11 @@
   "yellow": "#e0af68",
   "maroon": "#db4b4b",
   "teal": "#1abc9c",
-
   "accent": "#7aa2f7",
   "accent_dim": "#3d59a1",
   "accent_bright": "#b4f9f8",
   "selection": "#283457",
   "border": "#3d59a1",
-
   "term_black": "#15161e",
   "term_red": "#f7768e",
   "term_green": "#9ece6a",
@@ -47,7 +48,6 @@
   "term_bright_magenta": "#bb9af7",
   "term_bright_cyan": "#7dcfff",
   "term_bright_white": "#c0caf5",
-
   "radius_small": 4,
   "radius_medium": 10,
   "radius_large": 16,
