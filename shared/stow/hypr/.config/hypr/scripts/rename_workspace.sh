@@ -31,9 +31,9 @@ new=$(wofi \
 mkdir -p "$(dirname "$STATE")"
 touch "$STATE"
 tmp=$(mktemp)
+trap 'rm -f "$tmp"' EXIT
 grep -v "^$id=" "$STATE" > "$tmp" || true
 [[ -n "$new" ]] && printf '%s=%s\n' "$id" "$new" >> "$tmp"
 sort -n -t= -k1 "$tmp" -o "$STATE"
-rm -f "$tmp"
 
 hyprctl dispatch "hl.dsp.workspace.rename({ workspace = '$id', name = '$id${new:+: $new}' })"
