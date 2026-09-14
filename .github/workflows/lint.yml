@@ -44,3 +44,6 @@ jobs:
       - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Same ruleset the pre-push hook uses. Without this CI ran the stock
+          # rules and the two could disagree in either direction.
+          GITLEAKS_CONFIG: ${{ github.workspace }}/shared/stow/git/.config/git/gitleaks.toml

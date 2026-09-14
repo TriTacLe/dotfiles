@@ -1,17 +1,25 @@
 -- Autostart, plus the workspaces that must always exist.
 
--- Under uwsm, launch as a background scope so oomd sees each daemon on its
--- own. A plain session falls through to the bare command.
+-- Under uwsm, launch as a scope in background-graphical.slice so each daemon is
+-- its own unit and stops with the session. A plain session falls through to the
+-- bare command. exec in both branches so the wrapper shell does not stay parked
+-- around every daemon for the life of the session.
 local function bg(cmd)
-    return "if systemctl --user -q is-active wayland-wm@*.service; then uwsm app -s b -- "
-        .. cmd .. "; else " .. cmd .. "; fi"
+    return "if systemctl --user -q is-active wayland-wm@*.service; then exec uwsm app -s b -- "
+        .. cmd .. "; else exec " .. cmd .. "; fi"
+end
+
+-- uwsm's session target also pulls in /etc/xdg/autostart, so anything with a
+-- desktop entry there is already started for us and starting it again gives two
+-- tray icons. Launch these only in a plain session.
+local function unless_uwsm(cmd)
+    return "if systemctl --user -q is-active wayland-wm@*.service; then :; else exec " .. cmd .. "; fi"
 end
 
 hl.on("hyprland.start", function()
     hl.exec_cmd("dbus-update-activation-environment --systemd --all")
-    hl.exec_cmd(bg("blueman-applet"))                    -- Bluetooth tray icon
-    hl.exec_cmd(bg("nm-applet --no-agent --indicator"))  -- Network tray icon
-    hl.exec_cmd("hyprpm reload -n")
+    hl.exec_cmd(unless_uwsm("blueman-applet"))           -- Bluetooth tray icon, also in /etc/xdg/autostart
+    hl.exec_cmd(unless_uwsm("nm-applet --no-agent --indicator")) -- Network tray icon, also in /etc/xdg/autostart
     hl.exec_cmd(bg("swaync"))
     hl.exec_cmd(bg("hyprpaper"))
     hl.exec_cmd(bg("~/.config/hypr/scripts/wallpaper-slideshow.sh"))

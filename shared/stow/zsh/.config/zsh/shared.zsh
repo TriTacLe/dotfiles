@@ -13,6 +13,9 @@ unset _df
 : "${DOTFILES_DIR:=$HOME/Desktop/dotfiles}"
 
 # PATH
+# typeset -U keeps path unique, so a shell started inside another shell does not
+# end up with these five entries twice, and again on the one after that.
+typeset -U path PATH
 export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$HOME/.npm-global/bin:$HOME/go/bin:$HOME/.cargo/bin:$PATH"
 # Runtimes: mise when installed (versions in ~/.config/mise/config.toml),
 # else the per-tool initialisers it replaces.
@@ -40,10 +43,6 @@ export HISTFILE=~/.zshhist
 setopt INC_APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_SPACE HIST_IGNORE_ALL_DUPS
 setopt HIST_SAVE_NO_DUPS HIST_IGNORE_DUPS HIST_FIND_NO_DUPS
 
-# Completion
-autoload -Uz compinit && compinit -d ~/.config/zsh/.zcompdump
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-
 # Plugins through antidote. The bundle list is stowed; the static file it
 # writes next to it is generated and untracked. The first start on a machine
 # clones antidote and the plugins, which takes a moment; do not interrupt it.
@@ -63,6 +62,11 @@ if [[ -r ~/.antidote/antidote.zsh ]]; then
 fi
 
 [[ -r $P10K_SYSTEM ]] && source $P10K_SYSTEM
+
+# Completion, after antidote: the generated plugin file appends to fpath, and
+# compinit only sees what is in fpath at the moment it builds the dump.
+autoload -Uz compinit && compinit -d ~/.config/zsh/.zcompdump
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
 # Tab accepts the autosuggestion when there is one, else completes.
 _accept_or_complete() {
@@ -315,8 +319,11 @@ bindkey '^[[127;3u' backward-kill-line
 
 # Activate a project venv on cd.
 chpwd() {
-    [[ -d .venv ]] && source .venv/bin/activate
-    [[ -d venv ]] && source venv/bin/activate
+    # Guard the file, not the directory. A .venv without bin/activate (an
+    # interrupted create, or one copied from another machine) otherwise makes
+    # every cd into that tree print an error, including in non-interactive zsh.
+    [[ -f .venv/bin/activate ]] && source .venv/bin/activate
+    [[ -f venv/bin/activate ]] && source venv/bin/activate
 }
 
 # Stow one package from whichever tree holds it.
@@ -331,7 +338,8 @@ stow-pkg() {
 }
 unstow-pkg() {
     [[ -n "$1" ]] || { echo "Usage: unstow-pkg <package>"; return 1; }
-    if [[ "$1" == "claude-config" ]]; then [[ -L ~/.claude ]] && rm ~/.claude; return; fi
+    # command rm: the interactive rm -iv alias would stop and ask here.
+    if [[ "$1" == "claude-config" ]]; then [[ -L ~/.claude ]] && command rm -f ~/.claude; return; fi
     for _d in shared arch ubuntu macos; do
         [[ -d "$DOTFILES_DIR/$_d/stow/$1" ]] && stow -d "$DOTFILES_DIR/$_d/stow" -t ~ --no-folding -D "$1"
     done

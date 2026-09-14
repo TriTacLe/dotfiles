@@ -54,11 +54,11 @@
         },
         {
           "label": "󰌾",
-          "command": "playerctl pause | $HOME/.config/sway/swaylock-corrupter.sh"
+          "command": "playerctl pause; loginctl lock-session"
         },
         {
           "label": "󰍃",
-          "command": "swaymsg exit"
+          "command": "hyprctl dispatch exit"
         },
         {
           "label": "󰆴",
@@ -76,7 +76,7 @@
         },
         {
           "label": "󰖩",
-          "command": "nmtui"
+          "command": "ghostty -e nmtui"
         },
         {
           "label": "󰂯",

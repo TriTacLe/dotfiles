@@ -31,4 +31,14 @@ _stow os flag:
     # otherwise leave a stale link behind.
     stow -d "{{dotfiles}}/shared/stow" -t ~ --no-folding {{flag}} $shared
     stow -d "{{dotfiles}}/$dir/stow" -t ~ --no-folding {{flag}} $pkgs
-    [ "{{flag}}" = "-R" ] && ln -sfn "{{dotfiles}}/claude-config" ~/.claude || true
+    # ~/.claude is one symlink to the claude-config submodule, not a stow tree.
+    # Guarded the same way link_claude_config is: never clobber a real directory.
+    if [ "{{flag}}" = "-R" ]; then
+        if [ -d ~/.claude ] && [ ! -L ~/.claude ]; then
+            echo "~/.claude is a real directory, leaving it alone" >&2
+        else
+            ln -sfn "{{dotfiles}}/claude-config" ~/.claude
+        fi
+    elif [ -L ~/.claude ]; then
+        rm -f ~/.claude
+    fi
