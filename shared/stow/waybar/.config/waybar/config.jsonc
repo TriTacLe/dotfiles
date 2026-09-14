@@ -144,10 +144,10 @@
         "format": "{icon}  {volume}%",
         "tooltip": false,
         "format-muted": "  Muted",
-        "on-click": "pamixer -t",
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
         "on-click-right": "pavucontrol",
-        "on-scroll-up": "pamixer -d 1",
-        "on-scroll-down": "pamixer -i 1",
+        "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 1%+",
+        "on-scroll-down": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 1%-",
         "scroll-step": 5,
         "format-icons": {
             "headphone": "",
@@ -164,9 +164,9 @@
         "format": "{format_source}",
         "format-source": "  {volume}%",
         "format-source-muted": "    Muted",
-        "on-click": "pamixer --default-source -t",
-        "on-scroll-up": "pamixer --default-source -d 1",
-        "on-scroll-down": "pamixer --default-source -i 1",
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle",
+        "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 1%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 1%-",
         "scroll-step": 5
     },
     

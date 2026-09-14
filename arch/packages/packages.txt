@@ -152,6 +152,7 @@ kinfocenter
 kitty
 kmenuedit
 knighttime
+kooha
 kpipewire
 krdp
 kscreen
