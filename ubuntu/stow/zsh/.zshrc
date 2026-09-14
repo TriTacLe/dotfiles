@@ -1,206 +1,29 @@
-# Ubuntu Zsh Configuration
+# Ubuntu zsh config. Everything shared lives in ~/.config/zsh/shared.zsh.
 
-# Enable Powerlevel10k instant prompt - must stay near top
+# p10k instant prompt, must stay at the top.
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Source per-machine .env if present (paths, prefs)
-for _df in "$DOTFILES_DIR" "$HOME/Desktop/dotfiles" "$HOME/dotfiles" "$HOME/.dotfiles"; do
-    if [[ -n "$_df" && -f "$_df/.env" ]]; then
-        set -a; source "$_df/.env"; set +a
-        export DOTFILES_DIR="$_df"
-        break
-    fi
-done
-unset _df
+source ~/.config/zsh/shared.zsh
 
-# ============================================
-# PATH
-# ============================================
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.opencode/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-
-# Bun
-if [ -d "$HOME/.bun" ]; then
-    export BUN_INSTALL="$HOME/.bun"
-    export PATH="$BUN_INSTALL/bin:$PATH"
-    [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-fi
-
-# ============================================
-# Oh My Zsh
-# ============================================
-export ZSH="$HOME/.oh-my-zsh"
-export TERMINAL_EMULATOR="ghostty"
-
-if [ -d "$ZSH/custom/themes/powerlevel10k" ] || [ -f "/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme" ]; then
-    ZSH_THEME="powerlevel10k/powerlevel10k"
-else
-    ZSH_THEME="robbyrussell"
-fi
-
-HYPHEN_INSENSITIVE="true"
-ENABLE_CORRECTION="true"
-COMPLETION_WAITING_DOTS="true"
-
-plugins=(git)
-[ -d "$ZSH/custom/plugins/zsh-autosuggestions" ] && plugins+=(zsh-autosuggestions)
-[ -d "$ZSH/custom/plugins/zsh-syntax-highlighting" ] && plugins+=(zsh-syntax-highlighting)
-[ -d "$ZSH/custom/plugins/fzf" ] && plugins+=(fzf)
-[ -d "$ZSH/custom/plugins/zoxide" ] && plugins+=(zoxide)
-
-source $ZSH/oh-my-zsh.sh
-
-# ============================================
-# FZF
-# ============================================
-[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
-[ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-if command -v fzf &>/dev/null; then
-    if command -v fd &>/dev/null; then
-        export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-        export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-        export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
-    fi
-    export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
-    export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
-fi
-
-
-# ============================================
-# The Fuck
-# ============================================
-if command -v thefuck &>/dev/null && thefuck --version &>/dev/null; then
-    eval "$(thefuck --alias)"
-fi
-
-# ============================================
-# Powerlevel10k
-# ============================================
-# Stowed config wins; loose ~/.p10k.zsh is the fallback on machines without it
-if [[ -f ~/.config/zsh/.p10k.zsh ]]; then
-    source ~/.config/zsh/.p10k.zsh
-elif [[ -f ~/.p10k.zsh ]]; then
-    source ~/.p10k.zsh
-fi
-[[ -f /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme ]] && \
-    source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-
-# ============================================
-# Ubuntu-specific aliases
-# ============================================
 alias update='sudo apt update && sudo apt upgrade -y'
 alias inst='sudo apt install'
 alias remove='sudo apt remove'
 alias search='apt search'
 alias autoremove='sudo apt autoremove'
 alias pkgfnd='dpkg -l | grep'
-
 alias py='python3'
-
-alias desktop='cd ~/Desktop'
-alias documents='cd ~/Documents'
-alias downloads='cd ~/Downloads'
-alias home='cd ~'
-
-# Dev-dir aliases: guard on existence (paths from .env override defaults)
-[[ -d "${DOTFILES_DIR:-$HOME/Desktop/dotfiles}" ]] && alias dotfiles="cd ${DOTFILES_DIR:-$HOME/Desktop/dotfiles}"
-[[ -d "${PROJECTS_DIR:-$HOME/Desktop/projects}" ]] && alias project="cd ${PROJECTS_DIR:-$HOME/Desktop/projects}"
-[[ -d "${ORBIT_DIR:-$HOME/Desktop/orbit}" ]] && alias orbit="cd ${ORBIT_DIR:-$HOME/Desktop/orbit}"
-[[ -n "$MOENMARIN_DIR" && -d "$MOENMARIN_DIR/timeseries-api" ]] && alias timeseriesapi="cd $MOENMARIN_DIR/timeseries-api"
-[[ -n "$MOENMARIN_DIR" && -d "$MOENMARIN_DIR/monitor-5.0" ]] && alias monitor5="cd $MOENMARIN_DIR/monitor-5.0"
-
-alias claudd='claude --dangerously-skip-permissions'
-
-alias zshconf='nvim ~/.zshrc && source ~/.zshrc'
-alias bashconf='nvim ~/.bashrc && source ~/.bashrc'
-alias vimconf='nvim ~/.config/nvim/init.lua'
-
-alias bt='sudo systemctl start bluetooth'
-alias wifilist='nmcli device wifi list'
-alias wificonnect='nmcli device wifi connect --ask'
-alias fnd='ls -a | grep -i'
 alias lsblk='lsblk --output NAME,SIZE,TYPE,MOUNTPOINT,MODEL'
-
 alias rofi-launch='rofi -show drun'
 alias rofi-run='rofi -show run'
 alias rofi-window='rofi -show window'
 alias lock='swaylock'
 alias logout-menu='wlogout'
 
-if command -v eza &>/dev/null; then
-    alias ls='eza --icons=auto'
-    alias l='eza -la --icons=auto'
-    alias ll='eza -l --icons=auto'
-    alias lss='eza --tree --icons=auto --level=2'
-    alias lsss='eza --tree --icons=auto --level=3'
-    alias lssss='eza --tree --icons=auto --level=4'
-else
-    alias ls='ls --color=auto'
-    alias l='ls -la'
-    alias la='ls -la'
-    alias ll='ls -l'
-fi
+[[ -f "$HOME/Downloads/google-cloud-sdk/path.zsh.inc" ]] && source "$HOME/Downloads/google-cloud-sdk/path.zsh.inc"
+[[ -f "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc" ]] && source "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc"
 
-if command -v bat &>/dev/null; then
-    alias cat='bat --style=plain --paging=never'
-    alias catl='bat'
-fi
-
-if command -v btop &>/dev/null; then
-    alias top='btop'
-    alias htop='btop'
-fi
-
-if command -v yazi &>/dev/null; then
-    alias y='yazi'
-    alias ya='yazi'
-fi
-
-if command -v fastfetch &>/dev/null; then
-    alias fetch='fastfetch'
-    alias neofetch='fastfetch'
-elif command -v neofetch &>/dev/null; then
-    alias fetch='neofetch'
-fi
-
-# ============================================
-# Shared config + secrets
-# ============================================
-[ -f ~/.config/zsh/shared.zsh ] && source ~/.config/zsh/shared.zsh
-[ -f ~/.zshenv.secrets ] && source ~/.zshenv.secrets
-
-# ============================================
-# Google Cloud SDK
-# ============================================
-[ -f "$HOME/Downloads/google-cloud-sdk/path.zsh.inc" ] && source "$HOME/Downloads/google-cloud-sdk/path.zsh.inc"
-[ -f "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc" ] && source "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc"
-
-# ============================================
-# NVM
-# ============================================
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-# ============================================
-# SDKMAN - must stay last initializer
-# ============================================
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-# ============================================
-# Welcome Message
-# ============================================
-#if [[ -o interactive ]]; then
-#    if command -v fastfetch &>/dev/null; then
-#        fastfetch
-#    elif command -v neofetch &>/dev/null; then
-#        neofetch
-#    fi
-#fi
+[[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
