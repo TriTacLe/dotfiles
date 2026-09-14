@@ -10,10 +10,13 @@ BATTERY_PATH=$(upower -e | grep -m1 battery)
 BATTERY_PERCENT=$(upower -i "$BATTERY_PATH" | grep percentage | awk '{print $2}' | tr -d '%')
 BATTERY_STATE=$(upower -i "$BATTERY_PATH" | grep state | awk '{print $2}')
 
-# File to track if we've already dimmed the screen
-DIMMED_FLAG="/tmp/battery_dimmed"
-# File to store original brightness
-BRIGHTNESS_FILE="/tmp/battery_original_brightness"
+# Per-user runtime dir, not /tmp: fixed names in a world-writable directory mean
+# a stale file owned by someone else makes the brightness write fail for good.
+STATE_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+# Tracks whether the screen has already been dimmed.
+DIMMED_FLAG="$STATE_DIR/battery_dimmed"
+# Stores the brightness to restore.
+BRIGHTNESS_FILE="$STATE_DIR/battery_original_brightness"
 
 if [ "$BATTERY_STATE" = "discharging" ]; then
   if [ "$BATTERY_PERCENT" -le 5 ]; then

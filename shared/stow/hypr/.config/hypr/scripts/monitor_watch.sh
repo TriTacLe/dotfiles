@@ -4,7 +4,21 @@ set -euo pipefail
 # Requires: jq
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-SOCKET="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+# uwsm app with UWSM_APP_UNIT_TYPE=service runs from the systemd activation
+# environment, which need not carry the compositor's signature. Deriving it from
+# the newest instance directory keeps this working there; dying on an unbound
+# variable meant the reconnect loop below never started and the feature silently
+# stopped for the rest of the session.
+RUNTIME="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+SIG="${HYPRLAND_INSTANCE_SIGNATURE:-}"
+if [[ -z "$SIG" ]]; then
+    SIG=$(ls -t "$RUNTIME/hypr" 2>/dev/null | head -n1 || true)
+fi
+if [[ -z "$SIG" ]]; then
+    echo "no Hyprland instance under $RUNTIME/hypr" >&2
+    exit 1
+fi
+SOCKET="$RUNTIME/hypr/$SIG/.socket2.sock"
 
 # Reconnect forever. A dropped socket read would otherwise leave monitor
 # hotplug unhandled for the rest of the session.
