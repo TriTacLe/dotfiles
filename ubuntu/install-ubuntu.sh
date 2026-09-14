@@ -4,6 +4,9 @@ set -e
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
 source "$DOTFILES/shared/scripts/config.sh"
 
+# Refresh the index first: a stale one makes every apt-get install below 404.
+sudo apt-get update
+
 # Ensure stow is installed
 if ! command -v stow &>/dev/null; then
     echo "Installing stow..."
