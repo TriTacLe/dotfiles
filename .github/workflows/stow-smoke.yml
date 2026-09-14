@@ -13,10 +13,12 @@ permissions:
 jobs:
   arch:
     runs-on: ubuntu-latest
-    container: archlinux:latest
+    container: archlinux:latest@sha256:b944cc65c5f28665dfd5fdbf5ed2997c88f5bb4a0aefac7ee8a7ef01893e5ed9
     steps:
       - run: pacman -Sy --noconfirm --needed stow just git zsh
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
       - name: Stow into a scratch home
         run: |
           export HOME=/tmp/home
@@ -25,4 +27,9 @@ jobs:
           test -L "$HOME/.zshrc"
           test -L "$HOME/.config/hypr/hyprland.lua"
           test -L "$HOME/.config/uwsm/env-hyprland"
-      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && bash shared/scripts/verify-system.sh
+      - name: Repo health checks
+        env:
+          DOTFILES_DIR: ${{ github.workspace }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          bash shared/scripts/verify-system.sh

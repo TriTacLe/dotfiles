@@ -3,6 +3,9 @@ name: nvim config check
 # Catches a broken Neovim config before it reaches a machine. Installs every
 # plugin headless, then opens a buffer per language and fails if anything errors.
 
+permissions:
+  contents: read
+
 on:
   push:
     paths:
@@ -24,9 +27,11 @@ jobs:
     env:
       NVIM_CONFIG: shared/stow/nvim/.config/nvim
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
-      - uses: rhysd/action-setup-vim@v1
+      - uses: rhysd/action-setup-vim@febef33995d6649302e9d88dda81e071b68f16a7 # v1
         with:
           neovim: true
           version: stable
@@ -56,7 +61,7 @@ jobs:
         run: nvim --headless -c "luafile $GITHUB_WORKSPACE/$NVIM_CONFIG/scripts/ci-check.lua"
 
       - name: stylua
-        uses: JohnnyMorganz/stylua-action@v4
+        uses: JohnnyMorganz/stylua-action@479972f01e665acfcba96ada452c36608bdbbb5e # v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # Pinned to the version mason installs locally. On latest, a formatter
