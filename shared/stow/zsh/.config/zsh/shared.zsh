@@ -14,12 +14,18 @@ unset _df
 
 # PATH
 export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$HOME/.npm-global/bin:$HOME/go/bin:$HOME/.cargo/bin:$PATH"
-if [[ -d "$HOME/.bun" ]]; then
-    export BUN_INSTALL="$HOME/.bun"
-    export PATH="$BUN_INSTALL/bin:$PATH"
-    [[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
+# Runtimes: mise when installed (versions in ~/.config/mise/config.toml),
+# else the per-tool initialisers it replaces.
+if command -v mise &>/dev/null; then
+    eval "$(mise activate zsh)"
+else
+    if [[ -d "$HOME/.bun" ]]; then
+        export BUN_INSTALL="$HOME/.bun"
+        export PATH="$BUN_INSTALL/bin:$PATH"
+        [[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
+    fi
+    [[ -f "$HOME/.deno/env" ]] && source "$HOME/.deno/env"
 fi
-[[ -f "$HOME/.deno/env" ]] && source "$HOME/.deno/env"
 
 # Environment
 export EDITOR='nvim'
@@ -337,6 +343,8 @@ is_linux && [[ -f ~/.config/zsh/.p10k.zsh ]] && source ~/.config/zsh/.p10k.zsh
 [[ -f "$HOME/.openclaw/completions/openclaw.zsh" ]] && source "$HOME/.openclaw/completions/openclaw.zsh"
 [[ -f ~/.zshenv.secrets ]] && source ~/.zshenv.secrets
 
-# SDKMAN wants to be last so its candidates lead PATH.
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+# SDKMAN only until mise takes over Java. It wants to be last.
+if ! command -v mise &>/dev/null; then
+    export SDKMAN_DIR="$HOME/.sdkman"
+    [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+fi
