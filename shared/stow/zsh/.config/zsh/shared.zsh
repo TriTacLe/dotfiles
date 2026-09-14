@@ -45,7 +45,8 @@ autoload -Uz compinit && compinit -d ~/.config/zsh/.zcompdump
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
 # Plugins through antidote. The bundle list is stowed; the static file it
-# writes next to it is generated and untracked.
+# writes next to it is generated and untracked. The first start on a machine
+# clones antidote and the plugins, which takes a moment; do not interrupt it.
 is_linux() { [[ $OSTYPE == linux* ]] }
 is_macos() { [[ $OSTYPE == darwin* ]] }
 # The distro package ships gitstatusd; the git clone would download it on
