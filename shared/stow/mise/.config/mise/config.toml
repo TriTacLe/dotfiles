@@ -1,0 +1,5 @@
+# Global tool versions. Node, Go and Python come from the distro packages.
+[tools]
+java = "temurin-21"
+deno = "2"
+bun = "1"
