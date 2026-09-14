@@ -5,8 +5,18 @@
 
 source ~/.config/zsh/shared.zsh
 
-export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null || /usr/libexec/java_home)
-export PATH="$JAVA_HOME/bin:$PATH"
+# mise owns java when it is installed: its activate output unsets JAVA_HOME and
+# puts its shims first, so re-setting it here shadowed the pinned temurin-21 with
+# whatever system JDK was registered. Only fall back when mise is absent, and
+# only when java_home actually found one, or PATH gains a literal /bin entry.
+if ! command -v mise &>/dev/null; then
+    _java_home=$(/usr/libexec/java_home -v 17 2>/dev/null || /usr/libexec/java_home 2>/dev/null)
+    if [[ -n "$_java_home" ]]; then
+        export JAVA_HOME="$_java_home"
+        export PATH="$JAVA_HOME/bin:$PATH"
+    fi
+    unset _java_home
+fi
 export NVM_DIR="$HOME/.nvm"
 [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
 
