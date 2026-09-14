@@ -72,6 +72,7 @@ ghostty
 git
 git-delta
 github-cli
+gitleaks
 git-lfs
 glm
 glow
@@ -184,6 +185,7 @@ man-db
 mariadb
 maven
 milou
+mise
 nano
 nautilus
 ncdu
@@ -269,6 +271,7 @@ stow
 sushi
 swappy
 swaync
+swayosd
 systemsettings
 tailscale
 tecla
