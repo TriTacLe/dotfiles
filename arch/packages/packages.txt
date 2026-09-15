@@ -9,6 +9,7 @@ asciiquarium
 aspell
 aspell-en
 atuin
+audacity
 aurorae
 baobab
 base
@@ -39,6 +40,7 @@ cpio
 cpufetch
 cronie
 ctags
+darktable
 dbeaver
 ddcutil
 decibels
@@ -71,9 +73,9 @@ gdm
 ghostty
 git
 git-delta
-git-lfs
 github-cli
 gitleaks
+git-lfs
 glm
 glow
 gnome-backgrounds
@@ -139,13 +141,13 @@ intel-ucode
 iptables
 iwd
 jdk25-openjdk
-jq
 just
 kactivitymanagerd
 kde-cli-tools
-kde-gtk-config
 kdecoration
 kdegraphics-thumbnailers
+kde-gtk-config
+kdenlive
 kdeplasma-addons
 kgamma
 kglobalacceld
@@ -153,7 +155,6 @@ kinfocenter
 kitty
 kmenuedit
 knighttime
-kooha
 kpipewire
 krdp
 kscreen
@@ -193,15 +194,15 @@ nautilus
 ncdu
 neovim
 net-tools
-network-manager-applet
 networkmanager
+network-manager-applet
 networkmanager-openconnect
 nodejs
 npm
 nwg-dock-hyprland
 nwg-look
-obs-studio
 obsidian
+obs-studio
 ocean-sound-theme
 okular
 openbsd-netcat
@@ -213,10 +214,12 @@ pacman-contrib
 papers
 pass
 pavucontrol
+perl-image-exiftool
 pipewire
 pipewire-alsa
 pipewire-jack
 pipewire-pulse
+plasma5support
 plasma-activities-stats
 plasma-browser-integration
 plasma-desktop
@@ -232,7 +235,6 @@ plasma-vault
 plasma-welcome
 plasma-workspace
 plasma-workspace-wallpapers
-plasma5support
 plymouth-kcm
 polkit-gnome
 polkit-kde-agent
@@ -247,8 +249,8 @@ python-requests
 qemu-base
 qqc2-breeze-style
 qt5-wayland
-qt6-wayland
 qt6ct
+qt6-wayland
 r
 rclone
 reflector
@@ -260,6 +262,7 @@ sddm
 sddm-kcm
 sfml
 shellcheck
+shotcut
 showtime
 simple-scan
 slurp
