@@ -9,6 +9,9 @@ espanso-wayland-bin
 google-chrome
 hyprswitch
 jql
+localsend-bin
+losslesscut-bin
+losslesscut-bin-debug
 neofetch-git
 ngrok
 pacseek
