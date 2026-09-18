@@ -38,23 +38,48 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 |---|---|
 | Hostname | archlinux |
 | OS | Arch Linux |
-| Kernel | 6.19.14-arch1-1 |
-| CPU | Intel Core i7-10750H (6c/12t, 2.60 GHz) |
-| GPU | Intel UHD Graphics (CometLake-H) + NVIDIA Quadro T1000 Mobile |
+| Model | HP ZBook Studio G7 Mobile Workstation |
+| BIOS | S91 Ver. 01.22.00 (2025-07-08) |
+| Kernel | 7.2.4-arch1-2 |
+| CPU | Intel Core i7-10750H (6c/12t, 2.60 GHz base, 5.0 GHz turbo), `intel_pstate` active + HWP |
+| GPU | Intel UHD CometLake-H GT2 `8086:9bc4` (i915) + NVIDIA Quadro T1000 Mobile TU117GLM `10de:1fb9` (nouveau) |
 | RAM | 16 GB |
-| Storage | 512 GB NVMe (46 GB root, 422 GB /home) |
-| Display | AU Optronics 0x1092, 1920x1080, eDP-1 |
+| Storage | 512 GB Samsung 970 EVO/PRO NVMe `144d:a808` (46 GB root, 422 GB /home) |
+| Display | AU Optronics 0x1092, 1920x1080@60.164, eDP-1, driven by the iGPU |
+| WiFi | Intel AX201 CNVi `8086:06f0` (iwlwifi) |
 | Touchpad | elan1201:00-04f3:3098 |
-| WM | Hyprland 0.56.1 (pacman) |
+| WM | Hyprland 0.56.2 (pacman) |
 | Installer | `arch/install-arch.sh` |
 | Hypr host overlay | `arch/stow/hypr-host/.config/hypr/host.lua` |
 
 ### Notes
 
 - Monitor by EDID description `desc:AU Optronics 0x1092`, scale 1.0
-- Hybrid GPU: Intel iGPU drives display, Quadro T1000 for compute
+- Hybrid GPU: Intel iGPU drives the display (`card1`), Quadro T1000 is `card0`
+- The Quadro runs on nouveau, so there is no CUDA. Ollama embeds on CPU only, which is why a full RAG reindex takes hours
 - Root 46 GB (small), home 422 GB - keep root lean
 - Pacman cache at `/home/pacman-cache` and journal capped at 200 MB, both set by `install_system_configs`, so upgrades stop failing the download-space check on root
+
+### Power and thermal
+
+- Battery is 7.17 Ah design. Measured 2026-09-18: 5.85 Ah full charge = 81.6% health, 313 cycles
+- **This EC exposes no `power_now` and no `current_now`.** `power_now` does not exist, `current_now` returns "No such device". Any guide that starts by reading `power_now` is unusable here
+- The only way to measure draw is integrating `charge_now` over time, and the gauge moves in ~6 mAh steps. **Windows under 3 minutes return noise**: two short samples once read 8.0 W and 15.9 W for the same workload while a 240 s sample read 6.8 W
+
+  ```bash
+  c1=$(cat /sys/class/power_supply/BAT0/charge_now); t1=$(date +%s)
+  sleep 240
+  c2=$(cat /sys/class/power_supply/BAT0/charge_now); t2=$(date +%s)
+  v=$(cat /sys/class/power_supply/BAT0/voltage_now)
+  awk -v a=$c1 -v b=$c2 -v v=$v -v dt=$((t2-t1)) \
+    'BEGIN{printf "%.1f W\n", (a-b)/1e6*(3600/dt)*v/1e6}'
+  ```
+
+- dGPU power management already works: `runtime_status` suspended 99.45% of runtime-managed time, `d3cold_allowed=1`, 5 s autosuspend. Nothing to gain by "turning the NVIDIA card off"
+- `cpu-tune.service` caps `max_perf_pct` to 80 and sets EPP `balance_power` at every boot. That is a deliberate fan-noise tradeoff from `746b5de`, not stock
+- `/sys/power/mem_sleep` is `[s2idle] deep`. `hypridle.conf` sets dpms and lock timeouts but no suspend timeout, so an idle machine with the lid open drains until flat
+- Kernel cmdline carries no `i915.*`, `pcie_aspm` or `nvme_core.*` parameters
+- Installed: `thermald` (active, enabled) and `powertop`. No TLP, no power-profiles-daemon, no auto-cpufreq
 
 ---
 
