@@ -6,7 +6,11 @@ hl.config({
         kb_layout = "no", -- Norwegian keyboard layout
         kb_model = "",
         kb_options = "",
-        kb_variant = "",
+        -- nodeadkeys: ^ ~ ` and acute are dead keys on the stock Norwegian
+        -- layout, so each needs a trailing space. Costs foreign accents like
+        -- é, which compose off those keys. æ ø å have their own keys and are
+        -- unaffected.
+        kb_variant = "nodeadkeys",
         kb_rules = "",
 
         follow_mouse = 1,

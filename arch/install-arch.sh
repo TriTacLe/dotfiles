@@ -25,7 +25,7 @@ THEME_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/current-theme"
     "$(cat "$THEME_STATE" 2>/dev/null || echo catppuccin-mocha)" --no-reload
 
 link_claude_config "$DOTFILES"
-enable_user_units battery-warning.timer log-gc.timer skill-gap.timer vault-reindex.timer vault-index.path
+enable_user_units battery-warning.timer log-gc.timer skill-gap.timer vault-index.path
 
 # /etc is not a stow target, so system tuning is copied in instead of linked.
 install_system_configs() {
@@ -35,6 +35,13 @@ install_system_configs() {
     sudo install -D -m 0644 -o root -g root \
         "$DOTFILES/arch/etc/systemd/oomd.conf.d/thresholds.conf" \
         /etc/systemd/oomd.conf.d/thresholds.conf
+    sudo install -D -m 0644 -o root -g root \
+        "$DOTFILES/arch/etc/systemd/system/cpu-tune.service" \
+        /etc/systemd/system/cpu-tune.service
+    sudo install -D -m 0644 -o root -g root \
+        "$DOTFILES/arch/etc/tmpfiles.d/mglru.conf" \
+        /etc/tmpfiles.d/mglru.conf
+    sudo systemd-tmpfiles --create /etc/tmpfiles.d/mglru.conf
 
     # Never set ManagedOOMSwap on the root slice. With zram-only swap it trips
     # under normal load and kills the session scope holding the compositor.
@@ -78,7 +85,7 @@ install_system_configs() {
     sudo systemctl daemon-reload
     # daemon-reload re-runs the zram generator; the device still has to be started.
     sudo systemctl start systemd-zram-setup@zram0.service
-    sudo systemctl enable --now thermald reflector.timer paccache.timer
+    sudo systemctl enable --now thermald cpu-tune reflector.timer paccache.timer
 }
 
 install_system_configs

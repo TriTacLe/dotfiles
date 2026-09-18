@@ -3,7 +3,7 @@ Description=Watch Obsidian vault for changes and trigger RAG reindex
 
 [Path]
 PathChanged=%h/vault/claude
-Unit=vault-reindex.service
+Unit=claude-rag-index.service
 MakeDirectory=true
 
 [Install]
