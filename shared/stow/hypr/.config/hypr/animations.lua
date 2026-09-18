@@ -19,6 +19,8 @@ hl.animation({ leaf = "windowsIn",   enabled = true, speed = 6,  bezier = "winIn
 hl.animation({ leaf = "windowsOut",  enabled = true, speed = 5,  bezier = "winOut", style = "slide" })
 hl.animation({ leaf = "windowsMove", enabled = true, speed = 5,  bezier = "wind",   style = "slide" })
 hl.animation({ leaf = "border",      enabled = true, speed = 1,  bezier = "liner" })
-hl.animation({ leaf = "borderangle", enabled = true, speed = 30, bezier = "liner",  style = "loop" })
+-- Off: style "loop" never stops, so the GPU re-composites forever and PSR can
+-- never engage. The border is a solid colour, so it drew nothing anyway.
+hl.animation({ leaf = "borderangle", enabled = false })
 hl.animation({ leaf = "fade",        enabled = true, speed = 8,  bezier = "default" })
 hl.animation({ leaf = "workspaces",  enabled = true, speed = 5,  bezier = "wind",   style = "slide" })
