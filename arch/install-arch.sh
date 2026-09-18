@@ -38,6 +38,10 @@ install_system_configs() {
     sudo install -D -m 0644 -o root -g root \
         "$DOTFILES/arch/etc/systemd/system/cpu-tune.service" \
         /etc/systemd/system/cpu-tune.service
+    sudo install -D -m 0644 -o root -g root \
+        "$DOTFILES/arch/etc/tmpfiles.d/mglru.conf" \
+        /etc/tmpfiles.d/mglru.conf
+    sudo systemd-tmpfiles --create /etc/tmpfiles.d/mglru.conf
 
     # Never set ManagedOOMSwap on the root slice. With zram-only swap it trips
     # under normal load and kills the session scope holding the compositor.
