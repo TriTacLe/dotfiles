@@ -25,7 +25,7 @@ THEME_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/current-theme"
     "$(cat "$THEME_STATE" 2>/dev/null || echo catppuccin-mocha)" --no-reload
 
 link_claude_config "$DOTFILES"
-enable_user_units battery-warning.timer log-gc.timer skill-gap.timer vault-reindex.timer vault-index.path
+enable_user_units battery-warning.timer log-gc.timer skill-gap.timer vault-index.path
 
 # /etc is not a stow target, so system tuning is copied in instead of linked.
 install_system_configs() {
