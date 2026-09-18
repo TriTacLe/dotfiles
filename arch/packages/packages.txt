@@ -294,6 +294,7 @@ tree
 ttf-cascadia-code-nerd
 ttf-jetbrains-mono-nerd
 tumbler
+turbostat
 uwsm
 vim
 viu
