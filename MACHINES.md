@@ -43,7 +43,7 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 | Kernel | 7.2.4-arch1-2 |
 | CPU | Intel Core i7-10750H (6c/12t, 2.60 GHz base, 5.0 GHz turbo), `intel_pstate` active + HWP |
 | GPU | Intel UHD CometLake-H GT2 `8086:9bc4` (i915) + NVIDIA Quadro T1000 Mobile TU117GLM `10de:1fb9` (nouveau) |
-| RAM | 16 GB |
+| RAM | 16 GB DDR4-3200 (runs at 2933, the 10750H controller ceiling), dual channel, **soldered, not upgradeable** |
 | Storage | 512 GB Samsung 970 EVO/PRO NVMe `144d:a808` (46 GB root, 422 GB /home) |
 | Display | AU Optronics 0x1092, 1920x1080@60.164, eDP-1, driven by the iGPU |
 | WiFi | Intel AX201 CNVi `8086:06f0` (iwlwifi) |
@@ -62,7 +62,8 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 
 ### Power and thermal
 
-- Battery is 7.17 Ah design. Measured 2026-09-18: 5.85 Ah full charge = 81.6% health, 313 cycles
+- Battery is 7.17 Ah design, so about 80 Wh new and 65 Wh at current health. Measured 2026-09-18: 5.85 Ah full charge = 81.6% health, 313 cycles
+- **RAM is soldered.** `dmidecode` reports `Form Factor: SODIMM` but that field lies here; the `Bottom-OnBoard 1/2` locators and HP QuickSpecs c06710184 ("Memory is soldered down and not upgradeable") agree it is not socketed. 32 GB was a factory option only, so 16 GB is permanent and every memory fix has to live within it
 - **This EC exposes no `power_now` and no `current_now`.** `power_now` does not exist, `current_now` returns "No such device". Any guide that starts by reading `power_now` is unusable here
 - The only way to measure draw is integrating `charge_now` over time, and the gauge moves in ~6 mAh steps. **Windows under 3 minutes return noise**: two short samples once read 8.0 W and 15.9 W for the same workload while a 240 s sample read 6.8 W
 
@@ -77,7 +78,8 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 
 - dGPU power management already works: `runtime_status` suspended 99.45% of runtime-managed time, `d3cold_allowed=1`, 5 s autosuspend. Nothing to gain by "turning the NVIDIA card off"
 - `cpu-tune.service` caps `max_perf_pct` to 80 and sets EPP `balance_power` at every boot. That is a deliberate fan-noise tradeoff from `746b5de`, not stock
-- `/sys/power/mem_sleep` is `[s2idle] deep`. `hypridle.conf` sets dpms and lock timeouts but no suspend timeout, so an idle machine with the lid open drains until flat
+- **Sleep must stay on `s2idle`. Do not switch to `deep`.** `/sys/power/mem_sleep` offers both, but S3 was tested on 2026-09-18 and it suspends, resumes, then leaves the embedded controller wedged: `ACPI Error: Timeout from EC hardware or EC device driver`, and the machine powers itself off a few minutes later with everything unsaved lost. `s2idle` has clean multi-hour cycles including a five hour overnight. The usual advice that Comet Lake-H s0ix is leaky so deep wins does not survive this firmware
+- The EC flakiness is the same root cause as the missing `power_now`: `BAT0._BST` is one of the ACPI methods that times out
 - Kernel cmdline carries no `i915.*`, `pcie_aspm` or `nvme_core.*` parameters
 - Installed: `thermald` (active, enabled) and `powertop`. No TLP, no power-profiles-daemon, no auto-cpufreq
 
