@@ -12,8 +12,8 @@ fi
 
 # Packages this script itself depends on, installed before anything reaches for
 # them: jq for theme_apply.sh, reflector and pacman-contrib for the timers
-# enabled below, thermald and zram-generator for the tuning further down.
-sudo pacman -S --needed --noconfirm jq reflector pacman-contrib thermald zram-generator
+# enabled below, thermald, tlp and zram-generator for the tuning further down.
+sudo pacman -S --needed --noconfirm jq reflector pacman-contrib thermald tlp zram-generator
 
 command -v just >/dev/null || sudo pacman -S --needed --noconfirm just
 just --justfile "$DOTFILES/justfile" stow arch
@@ -38,6 +38,11 @@ install_system_configs() {
     sudo install -D -m 0644 -o root -g root \
         "$DOTFILES/arch/etc/systemd/system/cpu-tune.service" \
         /etc/systemd/system/cpu-tune.service
+    # tlp.d is a drop-in dir, so this never collides with the tlp.conf the
+    # package owns and survives upgrades untouched.
+    sudo install -D -m 0644 -o root -g root \
+        "$DOTFILES/arch/etc/tlp.d/01-power.conf" \
+        /etc/tlp.d/01-power.conf
     sudo install -D -m 0644 -o root -g root \
         "$DOTFILES/arch/etc/tmpfiles.d/mglru.conf" \
         /etc/tmpfiles.d/mglru.conf
@@ -85,7 +90,7 @@ install_system_configs() {
     sudo systemctl daemon-reload
     # daemon-reload re-runs the zram generator; the device still has to be started.
     sudo systemctl start systemd-zram-setup@zram0.service
-    sudo systemctl enable --now thermald cpu-tune reflector.timer paccache.timer
+    sudo systemctl enable --now thermald cpu-tune tlp reflector.timer paccache.timer
 }
 
 install_system_configs

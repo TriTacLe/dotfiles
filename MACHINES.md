@@ -58,6 +58,8 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 - Hybrid GPU: Intel iGPU drives the display (`card1`), Quadro T1000 is `card0`
 - The Quadro runs on nouveau, so there is no CUDA. Ollama embeds on CPU only, which is why a full RAG reindex takes hours
 - Root 46 GB (small), home 422 GB - keep root lean
+- Firmware sets the RAPL long-term limit to 70 W on a 45 W part, so sustained all-core load outruns the heatsink and the fan never settles. `cpu-tune.service` pulls it back to 45 W; `tlp.d/01-power.conf` owns everything that differs between AC and battery
+- No charge threshold in sysfs. HP keeps it in firmware under Battery Health Manager, so TLP cannot set one (there is no HP plugin in its `bat.d`)
 - Pacman cache at `/home/pacman-cache` and journal capped at 200 MB, both set by `install_system_configs`, so upgrades stop failing the download-space check on root
 
 ### Power and thermal
