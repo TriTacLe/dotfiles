@@ -273,6 +273,7 @@ spectacle
 spotify-launcher
 starship
 stow
+stress-ng
 sushi
 swappy
 swaync
