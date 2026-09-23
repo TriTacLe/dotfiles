@@ -40,7 +40,7 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 | OS | Arch Linux |
 | Model | HP ZBook Studio G7 Mobile Workstation |
 | BIOS | S91 Ver. 01.22.00 (2025-07-08) |
-| Kernel | 7.2.4-arch1-2 |
+| Kernel | 7.2.6-arch2-1 |
 | CPU | Intel Core i7-10750H (6c/12t, 2.60 GHz base, 5.0 GHz turbo), `intel_pstate` active + HWP |
 | GPU | Intel UHD CometLake-H GT2 `8086:9bc4` (i915) + NVIDIA Quadro T1000 Mobile TU117GLM `10de:1fb9` (nouveau) |
 | RAM | 16 GB DDR4-3200 (runs at 2933, the 10750H controller ceiling), dual channel, **soldered, not upgradeable** |
@@ -62,7 +62,7 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 
 ### Power and thermal
 
-- Battery is 7.17 Ah design, so about 80 Wh new and 65 Wh at current health. Measured 2026-09-18: 5.85 Ah full charge = 81.6% health, 313 cycles
+- Battery is 7.17 Ah design, so about 80 Wh new and 65 Wh at current health. Measured 2026-09-23: 5.95 Ah full charge = 83.0% health, 320 cycles. That reads higher than the 81.6% measured on 2026-09-18 at 313 cycles. Health does not recover, so the difference is the gauge recalibrating, and single readings on this EC are worth about a point either way
 - **RAM is soldered.** `dmidecode` reports `Form Factor: SODIMM` but that field lies here; the `Bottom-OnBoard 1/2` locators and HP QuickSpecs c06710184 ("Memory is soldered down and not upgradeable") agree it is not socketed. 32 GB was a factory option only, so 16 GB is permanent and every memory fix has to live within it
 - **This EC exposes no `power_now` and no `current_now`.** `power_now` does not exist, `current_now` returns "No such device". Any guide that starts by reading `power_now` is unusable here
 - The only way to measure draw is integrating `charge_now` over time, and the gauge moves in ~6 mAh steps. **Windows under 3 minutes return noise**: two short samples once read 8.0 W and 15.9 W for the same workload while a 240 s sample read 6.8 W
@@ -77,7 +77,10 @@ Per-host dotfiles reference. Add a row when a new machine joins.
   ```
 
 - dGPU power management already works: `runtime_status` suspended 99.45% of runtime-managed time, `d3cold_allowed=1`, 5 s autosuspend. Nothing to gain by "turning the NVIDIA card off"
-- `cpu-tune.service` caps `max_perf_pct` to 80 and sets EPP `balance_power` at every boot. That is a deliberate fan-noise tradeoff from `746b5de`, not stock
+- `cpu-tune.service` caps `max_perf_pct` to 80, sets EPP `balance_power`, and caps the RAPL long-term limit (`constraint_0_power_limit_uw`) to 45 W at every boot. A deliberate fan-noise tradeoff, not stock. `max_perf_pct` and EPP date from `746b5de`; the PL1 cap was added later because those two bound frequency only and all-core load still pulled the full 70 W. PL2 (`constraint_1`, 125 W) is deliberately left alone so short bursts stay fast
+- **99 C under all-core load is the power limit, not throttling.** Stock firmware sets PL1 to 70 W on a 45 W-class CPU, so `stress-ng --cpu 0` pins the package at 99 C against a Tjmax of 100 C and holds there. Check `core_throttle_count` before believing any thermal diagnosis: it read 0 over a 21 h uptime that included such a run, with `package_throttle_count` at 2 totalling 7 ms. Idle clocks of 800-900 MHz are `powersave` plus EPP `balance_power` behaving normally and are routinely misread as throttling
+- `/proc/pressure/io` runs high on this machine without any disk problem. It sat at `some avg10=72` / `full avg10=57` while NVMe `io_ticks` moved 184 ms per 10 s, about 1.8% busy. The only D-state task was `kworker/u49:0+i915_flip`, and the stall attributes to `user.slice`. The i915 page-flip worker waiting on vblank is billed to PSI as IO. Cross-check `io_ticks` in `/proc/diskstats` before treating PSI IO as storage
+- `vpnagentd.service` (Cisco Secure Client) is disabled. Running, it produced 279 of 332 priority-3 journal errors in one boot, looping on `getCertDBPath` returning `CERTSTORE_ERROR_BAD_PARAMETER` and on `DeterminePublicInterface`. The cert error is because the daemon runs as root and the NSS database exists at `~/.pki/nssdb` but not `/root/.pki/nssdb`. `openconnect` and `vpnc` are installed and both speak AnyConnect, so use those. **`systemctl mask` does not work on it**: the Cisco installer drops a real file at `/etc/systemd/system/vpnagentd.service` rather than shipping it under `/usr/lib`, and mask needs to put its own symlink at that path, so it fails with "File ... already exists". Disabled is enough here, nothing pulls the unit in and no package owns the file, so upgrades cannot re-enable it. Bring it back with `sudo systemctl enable --now vpnagentd.service`, and seed `/root/.pki/nssdb` to silence the cert loop
 - **Sleep must stay on `s2idle`. Do not switch to `deep`.** `/sys/power/mem_sleep` offers both, but S3 was tested on 2026-09-18 and it suspends, resumes, then leaves the embedded controller wedged: `ACPI Error: Timeout from EC hardware or EC device driver`, and the machine powers itself off a few minutes later with everything unsaved lost. `s2idle` has clean multi-hour cycles including a five hour overnight. The usual advice that Comet Lake-H s0ix is leaky so deep wins does not survive this firmware
 - The EC flakiness is the same root cause as the missing `power_now`: `BAT0._BST` is one of the ACPI methods that times out
 - Kernel cmdline carries no `i915.*`, `pcie_aspm` or `nvme_core.*` parameters
