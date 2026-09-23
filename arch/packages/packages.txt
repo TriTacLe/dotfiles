@@ -289,6 +289,7 @@ thermald
 thunar
 thunar-volman
 tldr
+tlp
 tmux
 tor
 tree
