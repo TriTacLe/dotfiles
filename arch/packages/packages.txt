@@ -147,7 +147,6 @@ kde-cli-tools
 kdecoration
 kdegraphics-thumbnailers
 kde-gtk-config
-kdenlive
 kdeplasma-addons
 kgamma
 kglobalacceld
@@ -262,7 +261,6 @@ sddm
 sddm-kcm
 sfml
 shellcheck
-shotcut
 showtime
 simple-scan
 slurp
