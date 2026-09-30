@@ -270,6 +270,7 @@ sof-firmware
 spectacle
 spotify-launcher
 starship
+stlink
 stow
 stress-ng
 sushi
