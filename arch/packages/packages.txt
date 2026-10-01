@@ -311,6 +311,7 @@ wacomtablet
 waybar
 wev
 wget
+wine
 wireless_tools
 wireplumber
 wireshark-qt
