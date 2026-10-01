@@ -150,6 +150,10 @@ kde-gtk-config
 kdeplasma-addons
 kgamma
 kglobalacceld
+kicad
+kicad-demos
+kicad-library
+kicad-library-3d
 kinfocenter
 kitty
 kmenuedit
