@@ -43,6 +43,11 @@ install_system_configs() {
     sudo install -D -m 0644 -o root -g root \
         "$DOTFILES/arch/etc/tlp.d/01-power.conf" \
         /etc/tlp.d/01-power.conf
+    # Card reader and wifi PSM. Takes effect on the next load of each module,
+    # so in practice at the next reboot.
+    sudo install -D -m 0644 -o root -g root \
+        "$DOTFILES/arch/etc/modprobe.d/power.conf" \
+        /etc/modprobe.d/power.conf
     # Dims the panel when the charger comes out. Needs a reload to take effect
     # without a reboot; the rule only fires on the next AC transition either way.
     sudo install -D -m 0644 -o root -g root \
