@@ -62,7 +62,7 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 
 ### Power and thermal
 
-- Battery is 7.17 Ah design, so about 80 Wh new and 65 Wh at current health. Measured 2026-09-23: 5.95 Ah full charge = 83.0% health, 320 cycles. That reads higher than the 81.6% measured on 2026-09-18 at 313 cycles. Health does not recover, so the difference is the gauge recalibrating, and single readings on this EC are worth about a point either way
+- Battery is 7.17 Ah design, so about 80 Wh new and 65 Wh at current health. Measured 2026-10-12: 6.02 Ah full charge = 84.0% health, 338 cycles. Measured 2026-09-23: 5.95 Ah full charge = 83.0% health, 320 cycles, and 81.6% on 2026-09-18 at 313 cycles. Health does not recover, so the upward drift is the gauge recalibrating, and single readings on this EC are worth about a point either way
 - **RAM is soldered.** `dmidecode` reports `Form Factor: SODIMM` but that field lies here; the `Bottom-OnBoard 1/2` locators and HP QuickSpecs c06710184 ("Memory is soldered down and not upgradeable") agree it is not socketed. 32 GB was a factory option only, so 16 GB is permanent and every memory fix has to live within it
 - **This EC exposes no `power_now` and no `current_now`.** `power_now` does not exist, `current_now` returns "No such device". Any guide that starts by reading `power_now` is unusable here
 - The only way to measure draw is integrating `charge_now` over time, and the gauge moves in ~6 mAh steps. **Windows under 3 minutes return noise**: two short samples once read 8.0 W and 15.9 W for the same workload while a 240 s sample read 6.8 W
@@ -85,6 +85,21 @@ Per-host dotfiles reference. Add a row when a new machine joins.
 - The EC flakiness is the same root cause as the missing `power_now`: `BAT0._BST` is one of the ACPI methods that times out
 - Kernel cmdline carries no `i915.*`, `pcie_aspm` or `nvme_core.*` parameters
 - Installed: `thermald`, `tlp` and `powertop`. No power-profiles-daemon, no auto-cpufreq. TLP owns everything that differs between AC and battery; do not add a second power daemon alongside it
+- `/etc/tlp.d/01-power.conf` is deployed from `arch/etc/tlp.d/01-power.conf` by `install_system_configs`, and `install-arch.sh` installs and enables `tlp` itself. Until 2026-10-12 the drop-in existed only on disk and the installer never touched TLP, so a fresh install came up on stock TLP defaults with the service not enabled and nothing said so
+
+#### Audited 2026-10-12
+
+A sweep for anything left after the TLP and RAPL work. The knob layer came back
+essentially done; what follows is what the sweep actually found.
+
+- **The panel had no AC/battery level.** `intel_backlight` sat at `24000/24000` with nothing lowering it on unplug, and `battery_warning.sh` did not touch brightness until 20% remaining. `arch/etc/udev/rules.d/90-backlight-on-power.rules` now owns the level, 9600 (40%) on battery and 24000 on AC, raw values because `max_brightness` is 24000 on this panel. `battery_warning.sh` only steps further down below 20% and no longer saves and restores, because two writers on the same file left whichever won. hypridle also dims to 20% at 240 s via `brightnessctl -s`/`-r`, which keeps its own saved level and so needs no state file
+- **The Realtek RTS525A card reader never runtime-suspends.** `0000:02:00.0`, driver `rtsx_pci`, `runtime_status=active` with no card in the slot and no autosuspend to reach. `arch/etc/modprobe.d/power.conf` blacklists it, which kills the SD slot; drop the line and rebuild the initramfs to get it back
+- **`intel_idle` sources its states from the ACPI `_CST` table, not its native Comet Lake one.** Only four exist: `POLL`, `C1_ACPI`, `C2_ACPI` (MWAIT hint `0x33`, C7s) and `C3_ACPI` (hint `0x60`, C10). This is not broken, C10 is reachable and took 70% of cpu0 idle time against 25% in C7s over a 9 day uptime, but the governor has no C1E, C6 or C8 between a 151 us and a 1034 us state. `intel_idle.no_acpi=1` would restore the native table and is untried
+- **The dGPU needs nothing, again.** `0000:01:00.0` on nouveau measured 274506942 ms runtime-suspended against 1484306 ms active, 99.46%. Any advice to "turn the NVIDIA card off" is already done
+- **No second power daemon and no file indexer, confirmed rather than assumed.** `powerdevil`, `plasmashell`, `baloo_file`, `localsearch-3` and `orca` all have `OnlyShowIn=KDE` or `GNOME` in `/etc/xdg/autostart` and none of them run under Hyprland. The KDE and GTK portals do run next to the Hyprland one, but `~/.config/xdg-desktop-portal/portals.conf` already says `default=hyprland;gtk`, so they are dbus-activated leftovers rather than a misconfiguration
+- `geoclue-demo-agent.desktop` carries `NotShowIn=GNOME`, so it did start under Hyprland. Suppressed by a `Hidden=true` entry of the same name in the hypr stow package
+- The `at-spi-dbus-bus` entry is `OnlyShowIn=GNOME;Unity` yet the bus runs anyway: it is dbus-activated by the GTK and Electron apps, not autostarted. Left alone, `orca` is installed and killing the bridge is an accessibility regression for a saving that was never measured
+- **Nothing in this section has a measured watt figure yet.** The `charge_now` harness above needs 240 s on battery per sample and the machine was on AC throughout the audit. Measure a baseline, then the backlight, the card reader and the service changes one at a time, and record the deltas here. Anything that does not pay gets a line saying so, so the next sweep does not retry it
 
 ---
 
