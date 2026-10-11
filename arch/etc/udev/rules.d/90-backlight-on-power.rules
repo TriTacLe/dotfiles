@@ -1,0 +1,12 @@
+# Backlight follows the power source. The panel is the largest consumer left on
+# this machine and nothing else lowered it when the charger came out.
+# udev rather than a session hook so this still fires with the screen locked.
+#
+# Values are raw, not percentages: intel_backlight reports max_brightness 24000
+# on this panel, so 9600 is 40 percent. Both numbers are panel-specific.
+#
+# This rule owns the AC brightness level. battery_warning.sh only steps it
+# further down below 20 percent and no longer tries to restore it, because two
+# writers racing on the same file left the panel at whichever won.
+SUBSYSTEM=="power_supply", KERNEL=="AC", ACTION=="change", ATTR{online}=="0", RUN+="/bin/sh -c 'echo 9600 > /sys/class/backlight/intel_backlight/brightness'"
+SUBSYSTEM=="power_supply", KERNEL=="AC", ACTION=="change", ATTR{online}=="1", RUN+="/bin/sh -c 'echo 24000 > /sys/class/backlight/intel_backlight/brightness'"

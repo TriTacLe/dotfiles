@@ -43,6 +43,12 @@ install_system_configs() {
     sudo install -D -m 0644 -o root -g root \
         "$DOTFILES/arch/etc/tlp.d/01-power.conf" \
         /etc/tlp.d/01-power.conf
+    # Dims the panel when the charger comes out. Needs a reload to take effect
+    # without a reboot; the rule only fires on the next AC transition either way.
+    sudo install -D -m 0644 -o root -g root \
+        "$DOTFILES/arch/etc/udev/rules.d/90-backlight-on-power.rules" \
+        /etc/udev/rules.d/90-backlight-on-power.rules
+    sudo udevadm control --reload-rules
     sudo install -D -m 0644 -o root -g root \
         "$DOTFILES/arch/etc/tmpfiles.d/mglru.conf" \
         /etc/tmpfiles.d/mglru.conf

@@ -15,43 +15,34 @@ BATTERY_STATE=$(upower -i "$BATTERY_PATH" | grep state | awk '{print $2}')
 STATE_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 # Tracks whether the screen has already been dimmed.
 DIMMED_FLAG="$STATE_DIR/battery_dimmed"
-# Stores the brightness to restore.
-BRIGHTNESS_FILE="$STATE_DIR/battery_original_brightness"
 
+# This script only steps the panel further down near empty. The AC and battery
+# levels belong to 90-backlight-on-power.rules, which also puts the panel back
+# on charge, so there is nothing to save and restore here.
 if [ "$BATTERY_STATE" = "discharging" ]; then
   if [ "$BATTERY_PERCENT" -le 5 ]; then
     notify-send -u critical -t 10000 "Kun $BATTERY_PERCENT% igjen!"
-    # Dim screen to minimum if not already dimmed
     if [ ! -f "$DIMMED_FLAG" ]; then
-      brightnessctl g > "$BRIGHTNESS_FILE"
       brightnessctl set 5%
       touch "$DIMMED_FLAG"
     fi
   elif [ "$BATTERY_PERCENT" -le 10 ]; then
     notify-send -u critical -t 10000 "Batteri lavt: $BATTERY_PERCENT%"
-    # Dim screen if not already dimmed
     if [ ! -f "$DIMMED_FLAG" ]; then
-      brightnessctl g > "$BRIGHTNESS_FILE"
       brightnessctl set 15%
       touch "$DIMMED_FLAG"
     fi
   elif [ "$BATTERY_PERCENT" -le 20 ]; then
     notify-send -u normal "Batteri: $BATTERY_PERCENT%"
-    # Slightly dim screen if not already dimmed
     if [ ! -f "$DIMMED_FLAG" ]; then
-      brightnessctl g > "$BRIGHTNESS_FILE"
       brightnessctl set 30%
       touch "$DIMMED_FLAG"
     fi
   fi
 else
-  # Charging or fully charged - restore brightness if we dimmed it
+  # The udev rule has already restored the AC level; just clear the flag so the
+  # next discharge can dim again.
   if [ -f "$DIMMED_FLAG" ]; then
-    if [ -f "$BRIGHTNESS_FILE" ]; then
-      ORIGINAL=$(cat "$BRIGHTNESS_FILE")
-      brightnessctl set "$ORIGINAL"
-      rm "$BRIGHTNESS_FILE"
-    fi
     rm "$DIMMED_FLAG"
     notify-send -u normal "Lader... Lysstyrke gjenopprettet"
   fi
