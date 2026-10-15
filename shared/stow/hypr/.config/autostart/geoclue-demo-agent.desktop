@@ -1,0 +1,8 @@
+# Suppresses /etc/xdg/autostart/geoclue-demo-agent.desktop, which carries
+# NotShowIn=GNOME and so starts under Hyprland. Nothing here asks for location.
+# A user-level entry of the same name with Hidden=true is the XDG way to say no.
+# Lives in the hypr package because the uwsm session is what pulls it in.
+[Desktop Entry]
+Type=Application
+Name=Geoclue Demo agent
+Hidden=true

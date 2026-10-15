@@ -147,10 +147,13 @@ kde-cli-tools
 kdecoration
 kdegraphics-thumbnailers
 kde-gtk-config
-kdenlive
 kdeplasma-addons
 kgamma
 kglobalacceld
+kicad
+kicad-demos
+kicad-library
+kicad-library-3d
 kinfocenter
 kitty
 kmenuedit
@@ -245,6 +248,7 @@ procs
 python-pip
 python-pipx
 python-pynvim
+python-pyserial
 python-requests
 qemu-base
 qqc2-breeze-style
@@ -262,7 +266,6 @@ sddm
 sddm-kcm
 sfml
 shellcheck
-shotcut
 showtime
 simple-scan
 slurp
@@ -272,6 +275,7 @@ sof-firmware
 spectacle
 spotify-launcher
 starship
+stlink
 stow
 stress-ng
 sushi
@@ -289,6 +293,7 @@ thermald
 thunar
 thunar-volman
 tldr
+tlp
 tmux
 tor
 tree
@@ -307,6 +312,7 @@ wacomtablet
 waybar
 wev
 wget
+wine
 wireless_tools
 wireplumber
 wireshark-qt
