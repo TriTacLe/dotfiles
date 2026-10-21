@@ -1,11 +1,8 @@
-# Brewfile - macOS pakker for dotfiles
-# Kjør: brew bundle
-
 # Taps
 tap "homebrew/bundle"
 tap "homebrew/services"
 
-# Core utilities (bedre enn macOS-defaults)
+# Core utilities (better than the macOS defaults)
 brew "coreutils"
 brew "findutils"
 brew "gnu-tar"

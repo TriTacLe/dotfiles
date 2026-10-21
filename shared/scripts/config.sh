@@ -33,6 +33,13 @@ if command -v pacman &>/dev/null; then
 elif command -v apt &>/dev/null; then
     PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/ubuntu/packages}"
     PKG_MANAGER="apt"
+elif command -v brew &>/dev/null; then
+    PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/macos}"
+    PKG_MANAGER="brew"
+else
+    # Leaving these unset makes any set -u consumer die on an unbound variable
+    PACKAGES_DIR=""
+    PKG_MANAGER=""
 fi
 
 # Color logger
