@@ -124,6 +124,7 @@ unset _z
 echo ""
 echo "[5] Required files exist"
 check "shared/scripts/config.sh"              test -f shared/scripts/config.sh
+check "shared/scripts/pkgsnapshot.sh"         test -f shared/scripts/pkgsnapshot.sh
 check "arch/scripts/pkgtrack.sh"            test -f arch/scripts/pkgtrack.sh
 check "install.sh"                          test -x install.sh
 check "arch/install-hook.sh"               test -x arch/install-hook.sh

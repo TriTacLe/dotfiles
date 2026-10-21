@@ -26,21 +26,30 @@ if [[ -z "${DOTFILES_DIR:-}" || ! -e "${DOTFILES_DIR:-}/.git" ]]; then
     unset _path
 fi
 
-# OS-aware packages dir: arch uses pacman, ubuntu/debian uses apt
-if command -v pacman &>/dev/null; then
-    PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/arch/packages}"
-    PKG_MANAGER="pacman"
-elif command -v apt &>/dev/null; then
-    PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/ubuntu/packages}"
-    PKG_MANAGER="apt"
-elif command -v brew &>/dev/null; then
-    PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/macos}"
-    PKG_MANAGER="brew"
-else
-    # Leaving these unset makes any set -u consumer die on an unbound variable
-    PACKAGES_DIR=""
-    PKG_MANAGER=""
-fi
+# OS-aware packages dir: arch uses pacman, ubuntu/debian uses apt.
+# An explicit PKG_MANAGER wins over detection, which is how the tests reach the
+# apt path from an Arch box.
+case "${PKG_MANAGER:-}" in
+    pacman) PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/arch/packages}" ;;
+    apt)    PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/ubuntu/packages}" ;;
+    brew)   PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/macos}" ;;
+    *)
+        if command -v pacman &>/dev/null; then
+            PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/arch/packages}"
+            PKG_MANAGER="pacman"
+        elif command -v apt &>/dev/null; then
+            PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/ubuntu/packages}"
+            PKG_MANAGER="apt"
+        elif command -v brew &>/dev/null; then
+            PACKAGES_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/macos}"
+            PKG_MANAGER="brew"
+        else
+            # Leaving these unset makes any set -u consumer die on an unbound variable
+            PACKAGES_DIR=""
+            PKG_MANAGER=""
+        fi
+        ;;
+esac
 
 # Color logger
 _dotfiles_color() {

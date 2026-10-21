@@ -1,10 +1,11 @@
 #!/bin/bash
-# Package tracking for Ubuntu/Debian - regenerates packages.txt from apt-mark showmanual,
-# then commits/pushes only if AUTO_PUSH=true (default).
+# Package tracking for Ubuntu/Debian - regenerates packages.txt from apt-mark
+# showmanual, then pushes the snapshot to a per-machine branch and opens a PR if
+# AUTO_PUSH=true.
 # Invoked by /etc/apt/apt.conf.d/99dotfiles-autotrack via /usr/local/bin/dotfiles-pkgtrack-ubuntu symlink.
 
-# No -e on purpose: git diff --cached --quiet returns nonzero as normal control
-# flow further down, and the push path relies on failing commands.
+# No -e on purpose: merge-base --is-ancestor returns nonzero as normal control
+# flow inside snapshot_push.
 set -uo pipefail
 
 # Handle SUDO_USER (apt runs as root - rebase HOME so config.sh and git work)
@@ -26,10 +27,12 @@ fi
 _self="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
 _repo="$(cd "$(dirname "$_self")/../.." && pwd)"
 source "$_repo/shared/scripts/config.sh"
+source "$_repo/shared/scripts/pkgsnapshot.sh"
 unset _self _repo
 
 [[ -z "${DOTFILES_DIR:-}" ]] && { echo "[pkgtrack] dotfiles dir not found" >&2; exit 1; }
 PACKAGES_FILE="$PACKAGES_DIR/packages.txt"
+DPKG_LOG="${DPKG_LOG:-/var/log/dpkg.log}"
 
 mkdir -p "$PACKAGES_DIR"
 
@@ -43,6 +46,23 @@ REMOVED_PKGS=$(comm -23 <(sort "$OLD_PACKAGES_FILE") "$PACKAGES_FILE" | tr '\n' 
 
 rm -f "$OLD_PACKAGES_FILE"
 
+# apt-mark showmanual lists manually installed packages only, so an apt remove
+# shows up as just the name that was typed and whatever apt pruned alongside it
+# leaves no trace. dpkg appends its own log as it works, so the current run is
+# already there when a DPkg::Post-Invoke hook runs; apt writes history.log only
+# once it exits, too late to read here. Only the last dpkg invocation is read, so
+# a run that apt splits into several removal passes records the last of them.
+removed_by_dpkg() {
+    [[ -r "$DPKG_LOG" ]] || return 0
+    awk '$3 == "startup"                      { block = "" }
+         $3 == "remove" || $3 == "purge"      { name = $4; sub(/:.*/, "", name); block = block name "\n" }
+         END                                  { printf "%s", block }' "$DPKG_LOG"
+}
+
+PRUNED_DEPS=$(removed_by_dpkg | sort -u | awk -v explicit="$REMOVED_PKGS" '
+    BEGIN { n = split(explicit, a, " "); for (i = 1; i <= n; i++) seen[a[i]] = 1 }
+    !($0 in seen)' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')
+
 if [[ -z "$NEW_PKGS" && -z "$REMOVED_PKGS" ]]; then
     exit 0
 fi
@@ -51,113 +71,29 @@ NEW_COUNT=$(wc -l < "$PACKAGES_FILE")
 
 [[ -n "$NEW_PKGS" ]] && echo "[+] New packages: $NEW_PKGS"
 [[ -n "$REMOVED_PKGS" ]] && echo "[-] Removed packages: $REMOVED_PKGS"
+[[ -n "$PRUNED_DEPS" ]] && echo "[-] Pruned dependencies: $PRUNED_DEPS"
 
 cd "$DOTFILES_DIR" || exit 1
 
-HOSTNAME=$(cat /etc/hostname 2>/dev/null || echo "unknown")
-DATE=$(date '+%Y-%m-%d')
-MACHINE="desktop"
-for bat in /sys/class/power_supply/BAT*; do
-    [[ -d "$bat" ]] && { MACHINE="laptop"; break; }
-done
+parts=()
+[[ -n "$NEW_PKGS" ]] && parts+=("+$(snapshot_summarize "$NEW_PKGS")")
+[[ -n "$REMOVED_PKGS" ]] && parts+=("-$(snapshot_summarize "$REMOVED_PKGS")")
 
-if [[ -n "$NEW_PKGS" && -n "$REMOVED_PKGS" ]]; then
-    COMMIT_MSG="[AUTO] [$DATE] [$HOSTNAME:$MACHINE] APT +$NEW_PKGS | -$REMOVED_PKGS"
-elif [[ -n "$NEW_PKGS" ]]; then
-    COMMIT_MSG="[AUTO] [$DATE] [$HOSTNAME:$MACHINE] APT packages: $NEW_PKGS"
-else
-    COMMIT_MSG="[AUTO] [$DATE] [$HOSTNAME:$MACHINE] APT removed: $REMOVED_PKGS"
-fi
+HOSTNAME=$(snapshot_host)
+SUBJECT="[AUTO] [$(date '+%Y-%m-%d')] [$HOSTNAME:$(snapshot_machine)] APT $(IFS='|'; echo "${parts[*]}")"
+COMMIT_MSG="$SUBJECT"
+# The subject only ever names manual packages, so the pruned deps go in the body
+[[ -n "$PRUNED_DEPS" ]] && COMMIT_MSG="$SUBJECT"$'\n\n'"pruned deps: $PRUNED_DEPS"
 
-echo "Committing package changes..."
+PR_BODY="Package snapshot from $HOSTNAME, committed by the apt hook."
+[[ -n "$PRUNED_DEPS" ]] && PR_BODY="$PR_BODY"$'\n\n'"Pruned dependencies: $PRUNED_DEPS"
+
 echo "Total packages: $NEW_COUNT"
-echo "Commit message: $COMMIT_MSG"
+echo "Commit message: $SUBJECT"
 
-git_as_user() {
-    if [[ -n "${SUDO_USER:-}" ]]; then
-        local _uid _sock="" _candidate
-        _uid=$(id -u "$SUDO_USER" 2>/dev/null)
-        for _candidate in \
-            "${SSH_AUTH_SOCK:-}" \
-            "/run/user/${_uid}/gcr/ssh" \
-            "/run/user/${_uid}/keyring/ssh"; do
-            if [[ -n "$_candidate" && -S "$_candidate" ]]; then
-                _sock="$_candidate"
-                break
-            fi
-        done
-        if [[ -n "$_sock" ]]; then
-            sudo -u "$SUDO_USER" SSH_AUTH_SOCK="$_sock" git "$@"
-        else
-            sudo -u "$SUDO_USER" git "$@"
-        fi
-    else
-        git "$@"
-    fi
-}
-
-gh_as_user() {
-    if [[ -n "${SUDO_USER:-}" ]]; then
-        sudo -u "$SUDO_USER" gh "$@"
-    else
-        gh "$@"
-    fi
-}
-
-# Fallback for anyone without admin rights: master is protected, so push the
-# commit to a per-machine branch and open a PR. HEAD:refs/heads/... on purpose,
-# never a checkout: the working tree is a field of stow symlinks that running
-# programs read, so moving the local branch under them is not safe.
-# One branch per host, force-pushed, so each machine keeps a single open PR
-# that later installs add to rather than a new PR per package.
-open_pkgtrack_pr() {
-    local branch="pkgtrack/${HOSTNAME//[^a-zA-Z0-9._-]/-}"
-    if ! git_as_user push --force origin "HEAD:refs/heads/$branch" 2>/dev/null; then
-        echo "[pkgtrack] push failed (offline, diverged, or dirty tree) - committed locally"
-        echo "[pkgtrack] $(date '+%Y-%m-%d %H:%M') push failed: $COMMIT_MSG" >> "$DOTFILES_DIR/.pkgtrack.log"
-        return 0
-    fi
-    echo "[pkgtrack] cannot push to $GIT_BRANCH, pushed branch $branch"
-    if ! command -v gh >/dev/null 2>&1; then
-        echo "[pkgtrack] gh not installed - open a PR from $branch by hand"
-        return 0
-    fi
-    if gh_as_user pr create --base "$GIT_BRANCH" --head "$branch" \
-        --title "$COMMIT_MSG" --body "Package snapshot from $HOSTNAME, committed by the apt hook." 2>/dev/null; then
-        return 0
-    fi
-    # Already open from an earlier install, or gh is not authenticated here
-    local existing
-    existing=$(gh_as_user pr list --head "$branch" --json url -q '.[0].url' 2>/dev/null)
-    if [[ -n "$existing" ]]; then
-        echo "[pkgtrack] added the commit to the open PR $existing"
-    else
-        echo "[pkgtrack] could not open a PR - branch $branch is pushed, open it by hand"
-    fi
-}
-
-git_as_user add ubuntu/packages/packages.txt
-git_as_user diff --cached --quiet && { echo "[pkgtrack] file unchanged after add, skipping commit"; exit 0; }
-if ! git_as_user commit -m "$COMMIT_MSG"; then
-    echo "[pkgtrack] commit failed" >&2
-    echo "[pkgtrack] $(date '+%Y-%m-%d %H:%M') commit failed: $COMMIT_MSG" >> "$DOTFILES_DIR/.pkgtrack.log"
-    exit 1
+if [[ "$AUTO_PUSH" != "true" ]]; then
+    echo "[pkgtrack] AUTO_PUSH=false - list rewritten, nothing committed or pushed"
+    exit 0
 fi
 
-if [[ "$AUTO_PUSH" == "true" ]]; then
-    if git_as_user push 2>/dev/null; then
-        echo "Pushed successfully"
-    # Non-fast-forward (another machine pushed): rebase our commits on top and retry.
-    # --no-autostash on purpose: a dirty tree aborts cleanly instead of resetting
-    # stowed configs that live programs (e.g. Hyprland) may rewrite mid-reset.
-    elif git_as_user pull --rebase --no-autostash 2>/dev/null && git_as_user push 2>/dev/null; then
-        echo "Pushed after rebase onto remote"
-    else
-        git_as_user rebase --abort 2>/dev/null
-        open_pkgtrack_pr
-    fi
-else
-    echo "[pkgtrack] AUTO_PUSH=false - committed locally, skipping push"
-fi
-
-exit 0
+snapshot_push "$SUBJECT" "$COMMIT_MSG" "$PR_BODY" ubuntu/packages/packages.txt
