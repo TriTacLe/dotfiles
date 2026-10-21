@@ -62,77 +62,134 @@ snapshot_log_failure() {
     echo "[pkgtrack] $(date '+%Y-%m-%d %H:%M') $1: $2" >> "$DOTFILES_DIR/.pkgtrack.log"
 }
 
-# snapshot_push SUBJECT MESSAGE PR_BODY FILE...
+# snapshot_commit PARENT MESSAGE FILE... - prints the new sha, or "unchanged"
 #
-# Pushes the listed files as one commit on a per-host branch and opens a PR for
-# it. The branch is never checked out and HEAD never moves: the working tree is a
+# The branch is never checked out and HEAD never moves: the working tree is a
 # field of stow symlinks that running programs read, so the commit is assembled
-# in a throwaway index and sent straight to the remote ref.
-snapshot_push() {
-    local subject="$1" message="$2" pr_body="$3"
-    shift 3
-
-    local host branch
-    host=$(snapshot_host)
-    # One branch per host so each machine keeps a single PR that later
-    # transactions add to, rather than a new PR per package.
-    branch="pkgtrack/${host//[^a-zA-Z0-9._-]/-}"
-
-    if ! snapshot_git fetch -q "$GIT_REMOTE" \
-        "+refs/heads/$GIT_BRANCH:refs/remotes/$GIT_REMOTE/$GIT_BRANCH" 2>/dev/null; then
-        echo "[pkgtrack] cannot reach $GIT_REMOTE - lists rewritten, nothing pushed"
-        snapshot_log_failure "fetch failed" "$subject"
-        return 0
-    fi
-
-    local base parent tip
-    base=$(snapshot_git rev-parse "refs/remotes/$GIT_REMOTE/$GIT_BRANCH")
-    # An already merged branch starts over from the base, an open one keeps its
-    # history so earlier subjects are not lost from the PR.
-    parent="$base"
-    if snapshot_git fetch -q "$GIT_REMOTE" \
-        "+refs/heads/$branch:refs/remotes/$GIT_REMOTE/$branch" 2>/dev/null; then
-        tip=$(snapshot_git rev-parse "refs/remotes/$GIT_REMOTE/$branch")
-        snapshot_git merge-base --is-ancestor "$tip" "$base" || parent="$tip"
-    fi
+# in a throwaway index instead.
+snapshot_commit() {
+    local parent="$1" message="$2"
+    shift 2
 
     GIT_INDEX_FILE=$(mktemp)
     export GIT_INDEX_FILE
     [[ -n "${SUDO_USER:-}" ]] && chown "$SUDO_USER" "$GIT_INDEX_FILE"
 
-    local tree sha file blob built=yes
+    local file blob tree="" sha built=yes
     snapshot_git read-tree "$parent" || built=no
     for file in "$@"; do
         [[ "$built" == yes ]] || break
-        blob=$(snapshot_git hash-object -w "$file") \
-            && snapshot_git update-index --add --cacheinfo "100644,$blob,$file" \
-            || built=no
+        if blob=$(snapshot_git hash-object -w "$file"); then
+            snapshot_git update-index --add --cacheinfo "100644,$blob,$file" || built=no
+        else
+            built=no
+        fi
     done
-    if [[ "$built" != yes ]]; then
-        echo "[pkgtrack] could not build the snapshot commit" >&2
-        snapshot_log_failure "build failed" "$subject"
-        rm -f "$GIT_INDEX_FILE"
-        unset GIT_INDEX_FILE
-        return 1
-    fi
+    [[ "$built" == yes ]] && tree=$(snapshot_git write-tree)
 
-    tree=$(snapshot_git write-tree)
     rm -f "$GIT_INDEX_FILE"
     unset GIT_INDEX_FILE
+
     if [[ -z "$tree" ]]; then
-        snapshot_log_failure "write-tree failed" "$subject"
+        echo "[pkgtrack] could not build the snapshot commit" >&2
         return 1
     fi
     if [[ "$tree" == "$(snapshot_git rev-parse "$parent^{tree}")" ]]; then
-        echo "[pkgtrack] snapshot already matches $branch, nothing to push"
+        echo unchanged
         return 0
     fi
 
     sha=$(snapshot_git commit-tree "$tree" -p "$parent" -m "$message")
     if [[ -z "$sha" ]]; then
         echo "[pkgtrack] commit-tree failed" >&2
-        snapshot_log_failure "commit-tree failed" "$subject"
         return 1
+    fi
+    echo "$sha"
+}
+
+# The push landed, so bring the local ref and index along. Still no checkout:
+# the files on disk already hold exactly what went out, so restaging those paths
+# and moving the ref is all a local commit would have done, and it leaves the
+# tree clean instead of modified until the next pull.
+snapshot_sync_local() {
+    local base="$1" sha="$2"
+    shift 2
+    local head
+    head=$(snapshot_git symbolic-ref -q --short HEAD) || return 0
+    [[ "$head" == "$GIT_BRANCH" ]] || return 0
+    [[ "$(snapshot_git rev-parse "refs/heads/$GIT_BRANCH")" == "$base" ]] || return 0
+    snapshot_git update-index --add -- "$@" || return 0
+    snapshot_git update-ref "refs/heads/$GIT_BRANCH" "$sha" "$base" || return 0
+    echo "[pkgtrack] local $GIT_BRANCH fast-forwarded to $sha"
+}
+
+# snapshot_push SUBJECT MESSAGE PR_BODY FILE...
+#
+# Pushes the listed files as one commit on the base branch. Anyone whose push to
+# the base branch is refused gets the snapshot on a per-host branch and a PR
+# instead, which is the shape a collaborator sees.
+snapshot_push() {
+    local subject="$1" message="$2" pr_body="$3"
+    shift 3
+
+    local host branch attempt base sha err
+    host=$(snapshot_host)
+    # One branch per host so each machine keeps a single PR that later
+    # transactions add to, rather than a new PR per package.
+    branch="pkgtrack/${host//[^a-zA-Z0-9._-]/-}"
+
+    # Two attempts: the one expected reason a fast-forward is refused rather
+    # than forbidden is another machine pushing between the fetch and the push.
+    for attempt in 1 2; do
+        if ! snapshot_git fetch -q "$GIT_REMOTE" \
+            "+refs/heads/$GIT_BRANCH:refs/remotes/$GIT_REMOTE/$GIT_BRANCH" 2>/dev/null; then
+            echo "[pkgtrack] cannot reach $GIT_REMOTE - lists rewritten, nothing pushed"
+            snapshot_log_failure "fetch failed" "$subject"
+            return 0
+        fi
+        base=$(snapshot_git rev-parse "refs/remotes/$GIT_REMOTE/$GIT_BRANCH")
+
+        sha=$(snapshot_commit "$base" "$message" "$@") || {
+            snapshot_log_failure "build failed" "$subject"
+            return 1
+        }
+        if [[ "$sha" == unchanged ]]; then
+            echo "[pkgtrack] snapshot already matches $GIT_BRANCH, nothing to push"
+            return 0
+        fi
+
+        if err=$(snapshot_git push "$GIT_REMOTE" "$sha:refs/heads/$GIT_BRANCH" 2>&1); then
+            echo "[pkgtrack] pushed $sha to $GIT_BRANCH"
+            snapshot_sync_local "$base" "$sha" "$@"
+            return 0
+        fi
+        case "$err" in
+            *non-fast-forward*|*"fetch first"*|*"behind its remote"*)
+                (( attempt == 1 )) && continue
+                ;;
+        esac
+        break
+    done
+
+    echo "[pkgtrack] cannot push to $GIT_BRANCH, leaving the snapshot as a PR"
+
+    # Stack on the open per-host branch when there is one, so the subjects of
+    # earlier transactions are not lost from the PR while it waits for review.
+    local parent="$base" tip
+    if snapshot_git fetch -q "$GIT_REMOTE" \
+        "+refs/heads/$branch:refs/remotes/$GIT_REMOTE/$branch" 2>/dev/null; then
+        tip=$(snapshot_git rev-parse "refs/remotes/$GIT_REMOTE/$branch")
+        snapshot_git merge-base --is-ancestor "$tip" "$base" || parent="$tip"
+    fi
+    if [[ "$parent" != "$base" ]]; then
+        sha=$(snapshot_commit "$parent" "$message" "$@") || {
+            snapshot_log_failure "build failed" "$subject"
+            return 1
+        }
+        if [[ "$sha" == unchanged ]]; then
+            echo "[pkgtrack] snapshot already matches $branch, nothing to push"
+            return 0
+        fi
     fi
 
     if ! snapshot_git push --force "$GIT_REMOTE" "$sha:refs/heads/$branch" 2>/dev/null; then
