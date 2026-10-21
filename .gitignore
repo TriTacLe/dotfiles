@@ -45,3 +45,12 @@ server/etc/nginx/
 
 # Go writes telemetry state under the stowed .config; it is per machine.
 shared/stow/nvim/.config/go/
+
+# Private keys, by shape rather than by name
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+id_ecdsa*
+id_dsa*
+.ssh/
