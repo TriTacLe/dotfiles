@@ -13,6 +13,26 @@ server_pkgs := "zsh pacseek"
 # Restow every package for an OS: arch, ubuntu, macos or server
 stow os: (_stow os "-R")
 
+# Homebrew has no post-install hook, so unlike pacman and apt this is manual.
+# Snapshot installed brew packages into macos/Brewfile and commit any change
+pkgtrack-macos:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{dotfiles}}"
+    brew bundle dump --file=macos/Brewfile --force --no-describe
+    git add macos/Brewfile
+    if git diff --cached --quiet -- macos/Brewfile; then
+        echo "Brewfile unchanged"
+        exit 0
+    fi
+    host=$(hostname -s 2>/dev/null || hostname)
+    git commit -m "[AUTO] [$(date '+%Y-%m-%d')] [$host:macos] brew snapshot" -- macos/Brewfile
+    if git push; then
+        echo "Pushed successfully"
+    else
+        echo "push refused, master is protected: push a branch and open a PR" >&2
+    fi
+
 # Remove every stowed link for an OS
 unstow os: (_stow os "-D")
 
