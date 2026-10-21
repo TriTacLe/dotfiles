@@ -1,5 +1,4 @@
 android-studio
-balena-etcher-bin
 brave-bin
 catppuccin-gtk-theme-mocha
 cheat
@@ -14,7 +13,6 @@ losslesscut-bin
 neofetch-git
 ngrok
 pacseek
-postman-bin
 rstudio-desktop-bin
 sdkmanager
 slack-desktop
