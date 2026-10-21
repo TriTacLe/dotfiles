@@ -29,3 +29,5 @@ options edns0 trust-ad
 EOF
 }
 sunshine_start() { DISPLAY=:1 sunshine; }
+alias ltspice='wine "C:\Program Files\ADI\LTspice\LTspice.exe"'
+export PATH=$PATH:$HOME/.maestro/bin
