@@ -20,6 +20,14 @@ jobs:
           severity: warning
           ignore_paths: claude-config shared/stow/zsh arch/stow/zsh ubuntu/stow/zsh macos/stow/zsh
 
+  scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: shared/scripts/tests/run.sh
+
   workflows:
     runs-on: ubuntu-latest
     steps:
