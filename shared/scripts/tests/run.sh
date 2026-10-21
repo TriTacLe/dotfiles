@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Tests for pkgtrack.sh. Never touches real pacman, the real repo or the network:
-# pacman is a stub on PATH, DOTFILES_DIR points at a throwaway git repo and
-# AUTO_PUSH is false so no push is attempted.
+# Tests for pkgtrack.sh. Never touches real pacman, the real repo, the real
+# pacman log or the network: pacman is a stub on PATH, DOTFILES_DIR points at a
+# throwaway git repo, PACMAN_LOG defaults to /dev/null and the push tests talk to
+# a bare remote on disk.
 # Usage: shared/scripts/tests/run.sh   (exit 0 = all passed)
 #        SHOW=1 shared/scripts/tests/run.sh   (also print each run's output)
 set -uo pipefail
@@ -36,6 +37,10 @@ chmod +x "$work/bin/pacman"
 export PATH="$work/bin:$PATH"
 export PKGSTUB_ALL="$work/all.txt" PKGSTUB_AUR="$work/aur.txt"
 
+host="$(cat /etc/hostname 2>/dev/null || echo unknown)"
+host="${host//[^a-zA-Z0-9._-]/-}"
+branch="pkgtrack/$host"
+
 # fresh_repo: throwaway dotfiles clone with empty package lists
 fresh_repo() {
     rm -rf "$work/repo" "$work/remote"
@@ -49,7 +54,44 @@ fresh_repo() {
     git -C "$work/repo" commit -qm init
 }
 
-# run_pkgtrack OFFICIAL AUR: set the stub's package sets, then run the script
+# add_remote: bare remote on disk that refuses refs/heads/master, standing in for
+# GitHub branch protection. Nothing in pkgtrack.sh may push there any more.
+add_remote() {
+    git init -q --bare "$work/remote"
+    git -C "$work/remote" config core.hooksPath "$work/remote/hooks"
+    mkdir -p "$work/remote/hooks"
+    git -C "$work/repo" remote add origin "$work/remote"
+    git -C "$work/repo" push -q origin master
+    # installed only after master is seeded, so it guards pkgtrack and nothing else
+    cat > "$work/remote/hooks/pre-receive" <<'HOOK'
+#!/usr/bin/env bash
+while read -r _old _new ref; do
+    if [[ "$ref" == "refs/heads/master" ]]; then
+        echo "remote: error: GH006: Protected branch update failed" >&2
+        exit 1
+    fi
+done
+exit 0
+HOOK
+    chmod +x "$work/remote/hooks/pre-receive"
+}
+
+# gh stub, logging its arguments so the PR call can be asserted on
+install_gh_stub() {
+    export GHSTUB_LOG="$work/gh.log"
+    : > "$GHSTUB_LOG"
+    cat > "$work/bin/gh" <<'STUB'
+#!/usr/bin/env bash
+echo "$*" >> "$GHSTUB_LOG"
+# pr list must return nothing so the caller takes the "created" path
+[[ "$1 $2" == "pr list" ]] && exit 0
+exit 0
+STUB
+    chmod +x "$work/bin/gh"
+}
+
+# run_pkgtrack OFFICIAL AUR: set the stub's package sets, then run the script.
+# AUTO_PUSH stays false unless PUSH=1, so most cases need no remote at all.
 run_pkgtrack() {
     local -a official aur
     read -ra official <<< "$1"
@@ -62,14 +104,21 @@ run_pkgtrack() {
     else
         : > "$PKGSTUB_AUR"
     fi
-    out="$(env -u SUDO_USER DOTFILES_DIR="$work/repo" AUTO_PUSH=false bash "$pkgtrack" 2>&1)"
+    local push=false
+    [[ -n "${PUSH:-}" ]] && push=true
+    out="$(env -u SUDO_USER DOTFILES_DIR="$work/repo" \
+        PACMAN_LOG="${LOGSTUB:-/dev/null}" \
+        AUTO_PUSH="$push" bash "$pkgtrack" 2>&1)"
     rc=$?
     [[ -n "${SHOW:-}" ]] && printf '%s\n' "$out"
     return $rc
 }
 
-subject() { git -C "$work/repo" log -1 --pretty=%s; }
+# what the run would commit, read off the script's own report
+subject() { sed -n 's/^Commit message: //p' <<< "$out"; }
 commits() { git -C "$work/repo" rev-list --count HEAD; }
+# the snapshot the run actually pushed
+pushed()  { git -C "$work/remote" log -1 --pretty="$1" "refs/heads/$branch" 2>/dev/null; }
 
 check() {
     local name="$1" want="$2" got="$3"
@@ -87,13 +136,12 @@ check() {
 echo "=== pkgtrack ==="
 
 echo ""
-echo "[1] a new official package is tracked and committed"
+echo "[1] a new official package is tracked and reported"
 fresh_repo
 run_pkgtrack "bat eza fd" ""
 check "packages.txt is sorted" "bat
 eza
 fd" "$(cat "$work/repo/arch/packages/packages.txt")"
-check "one commit on top of init" "2" "$(commits)"
 check "subject names the additions" "+bat eza fd" "$(subject | sed 's/.*\] //')"
 
 echo ""
@@ -106,12 +154,11 @@ check "aur list holds only AUR" "spotify
 yay" "$(cat "$work/repo/arch/packages/aur.txt")"
 
 echo ""
-echo "[3] a second run with no change makes no commit"
+echo "[3] a second run with no change reports nothing"
 fresh_repo
 run_pkgtrack "bat eza" ""
-before="$(commits)"
 run_pkgtrack "bat eza" ""
-check "commit count unchanged" "$before" "$(commits)"
+check "no commit message on the second run" "" "$(subject)"
 
 echo ""
 echo "[4] a removed package is recorded as a removal"
@@ -141,52 +188,100 @@ check "aur.txt is zero bytes" "0" "$(wc -c < "$work/repo/arch/packages/aur.txt" 
 check "the count reported is zero" "AUR packages: 0" "$(grep '^AUR packages:' <<< "$out")"
 
 echo ""
-echo "[8] a push master cannot take becomes a branch and a PR"
-# Stands in for GitHub's branch protection: a bare remote whose pre-receive
-# hook refuses refs/heads/master and accepts everything else.
+echo "[8] the snapshot is pushed to a per-host branch, never to master"
 fresh_repo
-git init -q --bare "$work/remote"
-git -C "$work/remote" config core.hooksPath "$work/remote/hooks"
-git -C "$work/repo" remote add origin "$work/remote"
-git -C "$work/repo" push -q -u origin master
-cat > "$work/remote/hooks/pre-receive" <<'HOOK'
-#!/usr/bin/env bash
-while read -r _old _new ref; do
-    if [[ "$ref" == "refs/heads/master" ]]; then
-        echo "remote: error: GH006: Protected branch update failed" >&2
-        exit 1
-    fi
-done
-exit 0
-HOOK
-chmod +x "$work/remote/hooks/pre-receive"
-
-export GHSTUB_LOG="$work/gh.log"
-: > "$GHSTUB_LOG"
-cat > "$work/bin/gh" <<'STUB'
-#!/usr/bin/env bash
-echo "$*" >> "$GHSTUB_LOG"
-# pr list must return nothing so the caller takes the "created" path
-[[ "$1 $2" == "pr list" ]] && exit 0
-exit 0
-STUB
-chmod +x "$work/bin/gh"
-
+add_remote
+install_gh_stub
 master_before="$(git -C "$work/remote" rev-parse refs/heads/master)"
-printf '%s\n' bat eza > "$PKGSTUB_ALL"
-: > "$PKGSTUB_AUR"
-out="$(env -u SUDO_USER DOTFILES_DIR="$work/repo" AUTO_PUSH=true bash "$pkgtrack" 2>&1)"
-[[ -n "${SHOW:-}" ]] && printf '%s\n' "$out"
-
-host="$(cat /etc/hostname 2>/dev/null || echo unknown)"
-host="${host//[^a-zA-Z0-9._-]/-}"
-check "the commit landed on the per-host branch" "yes" \
-    "$(git -C "$work/remote" rev-parse --verify -q "refs/heads/pkgtrack/$host" >/dev/null && echo yes || echo no)"
+PUSH=1 run_pkgtrack "bat eza" ""
+check "the snapshot landed on the per-host branch" "yes" \
+    "$(git -C "$work/remote" rev-parse --verify -q "refs/heads/$branch" >/dev/null && echo yes || echo no)"
 check "protected master was not moved" "$master_before" \
     "$(git -C "$work/remote" rev-parse refs/heads/master)"
 check "a PR was opened against master" "yes" \
-    "$(grep -q "^pr create --base master --head pkgtrack/$host" "$GHSTUB_LOG" && echo yes || echo no)"
-check "local branch was never switched" "master" "$(git -C "$work/repo" branch --show-current)"
+    "$(grep -q "^pr create --base master --head $branch" "$GHSTUB_LOG" && echo yes || echo no)"
+check "the pushed subject matches the report" "$(subject)" "$(pushed %s)"
+check "the pushed commit sits on origin/master" "$master_before" "$(pushed %P)"
+
+echo ""
+echo "[9] nothing is committed locally and no branch is switched"
+check "HEAD did not move" "1" "$(commits)"
+check "local branch unchanged" "master" "$(git -C "$work/repo" branch --show-current)"
+check "the lists stay modified until the PR merges" "yes" \
+    "$(test -n "$(git -C "$work/repo" status --porcelain arch/packages)" && echo yes || echo no)"
+
+echo ""
+echo "[10] a package install on a feature branch still targets master"
+fresh_repo
+add_remote
+install_gh_stub
+git -C "$work/repo" checkout -q -b feature/unrelated
+git -C "$work/repo" commit -q --allow-empty -m "unrelated work"
+feature_head="$(git -C "$work/repo" rev-parse HEAD)"
+master_before="$(git -C "$work/remote" rev-parse refs/heads/master)"
+PUSH=1 run_pkgtrack "bat eza" ""
+check "the parent is origin/master, not the feature branch" "$master_before" "$(pushed %P)"
+check "the feature branch did not gain a commit" "$feature_head" \
+    "$(git -C "$work/repo" rev-parse HEAD)"
+check "still on the feature branch" "feature/unrelated" \
+    "$(git -C "$work/repo" branch --show-current)"
+
+echo ""
+echo "[11] deps pruned by -Rns are recorded in the commit body"
+fresh_repo
+add_remote
+install_gh_stub
+LOGSTUB="$work/pacman.log"
+cat > "$LOGSTUB" <<'LOG'
+[2026-10-20T10:00:00+0200] [ALPM] transaction started
+[2026-10-20T10:00:00+0200] [ALPM] removed stale-from-last-time (1.0-1)
+[2026-10-20T10:00:00+0200] [ALPM] transaction completed
+[2026-10-21T15:00:00+0200] [ALPM] transaction started
+[2026-10-21T15:00:00+0200] [ALPM] removed eza (0.21.0-1)
+[2026-10-21T15:00:00+0200] [ALPM] removed libgit2 (1.9.0-2)
+[2026-10-21T15:00:00+0200] [ALPM] removed terminfo (6.5-1)
+[2026-10-21T15:00:00+0200] [ALPM] transaction completed
+LOG
+export LOGSTUB
+PUSH=1 run_pkgtrack "bat eza" ""
+PUSH=1 run_pkgtrack "bat" ""
+check "pruned deps are reported" "[-] Pruned dependencies: libgit2 terminfo" \
+    "$(grep '^\[-\] Pruned dependencies:' <<< "$out")"
+check "the subject still names only the explicit package" "-eza" \
+    "$(subject | sed 's/.*\] //')"
+check "the body lists the pruned deps" "pruned deps: libgit2 terminfo" "$(pushed %b)"
+check "an earlier transaction block is not read" "yes" \
+    "$(pushed %B | grep -q stale-from-last-time && echo no || echo yes)"
+check "the PR title stays a single line" "yes" \
+    "$(grep -qF -- "--title $(subject) --body" "$GHSTUB_LOG" && echo yes || echo no)"
+unset LOGSTUB
+
+echo ""
+echo "[12] a per-host branch already merged into master starts over from master"
+fresh_repo
+add_remote
+install_gh_stub
+PUSH=1 run_pkgtrack "bat eza" ""
+first="$(pushed %H)"
+git -C "$work/remote" update-ref refs/heads/master "$first"
+master_after_merge="$(git -C "$work/remote" rev-parse refs/heads/master)"
+PUSH=1 run_pkgtrack "bat eza fd" ""
+check "the new snapshot parents on master, not the merged tip" "$master_after_merge" "$(pushed %P)"
+check "exactly one commit sits above master" "1" \
+    "$(git -C "$work/remote" rev-list --count "refs/heads/master..refs/heads/$branch")"
+
+echo ""
+echo "[13] an unreachable remote leaves the lists written and logs the miss"
+fresh_repo
+git -C "$work/repo" remote add origin "$work/nonexistent-remote"
+PUSH=1 run_pkgtrack "bat eza" ""
+check "the run still exits clean" "0" "$rc"
+check "the miss is reported" "yes" \
+    "$(grep -q 'cannot reach origin' <<< "$out" && echo yes || echo no)"
+check "the failure is logged" "yes" \
+    "$(grep -q 'fetch failed' "$work/repo/.pkgtrack.log" && echo yes || echo no)"
+check "the lists were still rewritten" "bat
+eza" "$(cat "$work/repo/arch/packages/packages.txt")"
 
 rm -f "$work/bin/gh"
 
