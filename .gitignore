@@ -54,3 +54,6 @@ id_ed25519*
 id_ecdsa*
 id_dsa*
 .ssh/
+
+# written by the pacman autotrack hook when a push cannot go out
+.pkgtrack.log
