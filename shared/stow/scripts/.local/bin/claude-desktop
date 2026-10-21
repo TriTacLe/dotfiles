@@ -1,3 +1,4 @@
 #!/bin/bash
 export LIBVA_DRIVER_NAME=iHD
+export CLAUDE_PASSWORD_STORE=gnome-libsecret
 exec /opt/claude-desktop/claude-desktop.AppImage "$@"
