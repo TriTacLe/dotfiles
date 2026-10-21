@@ -27,6 +27,7 @@ fi
 _self="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
 _repo="$(cd "$(dirname "$_self")/../.." && pwd)"
 source "$_repo/shared/scripts/config.sh"
+source "$_repo/shared/scripts/pkgsnapshot.sh"
 unset _self _repo
 
 [[ -z "${DOTFILES_DIR:-}" ]] && { echo "[pkgtrack] dotfiles dir not found" >&2; exit 1; }
@@ -91,150 +92,33 @@ AUR_COUNT=$(wc -l < "$AUR_FILE" 2>/dev/null || echo "0")
 
 cd "$DOTFILES_DIR" || exit 1
 
-HOSTNAME=$(cat /etc/hostname 2>/dev/null || echo "unknown")
-DATE=$(date '+%Y-%m-%d')
-MACHINE="desktop"
-for bat in /sys/class/power_supply/BAT*; do
-    [[ -d "$bat" ]] && { MACHINE="laptop"; break; }
-done
-
 if [[ "$NEW_PKGS" == "none" && "$NEW_AUR" == "none" && "$DEL_PKGS" == "none" && "$DEL_AUR" == "none" ]]; then
     exit 0
 fi
 
-# A single pacman -Rns can touch 100+ packages, so keep the subject readable
-summarize() {
-    local n
-    n=$(wc -w <<< "$1")
-    if (( n > 5 )); then
-        echo "$(cut -d' ' -f1-5 <<< "$1") and $((n - 5)) more"
-    else
-        echo "$1"
-    fi
-}
-
 parts=()
-[[ "$NEW_PKGS" != "none" ]] && parts+=("+$(summarize "$NEW_PKGS")")
-[[ "$NEW_AUR" != "none" ]] && parts+=("+AUR $(summarize "$NEW_AUR")")
-[[ "$DEL_PKGS" != "none" ]] && parts+=("-$(summarize "$DEL_PKGS")")
-[[ "$DEL_AUR" != "none" ]] && parts+=("-AUR $(summarize "$DEL_AUR")")
+[[ "$NEW_PKGS" != "none" ]] && parts+=("+$(snapshot_summarize "$NEW_PKGS")")
+[[ "$NEW_AUR" != "none" ]] && parts+=("+AUR $(snapshot_summarize "$NEW_AUR")")
+[[ "$DEL_PKGS" != "none" ]] && parts+=("-$(snapshot_summarize "$DEL_PKGS")")
+[[ "$DEL_AUR" != "none" ]] && parts+=("-AUR $(snapshot_summarize "$DEL_AUR")")
 
-SUBJECT="[AUTO] [$DATE] [$HOSTNAME:$MACHINE] $(IFS='|'; echo "${parts[*]}")"
+HOSTNAME=$(snapshot_host)
+SUBJECT="[AUTO] [$(date '+%Y-%m-%d')] [$HOSTNAME:$(snapshot_machine)] $(IFS='|'; echo "${parts[*]}")"
 COMMIT_MSG="$SUBJECT"
 # The subject only ever names explicit packages, so the pruned deps go in the body
 [[ -n "$PRUNED_DEPS" ]] && COMMIT_MSG="$SUBJECT"$'\n\n'"pruned deps: $PRUNED_DEPS"
 
+PR_BODY="Package snapshot from $HOSTNAME, committed by the pacman hook."
+[[ -n "$PRUNED_DEPS" ]] && PR_BODY="$PR_BODY"$'\n\n'"Pruned dependencies: $PRUNED_DEPS"
+
 echo "Official packages: $NEW_COUNT"
 echo "AUR packages: $AUR_COUNT"
 echo "Commit message: $SUBJECT"
-
-log_failure() {
-    echo "[pkgtrack] $(date '+%Y-%m-%d %H:%M') $1: $SUBJECT" >> "$DOTFILES_DIR/.pkgtrack.log"
-}
 
 if [[ "$AUTO_PUSH" != "true" ]]; then
     echo "[pkgtrack] AUTO_PUSH=false - lists rewritten, nothing committed or pushed"
     exit 0
 fi
 
-git_as_user() {
-    local -a pre=()
-    if [[ -n "${SUDO_USER:-}" ]]; then
-        pre=(sudo -u "$SUDO_USER" env)
-        [[ -n "${GIT_INDEX_FILE:-}" ]] && pre+=("GIT_INDEX_FILE=$GIT_INDEX_FILE")
-    fi
-    "${pre[@]}" git "$@"
-}
-
-gh_as_user() {
-    if [[ -n "${SUDO_USER:-}" ]]; then
-        sudo -u "$SUDO_USER" gh "$@"
-    else
-        gh "$@"
-    fi
-}
-
-# One branch per host so each machine keeps a single PR that later transactions
-# add to, rather than a new PR per package.
-BRANCH="pkgtrack/${HOSTNAME//[^a-zA-Z0-9._-]/-}"
-
-if ! git_as_user fetch -q "$GIT_REMOTE" "+refs/heads/$GIT_BRANCH:refs/remotes/$GIT_REMOTE/$GIT_BRANCH" 2>/dev/null; then
-    echo "[pkgtrack] cannot reach $GIT_REMOTE - lists rewritten, nothing pushed"
-    log_failure "fetch failed"
-    exit 0
-fi
-BASE=$(git_as_user rev-parse "refs/remotes/$GIT_REMOTE/$GIT_BRANCH")
-
-# An already merged branch starts over from the base, an open one keeps its
-# history so earlier subjects are not lost from the PR.
-PARENT="$BASE"
-if git_as_user fetch -q "$GIT_REMOTE" "+refs/heads/$BRANCH:refs/remotes/$GIT_REMOTE/$BRANCH" 2>/dev/null; then
-    TIP=$(git_as_user rev-parse "refs/remotes/$GIT_REMOTE/$BRANCH")
-    git_as_user merge-base --is-ancestor "$TIP" "$BASE" || PARENT="$TIP"
-fi
-
-# The working tree is a field of stow symlinks that running programs read, so the
-# branch is never checked out and HEAD is never moved. The commit is assembled in
-# a throwaway index and pushed straight to the remote ref.
-GIT_INDEX_FILE=$(mktemp)
-export GIT_INDEX_FILE
-[[ -n "${SUDO_USER:-}" ]] && chown "$SUDO_USER" "$GIT_INDEX_FILE"
-trap 'rm -f "$GIT_INDEX_FILE"' EXIT
-
-build_commit() {
-    git_as_user read-tree "$PARENT" || return 1
-    local file blob
-    for file in arch/packages/packages.txt arch/packages/aur.txt; do
-        blob=$(git_as_user hash-object -w "$file") || return 1
-        git_as_user update-index --add --cacheinfo "100644,$blob,$file" || return 1
-    done
-}
-
-if ! build_commit; then
-    echo "[pkgtrack] could not build the snapshot commit" >&2
-    log_failure "build failed"
-    exit 1
-fi
-
-TREE=$(git_as_user write-tree) || { log_failure "write-tree failed"; exit 1; }
-if [[ "$TREE" == "$(git_as_user rev-parse "$PARENT^{tree}")" ]]; then
-    echo "[pkgtrack] snapshot already matches $BRANCH, nothing to push"
-    exit 0
-fi
-
-SHA=$(git_as_user commit-tree "$TREE" -p "$PARENT" -m "$COMMIT_MSG") || {
-    echo "[pkgtrack] commit-tree failed" >&2
-    log_failure "commit-tree failed"
-    exit 1
-}
-
-if ! git_as_user push --force "$GIT_REMOTE" "$SHA:refs/heads/$BRANCH" 2>/dev/null; then
-    echo "[pkgtrack] push to $BRANCH failed"
-    log_failure "push failed"
-    exit 1
-fi
-echo "[pkgtrack] pushed $SHA to $BRANCH"
-echo "[pkgtrack] arch/packages stays modified locally until the PR merges and you pull"
-
-PR_BODY="Package snapshot from $HOSTNAME, committed by the pacman hook."
-[[ -n "$PRUNED_DEPS" ]] && PR_BODY="$PR_BODY"$'\n\n'"Pruned dependencies: $PRUNED_DEPS"
-
-if ! command -v gh >/dev/null 2>&1; then
-    echo "[pkgtrack] gh not installed - open a PR from $BRANCH by hand"
-    exit 0
-fi
-
-if gh_as_user pr create --base "$GIT_BRANCH" --head "$BRANCH" \
-    --title "$SUBJECT" --body "$PR_BODY" 2>/dev/null; then
-    exit 0
-fi
-
-# Already open from an earlier transaction, or gh is not authenticated here
-EXISTING=$(gh_as_user pr list --head "$BRANCH" --json url -q '.[0].url' 2>/dev/null)
-if [[ -n "$EXISTING" ]]; then
-    echo "[pkgtrack] added the commit to the open PR $EXISTING"
-else
-    echo "[pkgtrack] could not open a PR - branch $BRANCH is pushed, open it by hand"
-fi
-
-exit 0
+snapshot_push "$SUBJECT" "$COMMIT_MSG" "$PR_BODY" \
+    arch/packages/packages.txt arch/packages/aur.txt

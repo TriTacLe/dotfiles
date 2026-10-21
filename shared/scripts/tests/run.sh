@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Tests for pkgtrack.sh. Never touches real pacman, the real repo, the real
-# pacman log or the network: pacman is a stub on PATH, DOTFILES_DIR points at a
-# throwaway git repo, PACMAN_LOG defaults to /dev/null and the push tests talk to
-# a bare remote on disk.
+# Tests for both pkgtrack.sh hooks. Never touches real pacman or apt, the real
+# repo, the real logs or the network: the package managers are stubs on PATH,
+# DOTFILES_DIR points at a throwaway git repo, the log paths default to /dev/null
+# and the push tests talk to a bare remote on disk.
 # Usage: shared/scripts/tests/run.sh   (exit 0 = all passed)
 #        SHOW=1 shared/scripts/tests/run.sh   (also print each run's output)
 set -uo pipefail
@@ -10,6 +10,7 @@ set -uo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$here/../../.." && pwd)"
 pkgtrack="$repo_root/arch/scripts/pkgtrack.sh"
+apttrack="$repo_root/ubuntu/scripts/pkgtrack.sh"
 export NO_COLOR=1
 # Hermetic: without this the real ~/.gitconfig applies, and its
 # core.hooksPath sends every repo here, bare remotes included, off to
@@ -34,8 +35,16 @@ case "$1" in
 esac
 STUB
 chmod +x "$work/bin/pacman"
+
+cat > "$work/bin/apt-mark" <<'STUB'
+#!/usr/bin/env bash
+[[ "$1" == "showmanual" ]] || { echo "unexpected apt-mark call: $*" >&2; exit 1; }
+cat "$PKGSTUB_MANUAL"
+STUB
+chmod +x "$work/bin/apt-mark"
 export PATH="$work/bin:$PATH"
 export PKGSTUB_ALL="$work/all.txt" PKGSTUB_AUR="$work/aur.txt"
+export PKGSTUB_MANUAL="$work/manual.txt"
 
 host="$(cat /etc/hostname 2>/dev/null || echo unknown)"
 host="${host//[^a-zA-Z0-9._-]/-}"
@@ -44,12 +53,13 @@ branch="pkgtrack/$host"
 # fresh_repo: throwaway dotfiles clone with empty package lists
 fresh_repo() {
     rm -rf "$work/repo" "$work/remote"
-    mkdir -p "$work/repo/arch/packages"
+    mkdir -p "$work/repo/arch/packages" "$work/repo/ubuntu/packages"
     git -C "$work/repo" init -q -b master
     git -C "$work/repo" config user.email test@example.com
     git -C "$work/repo" config user.name Test
     : > "$work/repo/arch/packages/packages.txt"
     : > "$work/repo/arch/packages/aur.txt"
+    : > "$work/repo/ubuntu/packages/packages.txt"
     git -C "$work/repo" add -A
     git -C "$work/repo" commit -qm init
 }
@@ -109,6 +119,22 @@ run_pkgtrack() {
     out="$(env -u SUDO_USER DOTFILES_DIR="$work/repo" \
         PACMAN_LOG="${LOGSTUB:-/dev/null}" \
         AUTO_PUSH="$push" bash "$pkgtrack" 2>&1)"
+    rc=$?
+    [[ -n "${SHOW:-}" ]] && printf '%s\n' "$out"
+    return $rc
+}
+
+# run_apttrack MANUAL: same contract as run_pkgtrack for the apt hook. PKG_MANAGER
+# is explicit because this box has pacman, so detection would pick the arch dir.
+run_apttrack() {
+    local -a manual
+    read -ra manual <<< "$1"
+    printf '%s\n' "${manual[@]}" > "$PKGSTUB_MANUAL"
+    local push=false
+    [[ -n "${PUSH:-}" ]] && push=true
+    out="$(env -u SUDO_USER DOTFILES_DIR="$work/repo" PKG_MANAGER=apt \
+        DPKG_LOG="${LOGSTUB:-/dev/null}" \
+        AUTO_PUSH="$push" bash "$apttrack" 2>&1)"
     rc=$?
     [[ -n "${SHOW:-}" ]] && printf '%s\n' "$out"
     return $rc
@@ -284,6 +310,69 @@ check "the lists were still rewritten" "bat
 eza" "$(cat "$work/repo/arch/packages/packages.txt")"
 
 rm -f "$work/bin/gh"
+
+echo ""
+echo "=== apt hook ==="
+
+echo ""
+echo "[14] a manually installed package is tracked and reported"
+fresh_repo
+run_apttrack "curl git tmux"
+check "packages.txt is sorted" "curl
+git
+tmux" "$(cat "$work/repo/ubuntu/packages/packages.txt")"
+check "subject names the additions" "APT +curl git tmux" "$(subject | sed 's/.*\] //')"
+
+echo ""
+echo "[15] more than five additions are summarized here too"
+fresh_repo
+run_apttrack "a b c d e f g"
+check "subject truncates after five" "APT +a b c d e and 2 more" "$(subject | sed 's/.*\] //')"
+
+echo ""
+echo "[16] deps pruned by apt remove are read from dpkg.log"
+fresh_repo
+add_remote
+install_gh_stub
+LOGSTUB="$work/dpkg.log"
+cat > "$LOGSTUB" <<'LOG'
+2026-10-20 10:00:00 startup packages remove
+2026-10-20 10:00:00 remove stale-from-last-time:amd64 1.0-1 <none>
+2026-10-21 15:00:00 startup packages remove
+2026-10-21 15:00:00 remove tmux:amd64 3.4-1 <none>
+2026-10-21 15:00:01 status half-configured libevent:amd64 2.1.12-1
+2026-10-21 15:00:01 remove libevent:amd64 2.1.12-1 <none>
+2026-10-21 15:00:02 purge libutempter:amd64 1.2.1-3 <none>
+LOG
+export LOGSTUB
+PUSH=1 run_apttrack "curl tmux"
+PUSH=1 run_apttrack "curl"
+check "pruned deps are reported" "[-] Pruned dependencies: libevent libutempter" \
+    "$(grep '^\[-\] Pruned dependencies:' <<< "$out")"
+check "the subject names only the manual package" "APT -tmux" "$(subject | sed 's/.*\] //')"
+check "the body lists the pruned deps" "pruned deps: libevent libutempter" "$(pushed %b)"
+check "an earlier dpkg run is not read" "yes" \
+    "$(pushed %B | grep -q stale-from-last-time && echo no || echo yes)"
+check "a status line is not mistaken for a removal" "yes" \
+    "$(pushed %B | grep -q half-configured && echo no || echo yes)"
+unset LOGSTUB
+
+echo ""
+echo "[17] the apt snapshot goes to the same per-host branch, never to master"
+fresh_repo
+add_remote
+install_gh_stub
+master_before="$(git -C "$work/remote" rev-parse refs/heads/master)"
+PUSH=1 run_apttrack "curl git"
+check "the snapshot landed on the per-host branch" "yes" \
+    "$(git -C "$work/remote" rev-parse --verify -q "refs/heads/$branch" >/dev/null && echo yes || echo no)"
+check "protected master was not moved" "$master_before" \
+    "$(git -C "$work/remote" rev-parse refs/heads/master)"
+check "the pushed commit sits on origin/master" "$master_before" "$(pushed %P)"
+check "only the ubuntu list is in the commit" "ubuntu/packages/packages.txt" \
+    "$(git -C "$work/remote" diff --name-only "refs/heads/master" "refs/heads/$branch")"
+check "nothing was committed locally" "1" "$(commits)"
+
 
 echo ""
 echo "=== Result ==="
