@@ -336,7 +336,6 @@ xorg-xinput
 xsel
 yamllint
 yazi
-ydotool
 yelp
 yq
 zathura
