@@ -106,6 +106,46 @@ git_as_user() {
     fi
 }
 
+gh_as_user() {
+    if [[ -n "${SUDO_USER:-}" ]]; then
+        sudo -u "$SUDO_USER" gh "$@"
+    else
+        gh "$@"
+    fi
+}
+
+# Fallback for anyone without admin rights: master is protected, so push the
+# commit to a per-machine branch and open a PR. HEAD:refs/heads/... on purpose,
+# never a checkout: the working tree is a field of stow symlinks that running
+# programs read, so moving the local branch under them is not safe.
+# One branch per host, force-pushed, so each machine keeps a single open PR
+# that later installs add to rather than a new PR per package.
+open_pkgtrack_pr() {
+    local branch="pkgtrack/${HOSTNAME//[^a-zA-Z0-9._-]/-}"
+    if ! git_as_user push --force origin "HEAD:refs/heads/$branch" 2>/dev/null; then
+        echo "[pkgtrack] push failed (offline or no remote) - committed locally"
+        echo "[pkgtrack] $(date '+%Y-%m-%d %H:%M') push failed: $COMMIT_MSG" >> "$DOTFILES_DIR/.pkgtrack.log"
+        return 0
+    fi
+    echo "[pkgtrack] cannot push to $GIT_BRANCH, pushed branch $branch"
+    if ! command -v gh >/dev/null 2>&1; then
+        echo "[pkgtrack] gh not installed - open a PR from $branch by hand"
+        return 0
+    fi
+    if gh_as_user pr create --base "$GIT_BRANCH" --head "$branch" \
+        --title "$COMMIT_MSG" --body "Package snapshot from $HOSTNAME, committed by the pacman hook." 2>/dev/null; then
+        return 0
+    fi
+    # Already open from an earlier install, or gh is not authenticated here
+    local existing
+    existing=$(gh_as_user pr list --head "$branch" --json url -q '.[0].url' 2>/dev/null)
+    if [[ -n "$existing" ]]; then
+        echo "[pkgtrack] added the commit to the open PR $existing"
+    else
+        echo "[pkgtrack] could not open a PR - branch $branch is pushed, open it by hand"
+    fi
+}
+
 git_as_user add arch/packages/packages.txt arch/packages/aur.txt
 git_as_user diff --cached --quiet && { echo "[pkgtrack] files unchanged after add, skipping commit"; exit 0; }
 if ! git_as_user commit -m "$COMMIT_MSG" -- arch/packages/packages.txt arch/packages/aur.txt; then
@@ -119,7 +159,7 @@ if [[ "$AUTO_PUSH" == "true" ]]; then
     if git_as_user push 2>/dev/null; then
         echo "Pushed successfully"
     else
-        echo "[pkgtrack] push failed (offline or no remote) - committed locally"
+        open_pkgtrack_pr
     fi
 else
     echo "[pkgtrack] AUTO_PUSH=false - committed locally, skipping push"

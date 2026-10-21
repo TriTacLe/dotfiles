@@ -10,6 +10,10 @@ here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$here/../../.." && pwd)"
 pkgtrack="$repo_root/arch/scripts/pkgtrack.sh"
 export NO_COLOR=1
+# Hermetic: without this the real ~/.gitconfig applies, and its
+# core.hooksPath sends every repo here, bare remotes included, off to
+# ~/.git-hooks instead of its own hooks dir.
+export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
 
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
@@ -34,9 +38,9 @@ export PKGSTUB_ALL="$work/all.txt" PKGSTUB_AUR="$work/aur.txt"
 
 # fresh_repo: throwaway dotfiles clone with empty package lists
 fresh_repo() {
-    rm -rf "$work/repo"
+    rm -rf "$work/repo" "$work/remote"
     mkdir -p "$work/repo/arch/packages"
-    git -C "$work/repo" init -q
+    git -C "$work/repo" init -q -b master
     git -C "$work/repo" config user.email test@example.com
     git -C "$work/repo" config user.name Test
     : > "$work/repo/arch/packages/packages.txt"
@@ -128,6 +132,56 @@ fresh_repo
 run_pkgtrack "bat eza" ""
 run_pkgtrack "bat fd" ""
 check "both parts present, pipe separated" "+fd|-eza" "$(subject | sed 's/.*\] //')"
+
+echo ""
+echo "[7] a push master cannot take becomes a branch and a PR"
+# Stands in for GitHub's branch protection: a bare remote whose pre-receive
+# hook refuses refs/heads/master and accepts everything else.
+fresh_repo
+git init -q --bare "$work/remote"
+git -C "$work/remote" config core.hooksPath "$work/remote/hooks"
+git -C "$work/repo" remote add origin "$work/remote"
+git -C "$work/repo" push -q -u origin master
+cat > "$work/remote/hooks/pre-receive" <<'HOOK'
+#!/usr/bin/env bash
+while read -r _old _new ref; do
+    if [[ "$ref" == "refs/heads/master" ]]; then
+        echo "remote: error: GH006: Protected branch update failed" >&2
+        exit 1
+    fi
+done
+exit 0
+HOOK
+chmod +x "$work/remote/hooks/pre-receive"
+
+export GHSTUB_LOG="$work/gh.log"
+: > "$GHSTUB_LOG"
+cat > "$work/bin/gh" <<'STUB'
+#!/usr/bin/env bash
+echo "$*" >> "$GHSTUB_LOG"
+# pr list must return nothing so the caller takes the "created" path
+[[ "$1 $2" == "pr list" ]] && exit 0
+exit 0
+STUB
+chmod +x "$work/bin/gh"
+
+master_before="$(git -C "$work/remote" rev-parse refs/heads/master)"
+printf '%s\n' bat eza > "$PKGSTUB_ALL"
+: > "$PKGSTUB_AUR"
+out="$(env -u SUDO_USER DOTFILES_DIR="$work/repo" AUTO_PUSH=true bash "$pkgtrack" 2>&1)"
+[[ -n "${SHOW:-}" ]] && printf '%s\n' "$out"
+
+host="$(cat /etc/hostname 2>/dev/null || echo unknown)"
+host="${host//[^a-zA-Z0-9._-]/-}"
+check "the commit landed on the per-host branch" "yes" \
+    "$(git -C "$work/remote" rev-parse --verify -q "refs/heads/pkgtrack/$host" >/dev/null && echo yes || echo no)"
+check "protected master was not moved" "$master_before" \
+    "$(git -C "$work/remote" rev-parse refs/heads/master)"
+check "a PR was opened against master" "yes" \
+    "$(grep -q "^pr create --base master --head pkgtrack/$host" "$GHSTUB_LOG" && echo yes || echo no)"
+check "local branch was never switched" "master" "$(git -C "$work/repo" branch --show-current)"
+
+rm -f "$work/bin/gh"
 
 echo ""
 echo "=== Result ==="

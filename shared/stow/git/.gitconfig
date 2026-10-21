@@ -88,3 +88,11 @@
 [credential "https://git.ntnu.no"]
 	helper = 
 	helper = !/usr/bin/gh auth git-credential
+
+# Per-machine identity. Anyone else using these dotfiles creates
+# ~/.config/git/identity.gitconfig with their own [user] name and email, which
+# overrides the block above. Git ignores the include when the file is absent,
+# so my own machines need nothing. Keeps package auto-commits attributed to
+# whoever actually ran the install.
+[include]
+	path = ~/.config/git/identity.gitconfig
