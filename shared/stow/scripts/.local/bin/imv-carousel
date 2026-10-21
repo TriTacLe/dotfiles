@@ -1,0 +1,22 @@
+#!/bin/bash
+# Open all images in same folder as selected file, starting at that file.
+selected="$1"
+dir="$(dirname "$selected")"
+
+mapfile -t imgs < <(
+    find "$dir" -maxdepth 1 -type f \( \
+        -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \
+        -o -iname '*.gif' -o -iname '*.webp' -o -iname '*.bmp' \
+        -o -iname '*.tiff' -o -iname '*.avif' \
+    \) | sort
+)
+
+[[ ${#imgs[@]} -eq 0 ]] && exit 1
+
+idx=0
+for i in "${!imgs[@]}"; do
+    [[ "${imgs[$i]}" == "$selected" ]] && idx=$i && break
+done
+
+reordered=("${imgs[@]:$idx}" "${imgs[@]:0:$idx}")
+exec imv "${reordered[@]}"

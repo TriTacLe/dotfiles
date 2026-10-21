@@ -16,7 +16,7 @@ unset _df
 # typeset -U keeps path unique, so a shell started inside another shell does not
 # end up with these five entries twice, and again on the one after that.
 typeset -U path PATH
-export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$HOME/.npm-global/bin:$HOME/go/bin:$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$HOME/go/bin:$HOME/.cargo/bin:$PATH"
 # Runtimes: mise when installed (versions in ~/.config/mise/config.toml),
 # else the per-tool initialisers it replaces.
 if command -v mise &>/dev/null; then
