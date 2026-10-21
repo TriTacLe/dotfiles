@@ -134,7 +134,14 @@ run_pkgtrack "bat fd" ""
 check "both parts present, pipe separated" "+fd|-eza" "$(subject | sed 's/.*\] //')"
 
 echo ""
-echo "[7] a push master cannot take becomes a branch and a PR"
+echo "[7] no AUR packages leaves aur.txt empty, not one blank line"
+fresh_repo
+run_pkgtrack "bat eza" ""
+check "aur.txt is zero bytes" "0" "$(wc -c < "$work/repo/arch/packages/aur.txt" | tr -d ' ')"
+check "the count reported is zero" "AUR packages: 0" "$(grep '^AUR packages:' <<< "$out")"
+
+echo ""
+echo "[8] a push master cannot take becomes a branch and a PR"
 # Stands in for GitHub's branch protection: a bare remote whose pre-receive
 # hook refuses refs/heads/master and accepts everything else.
 fresh_repo

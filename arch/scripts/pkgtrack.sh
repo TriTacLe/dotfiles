@@ -43,8 +43,19 @@ AUR_PACKAGES=$(pacman -Qqme | sort)
 ALL_PACKAGES=$(pacman -Qqe | sort)
 OFFICIAL_PACKAGES=$(comm -23 <(echo "$ALL_PACKAGES") <(echo "$AUR_PACKAGES"))
 
-echo "$OFFICIAL_PACKAGES" > "$PACKAGES_FILE"
-echo "$AUR_PACKAGES" > "$AUR_FILE"
+# printf guarded on empty, not echo: echo of an empty variable still writes a
+# newline, which on a box with no AUR packages left aur.txt holding a blank line
+# and made the count report 1 instead of 0.
+write_list() {
+    if [[ -n "$2" ]]; then
+        printf '%s\n' "$2" > "$1"
+    else
+        : > "$1"
+    fi
+}
+
+write_list "$PACKAGES_FILE" "$OFFICIAL_PACKAGES"
+write_list "$AUR_FILE" "$AUR_PACKAGES"
 
 NEW_PKGS=$(comm -13 <(sort "$OLD_PACKAGES_FILE") "$PACKAGES_FILE" | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')
 NEW_AUR=$(comm -13 <(sort "$OLD_AUR_FILE") "$AUR_FILE" | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')
