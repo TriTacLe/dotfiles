@@ -1,0 +1,3 @@
+#!/bin/bash
+export LIBVA_DRIVER_NAME=iHD
+exec /opt/claude-desktop/claude-desktop.AppImage "$@"
