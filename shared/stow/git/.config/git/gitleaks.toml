@@ -14,3 +14,13 @@ regexes = [
   '''(?i)(password|secret|api_key|access_token)\s*=\s*\w*(password|secret|api_key|access_token)\w*''',
   '''(?i)(password|secret|api_key)\s*:\s*(str|bytes|Optional|str\s*\|)''',
 ]
+
+# A saved error page committed by accident in the school vault on 17 Sep 2026
+# trips the generic token rules. The file is deleted, but the commits that added
+# it are still unpushed and so stay in the pre-push scan range. Scoped to that
+# one path.
+[[allowlists]]
+description = "school vault: saved error page, file deleted"
+paths = [
+  "eee3094s-control-systems-engineering/tut4-2023\\.b64$",
+]
