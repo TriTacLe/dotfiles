@@ -96,6 +96,8 @@ echo ""
 echo "[3] Shell script syntax"
 SH_FAIL=0
 while IFS= read -r f; do
+    # bash -n on a python3 or zsh file is a false failure, so filter by shebang.
+    head -1 "$f" | grep -qE '^#!.*[ /](bash|sh)$' || continue
     bash -n "$f" 2>/dev/null || { echo "    syntax error: $f"; SH_FAIL=$((SH_FAIL+1)); }
 done < <(
     # Not just *.sh: the git pre-push hook and the matlab wrapper ship executable
