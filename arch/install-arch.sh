@@ -16,6 +16,7 @@ fi
 sudo pacman -S --needed --noconfirm jq reflector pacman-contrib thermald tlp zram-generator
 
 command -v just >/dev/null || sudo pacman -S --needed --noconfirm just
+bootstrap_profile "$DOTFILES"
 just --justfile "$DOTFILES/justfile" stow arch
 
 # Colours are generated rather than stowed, so a fresh clone has none until this

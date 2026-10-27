@@ -1,7 +1,8 @@
 # Shared zsh config, sourced first by every OS .zshrc. The OS files add only
 # what differs: package manager aliases, platform paths, the macOS prompt.
 
-# Per-machine .env (project paths, prefs). set -a exports every line.
+# Per-machine .env (project paths, prefs), linked to profiles/<name>/profile.env.
+# set -a exports every line.
 for _df in "$DOTFILES_DIR" "$HOME/Desktop/dotfiles" "$HOME/dotfiles" "$HOME/.dotfiles"; do
     if [[ -n "$_df" && -f "$_df/.env" ]]; then
         set -a; source "$_df/.env"; set +a
@@ -231,7 +232,8 @@ alias fnd='ls -a | grep -i'
 alias py='python'
 alias o='opencode'
 alias claudd='claude --dangerously-skip-permissions'
-alias x='claude --dangerously-skip-permissions'
+alias agyy='agy --dangerously-skip-permissions'
+alias x='agy --dangerously-skip-permissions'
 alias myip='curl -s ifconfig.me'
 alias qrc='qrencode -t UTF8'
 alias nvide='nohup neovide & disown'
@@ -330,8 +332,12 @@ chpwd() {
 # Stow one package from whichever tree holds it.
 stow-pkg() {
     [[ -n "$1" ]] || { echo "Usage: stow-pkg <package>"; return 1; }
-    # ~/.claude is one symlink to the submodule, not a stow tree of per-file links
-    if [[ "$1" == "claude-config" ]]; then ln -sfn "$DOTFILES_DIR/claude-config" ~/.claude; return; fi
+    # ~/.claude is one symlink to the active config, not a stow tree.
+    if [[ "$1" == "claude-config" ]]; then
+        source "$DOTFILES_DIR/shared/scripts/config.sh"
+        link_claude_config "$DOTFILES_DIR"
+        return
+    fi
     for _d in shared arch ubuntu macos; do
         [[ -d "$DOTFILES_DIR/$_d/stow/$1" ]] && stow -d "$DOTFILES_DIR/$_d/stow" -t ~ --no-folding -R "$1"
     done

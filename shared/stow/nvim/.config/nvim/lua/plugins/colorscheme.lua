@@ -3,7 +3,7 @@
 -- <leader>uT still switch within a session.
 
 local ok, current = pcall(require, "theme_current")
-local colorscheme = ok and current.colorscheme or "desert"
+local colorscheme = ok and current.colorscheme or "catppuccin"
 
 return {
   {

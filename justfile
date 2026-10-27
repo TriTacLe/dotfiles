@@ -10,6 +10,14 @@ ubuntu_pkgs := "zsh rofi swaylock fontconfig systemd hypr-host sway"
 macos_pkgs := "zsh tmux alacritty ghostty kitty neofetch starship"
 server_pkgs := "zsh pacseek"
 
+# Create or refresh the local profile and its Claude link
+profile:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "{{dotfiles}}/shared/scripts/config.sh"
+    bootstrap_profile "{{dotfiles}}"
+    link_claude_config "{{dotfiles}}"
+
 # Restow every package for an OS: arch, ubuntu, macos or server
 stow os: (_stow os "-R")
 
@@ -31,14 +39,11 @@ _stow os flag:
     # otherwise leave a stale link behind.
     stow -d "{{dotfiles}}/shared/stow" -t ~ --no-folding {{flag}} $shared
     stow -d "{{dotfiles}}/$dir/stow" -t ~ --no-folding {{flag}} $pkgs
-    # ~/.claude is one symlink to the claude-config submodule, not a stow tree.
-    # Guarded the same way link_claude_config is: never clobber a real directory.
+    # ~/.claude is one symlink to the active Claude config, not a stow tree.
+    # link_claude_config guards real directories and applies the profile files.
     if [ "{{flag}}" = "-R" ]; then
-        if [ -d ~/.claude ] && [ ! -L ~/.claude ]; then
-            echo "~/.claude is a real directory, leaving it alone" >&2
-        else
-            ln -sfn "{{dotfiles}}/claude-config" ~/.claude
-        fi
+        source "{{dotfiles}}/shared/scripts/config.sh"
+        link_claude_config "{{dotfiles}}"
     elif [ -L ~/.claude ]; then
         rm -f ~/.claude
     fi

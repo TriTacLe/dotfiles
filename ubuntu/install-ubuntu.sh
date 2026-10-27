@@ -16,6 +16,7 @@ fi
 mkdir -p ~/.config
 
 command -v just >/dev/null || sudo apt-get install -y just
+bootstrap_profile "$DOTFILES"
 just --justfile "$DOTFILES/justfile" stow ubuntu
 
 link_claude_config "$DOTFILES"

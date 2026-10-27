@@ -56,3 +56,5 @@ if [[ -o interactive ]]; then
     else echo "Hei, $(whoami)!"; echo "System: $(sw_vers -productName) $(sw_vers -productVersion)"
     fi
 fi
+
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

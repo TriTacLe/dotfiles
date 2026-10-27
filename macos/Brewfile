@@ -1,9 +1,9 @@
 # Brewfile - macOS pakker for dotfiles
 # Kjør: brew bundle
 
-# Taps
-tap "homebrew/bundle"
-tap "homebrew/services"
+# Taps (deprecated - integrated into Homebrew core)
+# tap "homebrew/bundle"
+# tap "homebrew/services"
 
 # Core utilities (bedre enn macOS-defaults)
 brew "coreutils"
@@ -80,7 +80,7 @@ cask "font-symbols-only-nerd-font"
 # Applications
 cask "ghostty"
 cask "kitty"
-cask "alacritty"
+# cask "alacritty" (disabled in Homebrew due to macOS Gatekeeper)
 cask "visual-studio-code"
 cask "cursor"
 cask "intellij-idea-ce"
@@ -103,8 +103,8 @@ cask "keka"
 cask "hiddenbar"
 cask "stats"
 
-# Mac App Store apps
-mas "Xcode", id: 497799835
-mas "Things 3", id: 904280696
-mas "Amphetamine", id: 937984704
-mas "Spark Desktop", id: 6445813049
+# Mac App Store apps (install manually via App Store if owned)
+# mas "Xcode", id: 497799835
+# mas "Things 3", id: 904280696
+# mas "Amphetamine", id: 937984704
+# mas "Spark Desktop", id: 6445813049

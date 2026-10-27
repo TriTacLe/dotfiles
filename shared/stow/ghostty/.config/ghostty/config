@@ -85,3 +85,6 @@ keybind = ctrl+shift+l=goto_split:right
 
 # Toggle fullscreen
 keybind = f11=toggle_fullscreen
+
+# Personal overrides, linked from profiles/<user>/ghostty.conf.
+config-file = ?local

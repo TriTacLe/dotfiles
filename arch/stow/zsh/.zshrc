@@ -29,3 +29,5 @@ options edns0 trust-ad
 EOF
 }
 sunshine_start() { DISPLAY=:1 sunshine; }
+
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

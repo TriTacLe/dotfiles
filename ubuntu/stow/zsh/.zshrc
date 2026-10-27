@@ -27,3 +27,5 @@ alias logout-menu='wlogout'
 
 export NVM_DIR="$HOME/.nvm"
 [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

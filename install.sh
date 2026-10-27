@@ -3,8 +3,13 @@ set -e
 
 DOTFILES="$(cd "$(dirname "$0")" && pwd)"
 
-# Init submodules (safe to run even if already done)
-git -C "$DOTFILES" submodule update --init --recursive
+# The claude-config submodule is Tri's config and may not be reachable from
+# another account. A profile can point at its own repository instead, so a
+# failed submodule fetch must not stop the install.
+if ! git -C "$DOTFILES" submodule update --init --recursive; then
+    echo "warning: could not initialize claude-config submodule" >&2
+    echo "Set CLAUDE_CONFIG_REPO or CLAUDE_CONFIG_DIR in your profile to use your own Claude config." >&2
+fi
 
 # Role pin: write a single word to ~/.dotfiles-role to override the OS default
 # (currently only "server" is recognized; everything else falls through).
