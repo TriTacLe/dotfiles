@@ -12,5 +12,4 @@ content_halign=fill
 insensitive=true
 allow_images=true
 image_size=36
-gtk_dark=true
 normal_window=true
