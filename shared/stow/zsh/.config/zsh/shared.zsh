@@ -232,8 +232,7 @@ alias fnd='ls -a | grep -i'
 alias py='python'
 alias o='opencode'
 alias claudd='claude --dangerously-skip-permissions'
-alias agyy='agy --dangerously-skip-permissions'
-alias x='agy --dangerously-skip-permissions'
+alias x='claude --dangerously-skip-permissions'
 alias myip='curl -s ifconfig.me'
 alias qrc='qrencode -t UTF8'
 alias nvide='nohup neovide & disown'
@@ -363,4 +362,14 @@ is_linux && [[ -f ~/.config/zsh/.p10k.zsh ]] && source ~/.config/zsh/.p10k.zsh
 if ! command -v mise &>/dev/null; then
     export SDKMAN_DIR="$HOME/.sdkman"
     [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+fi
+
+# Scripts, editor tasks and agent tool calls source this file in a shell that is
+# not interactive, and there these aliases are wrong: rm, mv and cp stop to ask,
+# cd is really zoxide, ls and cat print decorated output nothing can parse, and
+# fmt runs npm instead of coreutils. unstow-pkg above already had to work around
+# it with "command rm". Only names that shadow a real command are dropped; the
+# namespace aliases (g, gs, dc, mvn...) are harmless either way.
+if [[ ! -o interactive ]]; then
+    unalias cd ls l ll la lt tree cat catl cp mv rm mkdir fmt 2>/dev/null
 fi
