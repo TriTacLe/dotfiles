@@ -446,8 +446,7 @@ relaunch() {
 # the old one still holds its wayland surface is what left waybar dead after a switch,
 # so poll instead of sleeping a fixed amount.
 wait_gone() {
-    local i
-    for i in $(seq 1 30); do
+    for _ in $(seq 1 30); do
         pgrep -x "$1" >/dev/null 2>&1 || return 0
         sleep 0.1
     done
@@ -455,8 +454,7 @@ wait_gone() {
 }
 
 wait_up() {
-    local i
-    for i in $(seq 1 30); do
+    for _ in $(seq 1 30); do
         pgrep -x "$1" >/dev/null 2>&1 && return 0
         sleep 0.1
     done
@@ -472,6 +470,10 @@ restart() {
     wait_gone "$name" || pkill -9 -x "$name" || true
     relaunch "$@"
     if wait_up "$name"; then return 0; fi
+    # It may just be slow rather than dead, and relaunching on top of that leaves two
+    # of them. Clear the field before the second try.
+    pkill -x "$name" 2>/dev/null || true
+    wait_gone "$name" || true
     relaunch "$@"
     if ! wait_up "$name"; then
         echo "warning: $name did not come back after the theme switch" >&2
