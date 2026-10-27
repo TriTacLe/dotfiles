@@ -61,3 +61,4 @@ id_ecdsa*
 id_dsa*
 .ssh/
 shared/stow/nvim/.config/nvim/lazy-lock.json
+!profiles/tri/
