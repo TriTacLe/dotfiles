@@ -1,5 +1,6 @@
 android-studio
 brave-bin
+catppuccin-gtk-theme-latte
 catppuccin-gtk-theme-mocha
 cheat
 checkstyle
