@@ -1,0 +1,7 @@
+# Dotfile symlinks
+# Format: source destination
+.zshrc ~/.zshrc
+.zshenv ~/.zshenv
+.gitconfig ~/.gitconfig
+.nvimrc ~/.config/nvim/init.lua
+
