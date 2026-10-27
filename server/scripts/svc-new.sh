@@ -63,7 +63,7 @@ if [[ ! -f "$SRV_DIR/compose.yml" ]]; then
 # owned by that user, not root and not your admin user.
 services:
   $NAME:
-    image: # TODO: pick image
+    image: nginx:alpine
     container_name: $NAME
     restart: unless-stopped
     user: "\${PUID}:\${PGID}"
