@@ -7,7 +7,7 @@
     "note": "accents darkened to WCAG AA against base"
   },
   "opacity": 1.0,
-  "gtk_theme": "Breeze",
+  "gtk_theme": "catppuccin-latte-mauve-standard+default",
   "icon_theme": "Papirus-Light",
   "base": "#eff1f5",
   "mantle": "#e6e9ef",

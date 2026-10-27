@@ -312,6 +312,14 @@ w "$HOME/.config/nvim/lua/theme_current.lua" <<EOF
 return { colorscheme = "$NVIM_CS" }
 EOF
 
+# That file is only read at startup, so tell the editors that are already open.
+# --remote-expr instead of --remote-send: no keystrokes, so insert mode survives.
+for sock in "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"/nvim.*; do
+    [ -S "$sock" ] || continue
+    timeout 2 nvim --server "$sock" \
+        --remote-expr "execute('colorscheme $NVIM_CS')" >/dev/null 2>&1 || true
+done
+
 # powerlevel10k. The rainbow preset paints segment backgrounds from terminal colours
 # 0-7 and writes black on top, which assumes those colours are light. A light theme
 # darkens them so they work as text, so the foregrounds have to be inverted here.
