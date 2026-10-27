@@ -1,6 +1,12 @@
 {
-  "_meta": { "name": "AMOLED Mono", "author": "Filip", "variant": "dark" },
-
+  "_meta": {
+    "name": "AMOLED Mono",
+    "author": "Filip",
+    "variant": "dark"
+  },
+  "opacity": 0.75,
+  "gtk_theme": "catppuccin-mocha-flamingo-standard+default",
+  "icon_theme": "Papirus-Dark",
   "base": "#000000",
   "mantle": "#000000",
   "crust": "#000000",
@@ -13,7 +19,6 @@
   "overlay0": "#353535",
   "overlay1": "#4d4d4d",
   "overlay2": "#6e6e6e",
-
   "blue": "#c0c0c0",
   "sapphire": "#b0b0b0",
   "peach": "#d0d0d0",
@@ -24,13 +29,11 @@
   "yellow": "#d8d8d8",
   "maroon": "#b0b0b0",
   "teal": "#c8c8c8",
-
   "accent": "#ffffff",
   "accent_dim": "#808080",
   "accent_bright": "#ffffff",
   "selection": "#2a2a2a",
   "border": "#1f1f1f",
-
   "term_black": "#000000",
   "term_red": "#909090",
   "term_green": "#b0b0b0",
@@ -47,7 +50,6 @@
   "term_bright_magenta": "#d8d8d8",
   "term_bright_cyan": "#e8e8e8",
   "term_bright_white": "#ffffff",
-
   "radius_small": 0,
   "radius_medium": 0,
   "radius_large": 0,

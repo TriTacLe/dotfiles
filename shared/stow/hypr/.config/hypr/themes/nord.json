@@ -5,6 +5,9 @@
     "variant": "dark",
     "nvim": "nord"
   },
+  "opacity": 0.75,
+  "gtk_theme": "catppuccin-mocha-flamingo-standard+default",
+  "icon_theme": "Papirus-Dark",
   "base": "#2e3440",
   "mantle": "#272c36",
   "crust": "#21252e",
