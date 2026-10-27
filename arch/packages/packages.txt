@@ -214,6 +214,7 @@ oxygen
 oxygen-sounds
 pacman-contrib
 papers
+papirus-icon-theme
 pass
 pavucontrol
 perl-image-exiftool
