@@ -56,10 +56,16 @@ if [[ ! "$DOTFILES_PROFILE" =~ ^[A-Za-z0-9._-]+$ ]]; then
 fi
 PROFILE_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/profiles/$DOTFILES_PROFILE}"
 if [[ -r "$PROFILE_DIR/profile.env" ]]; then
+    _profile_selection="$DOTFILES_PROFILE"
+    _profile_dir="$PROFILE_DIR"
     set -a
     # shellcheck disable=SC1090
     source "$PROFILE_DIR/profile.env"
     set +a
+    # The selection lives in ~/.dotfiles-profile, not in the profile itself.
+    DOTFILES_PROFILE="$_profile_selection"
+    PROFILE_DIR="$_profile_dir"
+    unset _profile_selection _profile_dir
 fi
 
 # OS-aware packages dir: arch uses pacman, ubuntu/debian uses apt
@@ -190,8 +196,9 @@ link_claude_config() {
 
     if [[ "$target" == "$HOME/.claude" ]]; then
         claude_dir="$HOME/.claude"
-    elif [[ -d "$HOME/.claude" && ! -L "$HOME/.claude" ]]; then
-        warn "$HOME/.claude is a real directory, leaving it alone"
+    elif [[ -e "$HOME/.claude" ]]; then
+        # An existing clone or symlink wins over the bundled fallback. This
+        # keeps local Claude state and per-person checkouts intact.
         claude_dir="$HOME/.claude"
     else
         ln -sfn "$target" "$HOME/.claude"

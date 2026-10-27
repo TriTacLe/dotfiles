@@ -23,6 +23,14 @@ and asks for the git name and email. The active profile is stored in
 
 Refresh the links after editing a profile with `just profile`.
 
+## Claude config
+
+`profile.env` accepts `CLAUDE_CONFIG_REPO` or `CLAUDE_CONFIG_DIR`. The installer
+clones the repository to `~/.local/share/claude-config` once and links
+`~/.claude` to it. With neither set it uses the bundled `claude-config`
+submodule when that is initialized. The two `.local` files stay untracked in
+whichever Claude directory is active, so they work with any clone.
+
 ## Selecting another profile
 
 ```bash

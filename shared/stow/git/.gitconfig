@@ -78,3 +78,6 @@
 	helper = !/usr/bin/gh auth git-credential
 [include]
 	path = ~/.gitconfig.local
+[user]
+	name = Saikou Amed Thidiane Diallo
+	email = 323202163+dsaikou618@users.noreply.github.com

@@ -1,1 +1,4 @@
--- Profile-specific Neovim config
+-- Personal Neovim overrides. Loaded by init.lua when this file exists.
+-- vim.opt.relativenumber = true
+-- vim.opt.cursorline = true
+-- vim.keymap.set("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file" })

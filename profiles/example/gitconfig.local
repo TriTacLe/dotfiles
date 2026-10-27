@@ -1,3 +1,9 @@
+# Personal git identity and overrides. Linked to ~/.gitconfig.local and
+# included last by the stowed .gitconfig.
 [user]
 	name = Your Name
 	email = you@example.com
+
+# Optional per-directory identity, for example a university account:
+# [includeIf "gitdir:~/Desktop/ntnu/"]
+#	path = ~/.config/git/ntnu.gitconfig

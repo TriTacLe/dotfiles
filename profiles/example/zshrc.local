@@ -1,1 +1,5 @@
-# Profile-specific zsh settings
+# Personal zsh overrides. Sourced last by every OS .zshrc.
+# Aliases, exports, and functions here win over the shared config.
+
+# alias work="cd $HOME/Desktop/work"
+# export BAT_THEME="Catppuccin Mocha"
