@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Read /home/tri/.claude/cache/token-cost.jsonl and print today's spend summary."""
 import json
 import sys
 from collections import defaultdict
