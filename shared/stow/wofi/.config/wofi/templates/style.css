@@ -15,10 +15,22 @@ window {
   color: @text_primary;
   font-weight: bold;
   background-color: @bg_base;
+  /* the GTK theme paints entries with a gradient, which wins over background-color */
+  background-image: none;
   outline: none;
   border-radius: 15px;
   margin: 10px;
   margin-bottom: 2px;
+}
+
+/* GTK 3.20+ renders an entry as `entry > text`; the inner node keeps the widget
+   theme's own background unless it is styled directly. */
+#input text,
+#input selection,
+#input image {
+  background-color: @bg_base;
+  background-image: none;
+  color: @text_primary;
 }
 
 #input:focus {

@@ -1,6 +1,12 @@
 {
-  "_meta": { "name": "Coolnight", "author": "Filip", "variant": "dark" },
-
+  "_meta": {
+    "name": "Coolnight",
+    "author": "Filip",
+    "variant": "dark"
+  },
+  "opacity": 0.75,
+  "gtk_theme": "catppuccin-mocha-flamingo-standard+default",
+  "icon_theme": "Papirus-Dark",
   "base": "#010d1a",
   "mantle": "#01111f",
   "crust": "#000810",
@@ -13,7 +19,6 @@
   "overlay0": "#275378",
   "overlay1": "#3d6a8a",
   "overlay2": "#547998",
-
   "blue": "#65b2ff",
   "sapphire": "#479cbb",
   "peach": "#ffb378",
@@ -24,13 +29,11 @@
   "yellow": "#ffe9aa",
   "maroon": "#c991e1",
   "teal": "#63f2f1",
-
   "accent": "#65b2ff",
   "accent_dim": "#0a64ac",
   "accent_bright": "#91ddff",
   "selection": "#0f3f63",
   "border": "#1a3a5c",
-
   "term_black": "#100e23",
   "term_red": "#ff5458",
   "term_green": "#62d196",
@@ -47,7 +50,6 @@
   "term_bright_magenta": "#c991e1",
   "term_bright_cyan": "#aaffe4",
   "term_bright_white": "#e8fafc",
-
   "radius_small": 4,
   "radius_medium": 10,
   "radius_large": 16,

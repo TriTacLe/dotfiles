@@ -10,7 +10,7 @@
 }
 
 window#waybar {
-  background: transparent;
+  background: @bar_bg;
   color: @text_primary;
 }
 
@@ -73,28 +73,29 @@ tooltip {
 }
 
 #workspaces button.active {
-  color: @mauve;
-  background: @bg_surface0;
+  color: @bg_base;
+  background: @accent;
   border-radius: 10px;
   padding-left: 6px;
   padding-right: 6px;
 }
 /* No windows on it: dimmer than an occupied workspace, still readable. */
 #workspaces button.empty {
-  color: @overlay2;
+  color: @text_muted;
 }
 #workspaces button.empty.active {
-  color: @mauve;
+  color: @bg_base;
+  background: @text_muted;
 }
 
 #workspaces button.urgent {
-  color: @bg_crust;
+  color: @bg_base;
   background: @green;
   border-radius: 10px;
 }
 
 #workspaces button:hover {
-  color: @overlay0;
+  color: @text_primary;
   border-radius: 10px;
 }
 

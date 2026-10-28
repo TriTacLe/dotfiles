@@ -349,6 +349,9 @@ unstow-pkg() {
 
 # Prompt config for p10k (Linux). macOS runs starship from its own file.
 is_linux && [[ -f ~/.config/zsh/.p10k.zsh ]] && source ~/.config/zsh/.p10k.zsh
+# Theme colours for the prompt. Written by theme_apply.sh, sourced after .p10k.zsh
+# because that file unsets every POWERLEVEL9K_* when it runs.
+[[ -f ~/.config/zsh/p10k-colors.zsh ]] && source ~/.config/zsh/p10k-colors.zsh
 
 [[ -f "$HOME/.openclaw/completions/openclaw.zsh" ]] && source "$HOME/.openclaw/completions/openclaw.zsh"
 [[ -f ~/.zshenv.secrets ]] && source ~/.zshenv.secrets
@@ -368,3 +371,19 @@ fi
 if [[ ! -o interactive ]]; then
     unalias cd ls l ll la lt tree cat catl cp mv rm mkdir fmt 2>/dev/null
 fi
+
+# Desktop theme. No argument toggles light and dark, a name applies that theme.
+# Ghostty needs ctrl+shift+comma afterwards; running terminals do not reload colours.
+theme() {
+  local script="$HOME/.config/hypr/scripts/theme_apply.sh"
+  local state="${XDG_STATE_HOME:-$HOME/.local/state}/current-theme"
+  if [ -n "$1" ]; then
+    "$script" "$@"
+    return
+  fi
+  if [ "$(cat "$state" 2>/dev/null)" = "catppuccin-latte" ]; then
+    "$script" catppuccin-mocha
+  else
+    "$script" catppuccin-latte
+  fi
+}

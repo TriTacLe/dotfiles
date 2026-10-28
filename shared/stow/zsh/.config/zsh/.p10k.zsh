@@ -392,11 +392,13 @@
     fi
 
     # Styling for different parts of Git status.
-    local       meta='%7F' # white foreground
-    local      clean='%0F' # black foreground
-    local   modified='%0F' # black foreground
-    local  untracked='%0F' # black foreground
-    local conflicted='%1F' # red foreground
+    # Defaults match the rainbow preset. theme_apply.sh overrides them for a light
+    # theme, where every segment background is dark.
+    local       meta=${MY_GIT_META_FG:-'%7F'}
+    local      clean=${MY_GIT_FG:-'%0F'}
+    local   modified=${MY_GIT_FG:-'%0F'}
+    local  untracked=${MY_GIT_FG:-'%0F'}
+    local conflicted=${MY_GIT_CONFLICT_FG:-'%1F'}
 
     local res
 

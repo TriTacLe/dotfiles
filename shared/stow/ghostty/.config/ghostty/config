@@ -9,7 +9,7 @@ window-padding-x = 15
 window-padding-y = 10
 window-padding-balance = true
 window-decoration = false
-background-opacity = 0.75
+# background-opacity comes from the theme, see ?colors below
 background-blur-radius = 20
 
 # Palette. Written by theme_apply.sh, ? means skip it if absent.

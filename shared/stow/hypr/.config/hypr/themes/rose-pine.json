@@ -1,10 +1,13 @@
 {
   "_meta": {
-    "name": "Rosé Pine",
-    "author": "Rosé Pine",
+    "name": "Ros\u00e9 Pine",
+    "author": "Ros\u00e9 Pine",
     "variant": "dark",
     "nvim": "rose-pine-main"
   },
+  "opacity": 0.75,
+  "gtk_theme": "catppuccin-mocha-flamingo-standard+default",
+  "icon_theme": "Papirus-Dark",
   "base": "#191724",
   "mantle": "#1f1d2e",
   "crust": "#14121f",

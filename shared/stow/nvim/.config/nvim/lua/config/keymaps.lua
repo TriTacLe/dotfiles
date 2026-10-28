@@ -2,17 +2,12 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
--- Theme toggle: switch between light and dark
+-- Session only. Startup reads theme_current.lua, which theme_apply.sh writes.
 vim.keymap.set("n", "<leader>uN", function()
-  local current = vim.g.colors_name
-  if current == "tokyonight-day" or current == "catppuccin-latte" then
-    vim.cmd("colorscheme tokyonight")
-  else
-    vim.cmd("colorscheme tokyonight-day")
-  end
+  local light = vim.g.colors_name == "catppuccin-latte"
+  vim.cmd("colorscheme " .. (light and "catppuccin-mocha" or "catppuccin-latte"))
 end, { desc = "Theme: Toggle Light/Dark" })
 
--- Theme picker (fixed - ensure telescope is loaded)
 vim.keymap.set("n", "<leader>uT", function()
-  require("telescope.builtin").colorscheme({ enable_preview = true })
+  Snacks.picker.colorschemes()
 end, { desc = "Theme: Picker" })
