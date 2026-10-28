@@ -54,6 +54,11 @@ install_system_configs() {
         "$DOTFILES/arch/etc/udev/rules.d/90-backlight-on-power.rules" \
         /etc/udev/rules.d/90-backlight-on-power.rules
     sudo udevadm control --reload-rules
+    # Follows the laptop across continents: resolves the public IP to a timezone
+    # on every NetworkManager connect and sets it only when it differs.
+    sudo install -D -m 0755 -o root -g root \
+        "$DOTFILES/arch/etc/NetworkManager/dispatcher.d/90-timezone" \
+        /etc/NetworkManager/dispatcher.d/90-timezone
     sudo install -D -m 0644 -o root -g root \
         "$DOTFILES/arch/etc/tmpfiles.d/mglru.conf" \
         /etc/tmpfiles.d/mglru.conf

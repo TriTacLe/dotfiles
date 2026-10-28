@@ -1,0 +1,58 @@
+#!/bin/sh
+set -eu
+
+PATH=/usr/bin:/bin
+
+IFACE="${1:-}"
+ACTION="${2:-}"
+
+case "$ACTION" in
+    up|connectivity-change) ;;
+    *) exit 0 ;;
+esac
+
+if [ "$IFACE" = "lo" ]; then
+    exit 0
+fi
+
+STAMP=/var/lib/nm-timezone/last-attempt
+MIN_INTERVAL=600
+
+# Rate limit on attempts, not successes, so a flapping link cannot hammer the API.
+if [ -f "$STAMP" ]; then
+    age=$(( $(date +%s) - $(stat -c %Y "$STAMP") ))
+    if [ "$age" -lt "$MIN_INTERVAL" ]; then
+        exit 0
+    fi
+fi
+mkdir -p "$(dirname "$STAMP")"
+: > "$STAMP"
+
+lookup() {
+    curl -fsS --max-time 5 "$1" 2>/dev/null | tr -d '[:space:]'
+}
+
+tz=$(lookup https://ipapi.co/timezone) || tz=""
+if [ -z "$tz" ]; then
+    tz=$(lookup https://ipinfo.io/timezone) || tz=""
+fi
+
+# Reject anything that is not a bare Region/City before it reaches the filesystem.
+case "$tz" in
+    */*) ;;
+    *) exit 0 ;;
+esac
+case "$tz" in
+    *[!A-Za-z0-9/_+-]* | /* | */ | */../*) exit 0 ;;
+esac
+if [ ! -f "/usr/share/zoneinfo/$tz" ]; then
+    exit 0
+fi
+
+current=$(timedatectl show -p Timezone --value)
+if [ "$tz" = "$current" ]; then
+    exit 0
+fi
+
+timedatectl set-timezone "$tz"
+logger -t nm-timezone "timezone $current -> $tz"
