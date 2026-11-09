@@ -23,6 +23,10 @@ and asks for the git name and email. The active profile is stored in
 
 Refresh the links after editing a profile with `just profile`.
 
+`~/.claude` points at the bundled `claude-config` submodule by default. Set
+`DOTFILES_CLAUDE_REPO` in `profile.env` to clone your own config instead, or
+`DOTFILES_CLAUDE_DIR` to use a directory you already have.
+
 ## Selecting another profile
 
 ```bash

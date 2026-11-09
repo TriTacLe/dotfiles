@@ -49,12 +49,17 @@ DOTFILES_PROFILE="${DOTFILES_PROFILE:-}"
 if [[ -z "$DOTFILES_PROFILE" && -r "$HOME/.dotfiles-profile" ]]; then
     DOTFILES_PROFILE="$(tr -d '[:space:]' <"$HOME/.dotfiles-profile")"
 fi
-DOTFILES_PROFILE="${DOTFILES_PROFILE:-${USER:-$(id -un)}}"
-if [[ ! "$DOTFILES_PROFILE" =~ ^[A-Za-z0-9._-]+$ ]]; then
-    err "invalid profile name '$DOTFILES_PROFILE'"
-    return 1
+DOTFILES_PROFILE="${DOTFILES_PROFILE:-${USER:-$(id -un 2>/dev/null || true)}}"
+# An unusable name leaves the profile unset instead of failing the source. The
+# pacman hook sources this as root with no login name and must still run.
+if [[ -n "$DOTFILES_PROFILE" && ! "$DOTFILES_PROFILE" =~ ^[A-Za-z0-9._-]+$ ]]; then
+    err "invalid profile name '$DOTFILES_PROFILE', ignoring it"
+    DOTFILES_PROFILE=""
 fi
-PROFILE_DIR="${DOTFILES_DIR:+$DOTFILES_DIR/profiles/$DOTFILES_PROFILE}"
+PROFILE_DIR=""
+if [[ -n "$DOTFILES_PROFILE" && -n "${DOTFILES_DIR:-}" ]]; then
+    PROFILE_DIR="$DOTFILES_DIR/profiles/$DOTFILES_PROFILE"
+fi
 if [[ -r "$PROFILE_DIR/profile.env" ]]; then
     set -a
     # shellcheck disable=SC1090
@@ -167,20 +172,20 @@ bootstrap_profile() {
 resolve_claude_config() {
     local dotfiles="$1"
 
-    if [[ -n "${CLAUDE_CONFIG_DIR:-}" ]]; then
-        if [[ -d "$CLAUDE_CONFIG_DIR" ]]; then
-            printf '%s\n' "$CLAUDE_CONFIG_DIR"
+    if [[ -n "${DOTFILES_CLAUDE_DIR:-}" ]]; then
+        if [[ -d "$DOTFILES_CLAUDE_DIR" ]]; then
+            printf '%s\n' "$DOTFILES_CLAUDE_DIR"
             return 0
         fi
-        warn "CLAUDE_CONFIG_DIR=$CLAUDE_CONFIG_DIR does not exist"
+        warn "DOTFILES_CLAUDE_DIR=$DOTFILES_CLAUDE_DIR does not exist"
     fi
 
-    if [[ -n "${CLAUDE_CONFIG_REPO:-}" ]]; then
+    if [[ -n "${DOTFILES_CLAUDE_REPO:-}" ]]; then
         local dest="${XDG_DATA_HOME:-$HOME/.local/share}/claude-config"
         if [[ ! -d "$dest/.git" ]]; then
-            command -v git &>/dev/null || { err "git is required to clone $CLAUDE_CONFIG_REPO"; return 1; }
+            command -v git &>/dev/null || { err "git is required to clone $DOTFILES_CLAUDE_REPO"; return 1; }
             mkdir -p "$(dirname "$dest")"
-            git clone "$CLAUDE_CONFIG_REPO" "$dest" || return 1
+            git clone "$DOTFILES_CLAUDE_REPO" "$dest" || return 1
         fi
         printf '%s\n' "$dest"
         return 0
@@ -200,7 +205,7 @@ link_claude_config() {
     local target claude_dir
 
     target="$(resolve_claude_config "$dotfiles")" || {
-        warn "no Claude config found; set CLAUDE_CONFIG_REPO or CLAUDE_CONFIG_DIR in $PROFILE_DIR/profile.env"
+        warn "no Claude config found; set DOTFILES_CLAUDE_REPO or DOTFILES_CLAUDE_DIR in ${PROFILE_DIR:-your profile}/profile.env"
         return 0
     }
 
