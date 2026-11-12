@@ -25,7 +25,11 @@ Variants:
 ```bash
 echo server > ~/.dotfiles-role && bash install.sh   # headless Arch: CLI packages only
 bash install.sh --system                             # Arch desktop plus the /etc tuning below
+bash install.sh --system-undo                        # remove that tuning again
 ```
+
+A real `~/.zshrc`, `~/.gitconfig` or any other file in the way is moved to
+`~/.dotfiles-backup/<timestamp>/` before linking, and the installer says so.
 
 `--system` installs a 16 GB swapfile under /home, moves the pacman cache there, and drops
 power, journald and zram settings into `/etc`. It is sized for a laptop with a small root
