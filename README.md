@@ -1,5 +1,7 @@
 # dotfiles
 
+![Hyprland desktop: waybar at the bottom, a blurred city wallpaper, and a ghostty terminal running fastfetch](.github/screenshot.png)
+
 Arch Linux, Ubuntu, macOS and a headless Arch server, managed with GNU Stow. Hyprland on
 the desktops, zsh and Neovim everywhere, one JSON palette driving the colours of every app.
 

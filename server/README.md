@@ -1,6 +1,7 @@
 # server/
 
-Headless Arch profile. Use on any machine running services instead of a desktop.
+Headless Arch profile for my server. Nothing here is needed to use the repo on a desktop;
+the role pin selects it, nothing else reads it.
 
 ## Setup
 
