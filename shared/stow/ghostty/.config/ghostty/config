@@ -14,6 +14,8 @@ background-blur-radius = 20
 
 # Palette. Written by theme_apply.sh, ? means skip it if absent.
 config-file = ?colors
+# Profile overrides, linked here by `just profile`.
+config-file = ?local
 
 # Install the ghostty terminfo on remote hosts on first ssh. Falls back to
 # xterm-256color where tic is missing.

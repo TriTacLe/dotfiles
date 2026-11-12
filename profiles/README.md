@@ -11,15 +11,15 @@ and asks for the git name and email. The active profile is stored in
 
 ## What gets linked
 
-| Profile file | Target |
-| --- | --- |
-| `profile.env` | `<repo>/.env`, sourced by zsh |
-| `gitconfig.local` | `~/.gitconfig.local` |
-| `zshrc.local` | `~/.zshrc.local` |
-| `nvim.lua` | `~/.config/nvim/lua/config/local.lua` |
-| `ghostty.conf` | `~/.config/ghostty/local` |
-| `CLAUDE.local.md` | `~/.claude/CLAUDE.local.md` |
-| `settings.local.json` | `~/.claude/settings.local.json` |
+| Profile file | Target | Read by |
+| --- | --- | --- |
+| `profile.env` | `<repo>/.env` | `shared.zsh` at shell start, with `set -a` |
+| `gitconfig.local` | `~/.gitconfig.local` | `[include]` at the end of the stowed `.gitconfig` |
+| `zshrc.local` | `~/.zshrc.local` | sourced near the end of `shared.zsh` |
+| `nvim.lua` | `~/.config/nvim/lua/config/local.lua` | `pcall(require, "config.local")` in `init.lua` |
+| `ghostty.conf` | `~/.config/ghostty/local` | `config-file = ?local` |
+| `CLAUDE.local.md` | `~/.claude/CLAUDE.local.md` | Claude Code |
+| `settings.local.json` | `~/.claude/settings.local.json` | Claude Code |
 
 Refresh the links after editing a profile with `just profile`.
 

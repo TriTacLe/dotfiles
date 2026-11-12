@@ -28,6 +28,7 @@ install -D -m 0644 "$DOTFILES/server/etc/xdg/user-dirs.dirs" \
 # CLI-only stow set, no desktop packages.
 command -v just >/dev/null || sudo pacman -S --needed --noconfirm just
 just --justfile "$DOTFILES/justfile" stow server
+bootstrap_profile "$DOTFILES"
 link_claude_config "$DOTFILES"
 
 # Server-specific stow packages (none yet, but ready when added).

@@ -133,7 +133,7 @@ check "arch/install-hook.sh"               test -x arch/install-hook.sh
 check "arch/pacman-hook-autotrack.hook"    test -f arch/pacman-hook-autotrack.hook
 check "arch/packages/packages.txt"         test -f arch/packages/packages.txt
 check "arch/packages/aur.txt"              test -f arch/packages/aur.txt
-check "arch/templates/env.example"         test -f arch/templates/env.example
+check "profiles/example/profile.env"       test -f profiles/example/profile.env
 
 echo ""
 echo "[6] Shared library is sourceable"
