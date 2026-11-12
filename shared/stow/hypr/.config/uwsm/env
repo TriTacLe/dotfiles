@@ -4,5 +4,5 @@ export GTK_THEME=catppuccin-mocha-flamingo-standard+default
 export GDK_SCALE=1
 export GDK_DPI_SCALE=1
 export XCURSOR_SIZE=21
-export GNOME_KEYRING_CONTROL=/run/user/1000/keyring
+export GNOME_KEYRING_CONTROL="$XDG_RUNTIME_DIR/keyring"
 export ELECTRON_PASSWORD_STORE=gnome-libsecret

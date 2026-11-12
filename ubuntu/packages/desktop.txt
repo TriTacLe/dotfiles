@@ -1,0 +1,58 @@
+# Desktop manifest, installed by install-ubuntu.sh with apt-get. packages.txt
+# next to it is the apt snapshot of my machine and is not installed by anything.
+
+# Tooling
+build-essential
+curl
+git
+gh
+stow
+jq
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
+neovim
+tmux
+fzf
+fd-find
+ripgrep
+bat
+eza
+zoxide
+btop
+wget
+
+# Wayland session. Stock 24.04 apt has no Hyprland; the snapshot got these from
+# a third-party source, so they stay commented and sway below is the fallback.
+# hyprland
+# hypridle
+# hyprlock
+# hyprpaper
+# hyprpicker
+# xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+polkit-kde-agent-1
+qt6-wayland
+qtwayland5
+sway
+swaybg
+swayidle
+swaylock
+sway-notification-center
+waybar
+wofi
+wlogout
+grim
+slurp
+wl-clipboard
+cliphist
+brightnessctl
+pamixer
+pavucontrol
+playerctl
+
+# Terminal, fonts, icons. ghostty is not in stock apt either.
+# ghostty
+fonts-jetbrains-mono
+fonts-font-awesome
+papirus-icon-theme

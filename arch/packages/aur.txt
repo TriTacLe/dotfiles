@@ -1,5 +1,6 @@
 android-studio
 brave-bin
+catppuccin-gtk-theme-latte
 catppuccin-gtk-theme-mocha
 cheat
 checkstyle
@@ -8,6 +9,8 @@ espanso-wayland-bin
 google-chrome
 hyprswitch
 jql
+kgamma
+kwin-x11
 localsend-bin
 losslesscut-bin
 neofetch-git
@@ -17,6 +20,7 @@ rstudio-desktop-bin
 sdkmanager
 slack-desktop
 visual-studio-code-bin
+wacomtablet
 wakatime
 yay
 yay-debug

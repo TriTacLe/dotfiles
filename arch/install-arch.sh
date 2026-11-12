@@ -2,7 +2,42 @@
 set -e
 
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
+# config.sh otherwise searches a few home paths for the clone; this works anywhere.
+export DOTFILES_DIR="$DOTFILES"
 source "$DOTFILES/shared/scripts/config.sh"
+
+# Mirror of install_system_configs below. Packages and /home/pacman-cache stay.
+remove_system_configs() {
+    sudo systemctl disable --now thermald tlp cpu-tune reflector.timer paccache.timer 2>/dev/null || true
+    sudo rm -f /etc/systemd/zram-generator.conf \
+        /etc/systemd/oomd.conf.d/thresholds.conf \
+        /etc/systemd/system/cpu-tune.service \
+        /etc/tlp.d/01-power.conf \
+        /etc/modprobe.d/power.conf \
+        /etc/udev/rules.d/90-backlight-on-power.rules \
+        /etc/NetworkManager/dispatcher.d/90-timezone \
+        /etc/tmpfiles.d/mglru.conf \
+        /etc/systemd/journald.conf.d/size.conf \
+        /etc/systemd/coredump.conf.d/size.conf
+    # install -b kept the previous reflector.conf next to ours.
+    if [ -f /etc/xdg/reflector/reflector.conf~ ]; then
+        sudo mv -f /etc/xdg/reflector/reflector.conf~ /etc/xdg/reflector/reflector.conf
+    else
+        sudo rm -f /etc/xdg/reflector/reflector.conf
+    fi
+    sudo swapoff /home/swapfile 2>/dev/null || true
+    sudo sed -i '\|^/home/swapfile|d' /etc/fstab
+    sudo rm -f /home/swapfile
+    sudo sed -i 's|^CacheDir *= */home/pacman-cache/|#CacheDir    = /var/cache/pacman/pkg/|' /etc/pacman.conf
+    sudo udevadm control --reload-rules
+    sudo systemctl daemon-reload
+}
+
+if [ "${1:-}" = "--system-undo" ]; then
+    remove_system_configs
+    echo "Removed the system tuning. Packages and /home/pacman-cache were left in place."
+    exit 0
+fi
 
 # Ensure stow is installed
 if ! command -v stow &>/dev/null; then
@@ -10,13 +45,19 @@ if ! command -v stow &>/dev/null; then
     sudo pacman -S --needed --noconfirm stow
 fi
 
-# Packages this script itself depends on, installed before anything reaches for
-# them: jq for theme_apply.sh, reflector and pacman-contrib for the timers
-# enabled below, thermald, tlp and zram-generator for the tuning further down.
-sudo pacman -S --needed --noconfirm jq reflector pacman-contrib thermald tlp zram-generator
+# Curated desktop manifest. --needed makes a re-run a no-op.
+mapfile -t DESKTOP_PKGS < <(pkgs_from "$DOTFILES/arch/packages/desktop.txt")
+sudo pacman -S --needed --noconfirm "${DESKTOP_PKGS[@]}"
+AUR_HELPER=$(command -v paru || command -v yay || true)
+if [ -n "$AUR_HELPER" ]; then
+    mapfile -t AUR_PKGS < <(pkgs_from "$DOTFILES/arch/packages/aur-desktop.txt")
+    "$AUR_HELPER" -S --needed --noconfirm "${AUR_PKGS[@]}"
+else
+    echo "No AUR helper (paru or yay), skipping arch/packages/aur-desktop.txt." >&2
+fi
 
-command -v just >/dev/null || sudo pacman -S --needed --noconfirm just
 just --justfile "$DOTFILES/justfile" stow arch
+bootstrap_profile "$DOTFILES"
 
 # Colours are generated rather than stowed, so a fresh clone has none until this
 # runs. waybar, wofi and hyprlock all expect the generated file to exist.
@@ -25,7 +66,14 @@ THEME_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/current-theme"
     "$(cat "$THEME_STATE" 2>/dev/null || echo catppuccin-mocha)" --no-reload
 
 link_claude_config "$DOTFILES"
-enable_user_units battery-warning.timer log-gc.timer skill-gap.timer vault-index.path
+enable_user_units battery-warning.timer log-gc.timer
+# These two run scripts from the Claude config, which is private and optional.
+if [ -x "$HOME/.claude/scripts/skill-gap.sh" ]; then
+    enable_user_units skill-gap.timer
+fi
+if systemctl --user cat claude-rag-index.service &>/dev/null; then
+    enable_user_units vault-index.path
+fi
 
 # /etc is not a stow target, so system tuning is copied in instead of linked.
 install_system_configs() {
@@ -54,6 +102,11 @@ install_system_configs() {
         "$DOTFILES/arch/etc/udev/rules.d/90-backlight-on-power.rules" \
         /etc/udev/rules.d/90-backlight-on-power.rules
     sudo udevadm control --reload-rules
+    # Follows the laptop across continents: resolves the public IP to a timezone
+    # on every NetworkManager connect and sets it only when it differs.
+    sudo install -D -m 0755 -o root -g root \
+        "$DOTFILES/arch/etc/NetworkManager/dispatcher.d/90-timezone" \
+        /etc/NetworkManager/dispatcher.d/90-timezone
     sudo install -D -m 0644 -o root -g root \
         "$DOTFILES/arch/etc/tmpfiles.d/mglru.conf" \
         /etc/tmpfiles.d/mglru.conf
@@ -104,6 +157,13 @@ install_system_configs() {
     sudo systemctl enable --now thermald tlp cpu-tune reflector.timer paccache.timer
 }
 
-install_system_configs
+if [ "${1:-}" = "--system" ]; then
+    # reflector and pacman-contrib own the timers enabled above; thermald, tlp
+    # and zram-generator are the tuning itself.
+    sudo pacman -S --needed --noconfirm reflector pacman-contrib thermald tlp zram-generator
+    install_system_configs
+else
+    echo "Skipped system tuning (swapfile, pacman cache, /etc drop-ins). Re-run with --system to apply it."
+fi
 
 echo "Arch setup complete."

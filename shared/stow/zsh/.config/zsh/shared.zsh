@@ -231,6 +231,21 @@ alias fnd='ls -a | grep -i'
 alias py='python'
 alias o='opencode'
 alias claudd='claude --dangerously-skip-permissions'
+# Claude Code on the local LiteLLM hub (~/.claude/litellm). Shell exports only,
+# because a settings.json env value would move every session off the subscription.
+claude-hub() {
+    ANTHROPIC_BASE_URL=http://127.0.0.1:4000 \
+    ANTHROPIC_AUTH_TOKEN="$LITELLM_MASTER_KEY" \
+    ANTHROPIC_MODEL=coder \
+    ANTHROPIC_DEFAULT_FABLE_MODEL=coder \
+    ANTHROPIC_DEFAULT_OPUS_MODEL=coder \
+    ANTHROPIC_DEFAULT_SONNET_MODEL=coder \
+    ANTHROPIC_DEFAULT_HAIKU_MODEL=fast \
+    CLAUDE_CODE_SUBAGENT_MODEL=coder \
+    CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1 \
+    CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1 \
+    command claude --model coder "$@"
+}
 alias x='claude --dangerously-skip-permissions'
 alias myip='curl -s ifconfig.me'
 alias qrc='qrencode -t UTF8'
@@ -252,7 +267,7 @@ if command -v systemctl &>/dev/null; then
     alias systart='sudo systemctl restart'
 fi
 if command -v hyprctl &>/dev/null; then
-    alias hypr-fix='export HYPRLAND_INSTANCE_SIGNATURE=$(\ls -t /run/user/1000/hypr | head -n1)'
+    alias hypr-fix='export HYPRLAND_INSTANCE_SIGNATURE=$(\ls -t $XDG_RUNTIME_DIR/hypr | head -n1)'
     alias hyprconf='cd ~/.config/hypr && nvim ~/.config/hypr/hyprland.lua'
 fi
 
@@ -371,6 +386,9 @@ fi
 if [[ ! -o interactive ]]; then
     unalias cd ls l ll la lt tree cat catl cp mv rm mkdir fmt 2>/dev/null
 fi
+
+# Profile overrides, linked from profiles/<name>/zshrc.local by `just profile`.
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 # Desktop theme. No argument toggles light and dark, a name applies that theme.
 # Ghostty needs ctrl+shift+comma afterwards; running terminals do not reload colours.

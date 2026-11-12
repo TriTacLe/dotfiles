@@ -15,9 +15,11 @@ hl.env("VDPAU_DRIVER", "va_gl")
 -- wlroots-era leftover, no effect on aquamarine. Kept so behaviour matches the old config.
 hl.env("WLR_NO_HARDWARE_CURSORS", "1")
 
--- Synaptics precision touchpad (T14s)
+-- Norwegian keyboard without dead keys, and the Synaptics touchpad (T14s)
 hl.config({
     input = {
+        kb_layout = "no",
+        kb_variant = "nodeadkeys",
         touchpad = {
             natural_scroll = true,
             tap_to_click = true,

@@ -3,8 +3,17 @@ set -e
 
 DOTFILES="$(cd "$(dirname "$0")" && pwd)"
 
-# Init submodules (safe to run even if already done)
-git -C "$DOTFILES" submodule update --init --recursive
+# The claude-config submodule is Tri's config and may not be reachable from
+# another account. A profile can point at its own repository instead, so a
+# failed submodule fetch must not stop the install.
+if ! git -C "$DOTFILES" submodule update --init --recursive; then
+    echo "warning: could not initialize claude-config submodule" >&2
+    echo "Set DOTFILES_CLAUDE_REPO or DOTFILES_CLAUDE_DIR in your profile to use your own Claude config." >&2
+fi
+
+# Arguments pass through to the Arch installer. --system also applies the /etc
+# tuning (swapfile, pacman cache, power and journald drop-ins), which is sized
+# for my laptop and off by default. --system-undo removes it again.
 
 # Role pin: write a single word to ~/.dotfiles-role to override the OS default
 # (currently only "server" is recognized; everything else falls through).
@@ -28,7 +37,7 @@ elif [ "$OS" = "Linux" ]; then
             if [ "$ROLE" = "server" ]; then
                 bash "$DOTFILES/server/install-server.sh"
             else
-                bash "$DOTFILES/arch/install-arch.sh"
+                bash "$DOTFILES/arch/install-arch.sh" "$@"
             fi
             ;;
         ubuntu|debian)

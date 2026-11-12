@@ -1,25 +1,25 @@
--- Frontend utvikling for Vue, Next.js, React, TypeScript
+-- Frontend development for Vue, Next.js, React, TypeScript
 
 return {
-  -- TypeScript støtte (tsserver, eslint, prettier)
+  -- TypeScript support (tsserver, eslint, prettier)
   { import = "lazyvim.plugins.extras.lang.typescript" },
 
-  -- Vue.js støtte
+  -- Vue.js support
   { import = "lazyvim.plugins.extras.lang.vue" },
 
-  -- Tailwind CSS støtte
+  -- Tailwind CSS support
   { import = "lazyvim.plugins.extras.lang.tailwind" },
 
-  -- Språkserver konfigurasjon
+  -- Language server configuration
   {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        -- TypeScript (vtsls er raskere enn tsserver)
+        -- TypeScript (vtsls is faster than tsserver)
         vtsls = {
           settings = {
             typescript = {
-              -- Inlay hints - vis typer inline
+              -- Inlay hints: show types inline
               inlayHints = {
                 parameterNames = { enabled = "all" },
                 parameterTypes = { enabled = true },
@@ -28,14 +28,14 @@ return {
                 functionLikeReturnTypes = { enabled = true },
                 enumMemberValues = { enabled = true },
               },
-              -- Relativ import (ikke @/...)
+              -- Relative imports (not @/...)
               preferences = {
                 importModuleSpecifier = "relative",
               },
             },
           },
         },
-        -- ESLint for feilsjekking
+        -- ESLint for error checking
         eslint = {
           settings = {
             workingDirectories = { mode = "auto" },
@@ -45,7 +45,7 @@ return {
         volar = {
           init_options = {
             vue = {
-              hybridMode = true, -- Bedre ytelse
+              hybridMode = true, -- Better performance
             },
           },
         },
@@ -53,15 +53,15 @@ return {
     },
   },
 
-  -- Installer frontend-verktøy
+  -- Install frontend tools
   {
     "mason-org/mason.nvim",
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, {
-        "vtsls", -- TypeScript språkserver
+        "vtsls", -- TypeScript language server
         "eslint-lsp", -- ESLint
-        "prettier", -- Formattering
+        "prettier", -- Formatting
         "vue-language-server", -- Vue
         "css-lsp", -- CSS
         "cssmodules-language-server", -- CSS Modules
@@ -73,7 +73,7 @@ return {
     end,
   },
 
-  -- Frontend filer i treesitter
+  -- Frontend files in treesitter
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -91,7 +91,7 @@ return {
     end,
   },
 
-  -- Prettier for formattering av frontend-filer
+  -- Prettier for formatting frontend files
   {
     "stevearc/conform.nvim",
     opts = {
@@ -114,21 +114,21 @@ return {
     },
   },
 
-  -- Vis npm-pakkeversjoner i package.json
-  -- Nyttig for å se om pakker er outdated
+  -- Show npm package versions in package.json
+  -- Useful to see whether packages are outdated
   {
     "vuki656/package-info.nvim",
     dependencies = { "MunifTanjim/nui.nvim" },
     opts = {},
     ft = "json",
     keys = {
-      { "<leader>ns", "<cmd>lua require('package-info').show()<cr>", desc = "Vis pakkeversjon" },
-      { "<leader>nc", "<cmd>lua require('package-info').hide()<cr>", desc = "Skjul pakkeversjon" },
-      { "<leader>nt", "<cmd>lua require('package-info').toggle()<cr>", desc = "Toggle pakkeinfo" },
-      { "<leader>nu", "<cmd>lua require('package-info').update()<cr>", desc = "Oppdater pakke" },
-      { "<leader>nd", "<cmd>lua require('package-info').delete()<cr>", desc = "Slett pakke" },
-      { "<leader>ni", "<cmd>lua require('package-info').install()<cr>", desc = "Installer pakke" },
-      { "<leader>np", "<cmd>lua require('package-info').change_version()<cr>", desc = "Endre pakkeversjon" },
+      { "<leader>ns", "<cmd>lua require('package-info').show()<cr>", desc = "Show package version" },
+      { "<leader>nc", "<cmd>lua require('package-info').hide()<cr>", desc = "Hide package version" },
+      { "<leader>nt", "<cmd>lua require('package-info').toggle()<cr>", desc = "Toggle package info" },
+      { "<leader>nu", "<cmd>lua require('package-info').update()<cr>", desc = "Update package" },
+      { "<leader>nd", "<cmd>lua require('package-info').delete()<cr>", desc = "Delete package" },
+      { "<leader>ni", "<cmd>lua require('package-info').install()<cr>", desc = "Install package" },
+      { "<leader>np", "<cmd>lua require('package-info').change_version()<cr>", desc = "Change package version" },
     },
   },
 }

@@ -2,6 +2,8 @@
 set -e
 
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
+# config.sh otherwise searches a few home paths for the clone; this works anywhere.
+export DOTFILES_DIR="$DOTFILES"
 source "$DOTFILES/shared/scripts/config.sh"
 
 if ! command -v stow &>/dev/null; then
@@ -28,6 +30,7 @@ install -D -m 0644 "$DOTFILES/server/etc/xdg/user-dirs.dirs" \
 # CLI-only stow set, no desktop packages.
 command -v just >/dev/null || sudo pacman -S --needed --noconfirm just
 just --justfile "$DOTFILES/justfile" stow server
+bootstrap_profile "$DOTFILES"
 link_claude_config "$DOTFILES"
 
 # Server-specific stow packages (none yet, but ready when added).

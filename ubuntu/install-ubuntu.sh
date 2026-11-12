@@ -2,6 +2,8 @@
 set -e
 
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
+# config.sh otherwise searches a few home paths for the clone; this works anywhere.
+export DOTFILES_DIR="$DOTFILES"
 source "$DOTFILES/shared/scripts/config.sh"
 
 # Refresh the index first: a stale one makes every apt-get install below 404.
@@ -13,10 +15,15 @@ if ! command -v stow &>/dev/null; then
     sudo apt-get install -y stow
 fi
 
+# Curated desktop manifest.
+mapfile -t DESKTOP_PKGS < <(pkgs_from "$DOTFILES/ubuntu/packages/desktop.txt")
+sudo apt-get install -y "${DESKTOP_PKGS[@]}"
+
 mkdir -p ~/.config
 
 command -v just >/dev/null || sudo apt-get install -y just
 just --justfile "$DOTFILES/justfile" stow ubuntu
+bootstrap_profile "$DOTFILES"
 
 link_claude_config "$DOTFILES"
 

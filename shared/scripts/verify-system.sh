@@ -96,6 +96,8 @@ echo ""
 echo "[3] Shell script syntax"
 SH_FAIL=0
 while IFS= read -r f; do
+    # bash -n on a python3 or zsh file is a false failure, so filter by shebang.
+    head -1 "$f" | grep -qE '^#!.*[ /](bash|sh)$' || continue
     bash -n "$f" 2>/dev/null || { echo "    syntax error: $f"; SH_FAIL=$((SH_FAIL+1)); }
 done < <(
     # Not just *.sh: the git pre-push hook and the matlab wrapper ship executable
@@ -131,7 +133,10 @@ check "arch/install-hook.sh"               test -x arch/install-hook.sh
 check "arch/pacman-hook-autotrack.hook"    test -f arch/pacman-hook-autotrack.hook
 check "arch/packages/packages.txt"         test -f arch/packages/packages.txt
 check "arch/packages/aur.txt"              test -f arch/packages/aur.txt
-check "arch/templates/env.example"         test -f arch/templates/env.example
+check "arch/packages/desktop.txt"          test -f arch/packages/desktop.txt
+check "arch/packages/aur-desktop.txt"      test -f arch/packages/aur-desktop.txt
+check "ubuntu/packages/desktop.txt"        test -f ubuntu/packages/desktop.txt
+check "profiles/example/profile.env"       test -f profiles/example/profile.env
 
 echo ""
 echo "[6] Shared library is sourceable"

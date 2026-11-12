@@ -5,7 +5,8 @@
 
 set -euo pipefail
 
-LAPTOP="eDP-1"
+# The internal panel: the first eDP output, or the first monitor when there is none.
+LAPTOP=$(hyprctl monitors -j | jq -r '(map(select(.name | startswith("eDP")))[0] // .[0]).name')
 
 assign() {
     # Old dispatcher name first, Lua expression as fallback. A Lua config rejects

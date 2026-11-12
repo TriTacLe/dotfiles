@@ -31,5 +31,9 @@ require("windowrules")
 -- input.lua also set was silently written back over the top of it.
 pcall(require, "host")
 
+-- host_local.lua is the profile's Hyprland file, linked into ~/.config/hypr by
+-- `just profile` and never tracked. Personal binds and overrides go there.
+pcall(require, "host_local")
+
 require("autostart")
 
