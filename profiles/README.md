@@ -18,6 +18,7 @@ and asks for the git name and email. The active profile is stored in
 | `zshrc.local` | `~/.zshrc.local` | sourced near the end of `shared.zsh` |
 | `nvim.lua` | `~/.config/nvim/lua/config/local.lua` | `pcall(require, "config.local")` in `init.lua` |
 | `ghostty.conf` | `~/.config/ghostty/local` | `config-file = ?local` |
+| `hypr.lua` | `~/.config/hypr/host_local.lua` | `pcall(require, "host_local")` at the end of `hyprland.lua` |
 | `CLAUDE.local.md` | `~/.claude/CLAUDE.local.md` | Claude Code |
 | `settings.local.json` | `~/.claude/settings.local.json` | Claude Code |
 

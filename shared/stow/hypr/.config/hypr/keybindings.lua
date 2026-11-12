@@ -79,14 +79,6 @@ hl.bind("ALT + Tab", hl.dsp.focus({ workspace = "r+1" }))
 hl.bind("ALT + SHIFT + Tab", hl.dsp.focus({ workspace = "r-1" }))
 
 
--- Quick launch shortcuts
-
-hl.bind("CTRL + SHIFT + B", hl.dsp.exec_cmd(app("brave --new-window https://www.bible.com/bible/111/MAT.1.NIV")))
-hl.bind("CTRL + SHIFT + ALT + E", hl.dsp.exec_cmd(app("brave --new-window https://chat.openai.com/")))
-hl.bind("CTRL + SHIFT + ALT + A", hl.dsp.exec_cmd(app("brave --new-window https://claude.ai/")))
-hl.bind("CTRL + SHIFT + ALT + L", hl.dsp.exec_cmd(app("brave --new-window https://linkedin.com/")))
-
-
 -- Utility bindings
 
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("killall waybar; " .. app("waybar")))         -- Restart waybar
@@ -109,11 +101,6 @@ hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(scripts .. "/rename_workspace.sh"
 
 
 -- Special character input
-
--- æøå for US keyboard layout
-hl.bind(mod .. " + bracketleft", hl.dsp.exec_cmd('wtype "å"'))
-hl.bind(mod .. " + semicolon",   hl.dsp.exec_cmd('wtype "ø"'))
-hl.bind(mod .. " + apostrophe",  hl.dsp.exec_cmd('wtype "æ"'))
 
 -- Menu/Application key writes tilde
 hl.bind("Menu", hl.dsp.exec_cmd('wtype "~"'))

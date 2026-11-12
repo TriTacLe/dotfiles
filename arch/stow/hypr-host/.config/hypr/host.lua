@@ -19,6 +19,16 @@ hl.device({
     sensitivity = 0.1,
 })
 
+-- Norwegian keyboard. nodeadkeys: ^ ~ ` and acute are dead keys on the stock
+-- layout, so each needs a trailing space. Costs accents like é, which compose
+-- off those keys. æ ø å have their own keys and are unaffected.
+hl.config({
+    input = {
+        kb_layout = "no",
+        kb_variant = "nodeadkeys",
+    },
+})
+
 -- Dock (nwg-dock works correctly on Arch, use wlr/taskbar in waybar on Ubuntu instead)
 --
 -- It rests on waybar at the bottom, so any window on the workspace sits under

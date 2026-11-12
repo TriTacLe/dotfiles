@@ -1,0 +1,7 @@
+# AUR half of the desktop manifest, installed by install-arch.sh through paru
+# or yay when one is present. aur.txt next to it is the pkgtrack snapshot.
+zsh-theme-powerlevel10k     # prompt, sourced by the stowed .zshrc
+catppuccin-gtk-theme-mocha  # GTK widget theme the dark palette imports
+catppuccin-gtk-theme-latte  # same for the light palette
+pacseek                     # pacman TUI, has its own stow package
+wlogout                     # logout menu behind the waybar power button

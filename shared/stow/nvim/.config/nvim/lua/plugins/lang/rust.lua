@@ -1,7 +1,7 @@
--- Rust utviklingsoppsett
+-- Rust development setup
 
 return {
-  -- rust-analyzer med gode instillinger
+  -- rust-analyzer with tuned settings
   {
     "neovim/nvim-lspconfig",
     opts = {
@@ -22,7 +22,7 @@ return {
                 renderColons = { enable = true },
                 typeHints = { enable = true, hideClosureInitialization = false, hideNamedConstructor = false },
               },
-              -- Kodelinser
+              -- Code lenses
               lens = {
                 enable = true,
                 run = { enable = true },
@@ -35,12 +35,12 @@ return {
                   trait = { enable = true },
                 },
               },
-              -- Sjekk med clippy ved lagring
+              -- Check with clippy on save
               check = {
                 command = "clippy",
                 extraArgs = { "--no-deps" },
               },
-              -- Prosedyre-makroer
+              -- Procedural macros
               procMacro = {
                 enable = true,
                 ignored = {
@@ -61,7 +61,7 @@ return {
     },
   },
 
-  -- Installer Rust-verktøy (rust-analyzer handtert av LazyVim rust extra)
+  -- Install Rust tools (rust-analyzer is handled by the LazyVim rust extra)
   {
     "mason-org/mason.nvim",
     opts = function(_, opts)
@@ -72,7 +72,7 @@ return {
     end,
   },
 
-  -- Rust-filer i treesitter
+  -- Rust files in treesitter
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -85,7 +85,7 @@ return {
     end,
   },
 
-  -- Test runner med neotest-rust
+  -- Test runner with neotest-rust
   {
     "nvim-neotest/neotest",
     dependencies = {

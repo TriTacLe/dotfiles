@@ -8,7 +8,8 @@ hl.env("GTK_THEME", "catppuccin-mocha-flamingo-standard+default")
 hl.env("GDK_SCALE", "1")
 hl.env("XCURSOR_SIZE", "21")
 hl.env("GDK_DPI_SCALE", "1")
-hl.env("GNOME_KEYRING_CONTROL", "/run/user/1000/keyring")
+local runtime = os.getenv("XDG_RUNTIME_DIR")
+if runtime then hl.env("GNOME_KEYRING_CONTROL", runtime .. "/keyring") end
 hl.env("ELECTRON_PASSWORD_STORE", "gnome-libsecret")
 
 hl.config({

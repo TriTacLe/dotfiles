@@ -1,0 +1,97 @@
+# Desktop manifest, installed by install-arch.sh with pacman --needed. One
+# package per line, comments allowed. packages.txt next to it is the pkgtrack
+# snapshot of my machine and is not installed by anything.
+
+# Tooling the installer and the stowed configs expect
+base-devel
+git
+git-delta
+git-lfs
+github-cli
+gitleaks
+stow
+just
+jq
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
+neovim
+tmux
+mise
+fzf
+fd
+eza
+bat
+zoxide
+btop
+fastfetch
+lazygit
+yazi
+atuin
+direnv
+wget
+man-db
+tldr
+shellcheck
+
+# Wayland session
+hyprland
+hypridle
+hyprlock
+hyprpaper
+hyprpicker
+uwsm
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gnome
+xdg-user-dirs-gtk
+xdg-utils
+gnome-keyring
+qt5-wayland
+qt6-wayland
+
+# Bar, launcher, notifications, dock
+waybar
+swaync
+swayosd
+wofi
+nwg-dock-hyprland
+nwg-look
+
+# Screenshots, clipboard, input tools
+grim
+slurp
+wl-clipboard
+cliphist
+wtype
+wev
+brightnessctl
+
+# Audio, network, bluetooth
+pipewire
+pipewire-alsa
+pipewire-pulse
+pipewire-jack
+wireplumber
+pavucontrol
+networkmanager
+network-manager-applet
+bluez
+bluez-utils
+blueman
+
+# Terminals, fonts, icons
+ghostty
+kitty
+alacritty
+ttf-jetbrains-mono-nerd
+ttf-cascadia-code-nerd
+woff2-font-awesome
+papirus-icon-theme
+
+# Apps bound in keybindings.lua
+firefox
+thunar
+thunar-volman
+imv
+zathura
+zathura-pdf-mupdf

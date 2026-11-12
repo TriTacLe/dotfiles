@@ -3,14 +3,12 @@
 
 hl.config({
     input = {
-        kb_layout = "no", -- Norwegian keyboard layout
+        -- US by default. A machine's physical layout goes in its host.lua, a
+        -- personal preference in the profile's hypr.lua; both load after this.
+        kb_layout = "us",
         kb_model = "",
         kb_options = "",
-        -- nodeadkeys: ^ ~ ` and acute are dead keys on the stock Norwegian
-        -- layout, so each needs a trailing space. Costs foreign accents like
-        -- é, which compose off those keys. æ ø å have their own keys and are
-        -- unaffected.
-        kb_variant = "nodeadkeys",
+        kb_variant = "",
         kb_rules = "",
 
         follow_mouse = 1,
