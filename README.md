@@ -47,6 +47,8 @@ Everything that is yours lives in one place, `profiles/<login>/`, which is gitig
 
 Edit, then `just profile` to refresh the links. See `profiles/README.md`.
 
+`KEYBINDINGS.md` lists every bind, generated from the config.
+
 Machine hardware has its own layer: `<os>/stow/hypr-host/.config/hypr/host.lua` holds my
 monitors, touchpad, dock output and Norwegian keyboard. It loads after the shared config and
 before your `hypr.lua`, so you can override it without editing it, or drop `hypr-host` from
