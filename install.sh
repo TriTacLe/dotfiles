@@ -13,7 +13,7 @@ fi
 
 # Arguments pass through to the Arch installer. --system also applies the /etc
 # tuning (swapfile, pacman cache, power and journald drop-ins), which is sized
-# for my laptop and off by default.
+# for my laptop and off by default. --system-undo removes it again.
 
 # Role pin: write a single word to ~/.dotfiles-role to override the OS default
 # (currently only "server" is recognized; everything else falls through).

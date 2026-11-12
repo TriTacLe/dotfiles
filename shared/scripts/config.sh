@@ -92,6 +92,29 @@ case "${PKG_MANAGER:-}" in
         ;;
 esac
 
+# Stow refuses to link over a real file, which aborts the whole install on a
+# machine that already has a ~/.zshrc. Dry-run the same stow command, move every
+# conflicting target into a dated backup dir and say so. Takes the full stow
+# argument list; nothing moves when the dry run is clean.
+backup_conflicts() {
+    local out backup p
+    local -a paths
+    out="$(stow -n "$@" 2>&1 || true)"
+    mapfile -t paths < <(printf '%s\n' "$out" \
+        | sed -nE 's/.*over existing target ([^ ]+) since neither a link nor a directory.*/\1/p; s/.*existing target is not owned by stow: ([^ ]+).*/\1/p' \
+        | sort -u)
+    [[ ${#paths[@]} -eq 0 ]] && return 0
+    # One dir per run, however many stow passes call this.
+    : "${DOTFILES_BACKUP_DIR:=$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)}"
+    backup="$DOTFILES_BACKUP_DIR"
+    for p in "${paths[@]}"; do
+        [[ -e "$HOME/$p" || -L "$HOME/$p" ]] || continue
+        mkdir -p "$backup/$(dirname "$p")"
+        mv "$HOME/$p" "$backup/$p"
+        warn "moved existing $p to $backup/"
+    done
+}
+
 # Package names from a manifest: one per line, # comments and blank lines skipped.
 pkgs_from() { sed -e 's/#.*//' "$1" | awk 'NF { print $1 }'; }
 

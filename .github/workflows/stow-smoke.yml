@@ -90,6 +90,13 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+      # Real files already in the way: the install must move them aside, not abort.
+      - name: A home that already has dotfiles
+        run: |
+          mkdir -p "$HOME/.config/git"
+          echo 'export PRE=1' > "$HOME/.zshrc"
+          printf '[user]\n\tname = Someone\n' > "$HOME/.gitconfig"
+          echo '*.swp' > "$HOME/.config/git/ignore"
       - name: Run the installer
         run: |
           set -o pipefail
@@ -104,6 +111,11 @@ jobs:
       - name: Profile and manifest reached their targets
         run: |
           test -L "$HOME/.gitconfig.local"
+          test -L "$HOME/.zshrc"
+          test -L "$HOME/.gitconfig"
+          for f in .zshrc .gitconfig .config/git/ignore; do
+            test -f "$HOME"/.dotfiles-backup/*/"$f"
+          done
           grep -q ' hyprland' "$HOME/pm.log"
           grep -q 'warn' "$HOME/install.log"
       - name: Arch path warned about the submodule, skipped /etc and generated a theme

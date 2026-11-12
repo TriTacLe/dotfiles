@@ -6,6 +6,39 @@ DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
 export DOTFILES_DIR="$DOTFILES"
 source "$DOTFILES/shared/scripts/config.sh"
 
+# Mirror of install_system_configs below. Packages and /home/pacman-cache stay.
+remove_system_configs() {
+    sudo systemctl disable --now thermald tlp cpu-tune reflector.timer paccache.timer 2>/dev/null || true
+    sudo rm -f /etc/systemd/zram-generator.conf \
+        /etc/systemd/oomd.conf.d/thresholds.conf \
+        /etc/systemd/system/cpu-tune.service \
+        /etc/tlp.d/01-power.conf \
+        /etc/modprobe.d/power.conf \
+        /etc/udev/rules.d/90-backlight-on-power.rules \
+        /etc/NetworkManager/dispatcher.d/90-timezone \
+        /etc/tmpfiles.d/mglru.conf \
+        /etc/systemd/journald.conf.d/size.conf \
+        /etc/systemd/coredump.conf.d/size.conf
+    # install -b kept the previous reflector.conf next to ours.
+    if [ -f /etc/xdg/reflector/reflector.conf~ ]; then
+        sudo mv -f /etc/xdg/reflector/reflector.conf~ /etc/xdg/reflector/reflector.conf
+    else
+        sudo rm -f /etc/xdg/reflector/reflector.conf
+    fi
+    sudo swapoff /home/swapfile 2>/dev/null || true
+    sudo sed -i '\|^/home/swapfile|d' /etc/fstab
+    sudo rm -f /home/swapfile
+    sudo sed -i 's|^CacheDir *= */home/pacman-cache/|#CacheDir    = /var/cache/pacman/pkg/|' /etc/pacman.conf
+    sudo udevadm control --reload-rules
+    sudo systemctl daemon-reload
+}
+
+if [ "${1:-}" = "--system-undo" ]; then
+    remove_system_configs
+    echo "Removed the system tuning. Packages and /home/pacman-cache were left in place."
+    exit 0
+fi
+
 # Ensure stow is installed
 if ! command -v stow &>/dev/null; then
     echo "Installing stow..."

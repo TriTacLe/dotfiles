@@ -55,14 +55,21 @@ _stow os flag:
         *) echo "unknown os '{{os}}', expected arch, ubuntu, macos or server" >&2; exit 1 ;;
     esac
     mkdir -p ~/.config
+    source "{{dotfiles}}/shared/scripts/config.sh"
     # -R because --no-folding links files one by one, so a rename would
-    # otherwise leave a stale link behind.
+    # otherwise leave a stale link behind. Real files already in the way go to
+    # ~/.dotfiles-backup first, otherwise stow aborts the whole run.
+    if [ "{{flag}}" = "-R" ]; then
+        backup_conflicts -d "{{dotfiles}}/shared/stow" -t ~ --no-folding -R $shared
+    fi
     stow -d "{{dotfiles}}/shared/stow" -t ~ --no-folding {{flag}} $shared
+    if [ "{{flag}}" = "-R" ]; then
+        backup_conflicts -d "{{dotfiles}}/$dir/stow" -t ~ --no-folding -R $pkgs
+    fi
     stow -d "{{dotfiles}}/$dir/stow" -t ~ --no-folding {{flag}} $pkgs
     # ~/.claude is one symlink to the active Claude config, not a stow tree.
     # link_claude_config guards real directories and applies the profile files.
     if [ "{{flag}}" = "-R" ]; then
-        source "{{dotfiles}}/shared/scripts/config.sh"
         link_claude_config "{{dotfiles}}"
     elif [ -L ~/.claude ]; then
         rm -f ~/.claude
