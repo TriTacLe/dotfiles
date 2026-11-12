@@ -3,6 +3,26 @@ set -e
 
 DOTFILES="$(cd "$(dirname "$0")" && pwd)"
 
+case "${1:-}" in
+    -h|--help)
+        cat <<'EOF'
+Usage: bash install.sh [--system | --system-undo]
+
+Detects the OS, installs the desktop manifest, stows the package set, creates
+profiles/<login>/ and asks for a git identity. Files already in the way are
+moved to ~/.dotfiles-backup/<timestamp>/. Nothing outside your home changes
+unless --system is given.
+
+  --system       Arch only: also apply the /etc tuning (swapfile, pacman cache,
+                 power and journald drop-ins). Sized for my laptop.
+  --system-undo  Arch only: remove that tuning again.
+
+Role pin:  echo server > ~/.dotfiles-role     headless Arch set
+Profile:   echo <name> > ~/.dotfiles-profile  a profile other than your login
+EOF
+        exit 0 ;;
+esac
+
 # The claude-config submodule is Tri's config and may not be reachable from
 # another account. A profile can point at its own repository instead, so a
 # failed submodule fetch must not stop the install.

@@ -3,9 +3,9 @@ name: stow-smoke
 on:
   push:
     branches: [master]
-    paths: [justfile, 'shared/**', 'arch/**', 'ubuntu/**', 'macos/**', 'server/**', '.github/workflows/stow-smoke.yml']
+    paths: [install.sh, justfile, 'shared/**', 'arch/**', 'ubuntu/**', 'macos/**', 'server/**', '.github/workflows/stow-smoke.yml']
   pull_request:
-    paths: [justfile, 'shared/**', 'arch/**', 'ubuntu/**', 'macos/**', 'server/**', '.github/workflows/stow-smoke.yml']
+    paths: [install.sh, justfile, 'shared/**', 'arch/**', 'ubuntu/**', 'macos/**', 'server/**', '.github/workflows/stow-smoke.yml']
 
 permissions:
   contents: read
