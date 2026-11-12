@@ -1,5 +1,8 @@
 # dotfiles
 
+[![lint](https://github.com/TriTacLe/dotfiles/actions/workflows/lint.yml/badge.svg)](https://github.com/TriTacLe/dotfiles/actions/workflows/lint.yml)
+[![stow-smoke](https://github.com/TriTacLe/dotfiles/actions/workflows/stow-smoke.yml/badge.svg)](https://github.com/TriTacLe/dotfiles/actions/workflows/stow-smoke.yml)
+
 ![Hyprland desktop: waybar at the bottom, a blurred city wallpaper, and a ghostty terminal running fastfetch](.github/screenshot.png)
 
 Arch Linux, Ubuntu, macOS and a headless Arch server, managed with GNU Stow. Hyprland on
