@@ -70,6 +70,7 @@ fx
 fzf
 gcc-fortran
 gdm
+gemini-cli
 ghostty
 git
 git-delta
@@ -148,7 +149,6 @@ kdecoration
 kdegraphics-thumbnailers
 kde-gtk-config
 kdeplasma-addons
-kgamma
 kglobalacceld
 kicad
 kicad-demos
@@ -167,7 +167,6 @@ kvantum
 kwallet-pam
 kwayland
 kwin
-kwin-x11
 kwrited
 layer-shell-qt
 lazygit
@@ -207,7 +206,9 @@ obsidian
 obs-studio
 ocean-sound-theme
 okular
+openai-codex
 openbsd-netcat
+opencode
 openconnect
 orca
 oxygen
@@ -308,7 +309,6 @@ vulkan-intel
 vulkan-nouveau
 vulkan-radeon
 w3m
-wacomtablet
 waybar
 wev
 wget
