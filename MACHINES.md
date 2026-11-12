@@ -1,6 +1,7 @@
 # Machines
 
-Per-host dotfiles reference. Add a row when a new machine joins.
+Per-host dotfiles reference for my machines. Nothing here is needed to use the repo; it
+records what each box of mine has and why. Add a row when a new machine joins.
 
 ---
 
