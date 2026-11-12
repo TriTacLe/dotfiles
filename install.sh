@@ -70,8 +70,17 @@ elif [ "$OS" = "Linux" ]; then
             fi
             bash "$DOTFILES/ubuntu/install-ubuntu.sh"
             ;;
-        *)              echo "Unknown distro: $DISTRO" >&2; exit 1 ;;
+        *)
+            # Any other distro gets the shared stow set and the config bootstrap.
+            echo "Unknown distro: $DISTRO, installing the shared set only" >&2
+            bash "$DOTFILES/ubuntu/install-ubuntu.sh"
+            ;;
     esac
 else
     echo "Unknown OS: $OS"; exit 1
+fi
+
+# The config bootstrap: harnesses, plugins, MCP servers, hook files, units.
+if [ -f "$DOTFILES/claude-config/scripts/bootstrap.sh" ]; then
+    bash "$DOTFILES/claude-config/scripts/bootstrap.sh"
 fi

@@ -100,7 +100,11 @@ backup_conflicts() {
     local out backup p
     local -a paths
     out="$(stow -n "$@" 2>&1 || true)"
-    mapfile -t paths < <(printf '%s\n' "$out" \
+    # while-read instead of mapfile: macOS ships bash 3.2.
+    paths=()
+    while IFS= read -r p; do
+        [[ -n "$p" ]] && paths+=("$p")
+    done < <(printf '%s\n' "$out" \
         | sed -nE 's/.*over existing target ([^ ]+) since neither a link nor a directory.*/\1/p; s/.*existing target is not owned by stow: ([^ ]+).*/\1/p' \
         | sort -u)
     [[ ${#paths[@]} -eq 0 ]] && return 0
