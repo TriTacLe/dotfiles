@@ -14,6 +14,7 @@ brew bundle install --file="$DOTFILES/macos/Brewfile" --no-lock
 mkdir -p ~/.config
 
 just --justfile "$DOTFILES/justfile" stow macos
+bootstrap_profile "$DOTFILES"
 link_claude_config "$DOTFILES"
 
 echo "Mac setup complete."

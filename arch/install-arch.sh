@@ -10,13 +10,12 @@ if ! command -v stow &>/dev/null; then
     sudo pacman -S --needed --noconfirm stow
 fi
 
-# Packages this script itself depends on, installed before anything reaches for
-# them: jq for theme_apply.sh, reflector and pacman-contrib for the timers
-# enabled below, thermald, tlp and zram-generator for the tuning further down.
-sudo pacman -S --needed --noconfirm jq reflector pacman-contrib thermald tlp zram-generator
+# theme_apply.sh needs jq before anything reaches for it.
+sudo pacman -S --needed --noconfirm jq
 
 command -v just >/dev/null || sudo pacman -S --needed --noconfirm just
 just --justfile "$DOTFILES/justfile" stow arch
+bootstrap_profile "$DOTFILES"
 
 # Colours are generated rather than stowed, so a fresh clone has none until this
 # runs. waybar, wofi and hyprlock all expect the generated file to exist.
@@ -25,7 +24,14 @@ THEME_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/current-theme"
     "$(cat "$THEME_STATE" 2>/dev/null || echo catppuccin-mocha)" --no-reload
 
 link_claude_config "$DOTFILES"
-enable_user_units battery-warning.timer log-gc.timer skill-gap.timer vault-index.path
+enable_user_units battery-warning.timer log-gc.timer
+# These two run scripts from the Claude config, which is private and optional.
+if [ -x "$HOME/.claude/scripts/skill-gap.sh" ]; then
+    enable_user_units skill-gap.timer
+fi
+if systemctl --user cat claude-rag-index.service &>/dev/null; then
+    enable_user_units vault-index.path
+fi
 
 # /etc is not a stow target, so system tuning is copied in instead of linked.
 install_system_configs() {
@@ -109,6 +115,13 @@ install_system_configs() {
     sudo systemctl enable --now thermald tlp cpu-tune reflector.timer paccache.timer
 }
 
-install_system_configs
+if [ "${1:-}" = "--system" ]; then
+    # reflector and pacman-contrib own the timers enabled above; thermald, tlp
+    # and zram-generator are the tuning itself.
+    sudo pacman -S --needed --noconfirm reflector pacman-contrib thermald tlp zram-generator
+    install_system_configs
+else
+    echo "Skipped system tuning (swapfile, pacman cache, /etc drop-ins). Re-run with --system to apply it."
+fi
 
 echo "Arch setup complete."

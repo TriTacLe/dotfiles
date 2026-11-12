@@ -24,6 +24,7 @@ claude-config/repos.json
 
 # Claude config lives in the claude-config submodule, never at repo root
 .claude/
+CLAUDE.md
 .mcp.json
 .playwright-mcp/
 

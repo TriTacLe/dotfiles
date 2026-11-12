@@ -387,6 +387,9 @@ if [[ ! -o interactive ]]; then
     unalias cd ls l ll la lt tree cat catl cp mv rm mkdir fmt 2>/dev/null
 fi
 
+# Profile overrides, linked from profiles/<name>/zshrc.local by `just profile`.
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+
 # Desktop theme. No argument toggles light and dark, a name applies that theme.
 # Ghostty needs ctrl+shift+comma afterwards; running terminals do not reload colours.
 theme() {
