@@ -92,6 +92,9 @@ case "${PKG_MANAGER:-}" in
         ;;
 esac
 
+# Package names from a manifest: one per line, # comments and blank lines skipped.
+pkgs_from() { sed -e 's/#.*//' "$1" | awk 'NF { print $1 }'; }
+
 # Link a profile file into place. Real files are never clobbered.
 link_profile_file() {
     local src="$1" dst="$2"
@@ -152,6 +155,7 @@ bootstrap_profile() {
     link_profile_file "$PROFILE_DIR/zshrc.local" "$HOME/.zshrc.local"
     link_profile_file "$PROFILE_DIR/nvim.lua" "$HOME/.config/nvim/lua/config/local.lua"
     link_profile_file "$PROFILE_DIR/ghostty.conf" "$HOME/.config/ghostty/local"
+    link_profile_file "$PROFILE_DIR/hypr.lua" "$HOME/.config/hypr/host_local.lua"
 
     if [[ -e "$dotfiles/.env" && ! -L "$dotfiles/.env" ]]; then
         warn "$dotfiles/.env exists and is not a symlink, leaving it alone"

@@ -13,6 +13,10 @@ if ! command -v stow &>/dev/null; then
     sudo apt-get install -y stow
 fi
 
+# Curated desktop manifest.
+mapfile -t DESKTOP_PKGS < <(pkgs_from "$DOTFILES/ubuntu/packages/desktop.txt")
+sudo apt-get install -y "${DESKTOP_PKGS[@]}"
+
 mkdir -p ~/.config
 
 command -v just >/dev/null || sudo apt-get install -y just

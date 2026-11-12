@@ -267,7 +267,7 @@ if command -v systemctl &>/dev/null; then
     alias systart='sudo systemctl restart'
 fi
 if command -v hyprctl &>/dev/null; then
-    alias hypr-fix='export HYPRLAND_INSTANCE_SIGNATURE=$(\ls -t /run/user/1000/hypr | head -n1)'
+    alias hypr-fix='export HYPRLAND_INSTANCE_SIGNATURE=$(\ls -t $XDG_RUNTIME_DIR/hypr | head -n1)'
     alias hyprconf='cd ~/.config/hypr && nvim ~/.config/hypr/hyprland.lua'
 fi
 

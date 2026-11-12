@@ -9,7 +9,7 @@ value has a place outside git, and `install.sh` runs clean on a fresh box withou
 
 ## Install
 
-Needs `git` and `sudo`. The installer adds `stow`, `just` and `jq` itself.
+Needs `git` and `sudo`. The installer adds `stow`, `just`, `jq` and the desktop manifest below.
 
 ```bash
 git clone https://github.com/TriTacLe/dotfiles.git ~/dotfiles
@@ -42,17 +42,15 @@ Everything that is yours lives in one place, `profiles/<login>/`, which is gitig
 | `zshrc.local` | `~/.zshrc.local` | sourced near the end of `shared.zsh` |
 | `nvim.lua` | `~/.config/nvim/lua/config/local.lua` | `pcall(require, "config.local")` in `init.lua` |
 | `ghostty.conf` | `~/.config/ghostty/local` | `config-file = ?local` |
+| `hypr.lua` | `~/.config/hypr/host_local.lua` | `pcall(require, "host_local")` at the end of `hyprland.lua` |
 | `CLAUDE.local.md`, `settings.local.json` | `~/.claude/` | Claude Code, if you use it |
 
 Edit, then `just profile` to refresh the links. See `profiles/README.md`.
 
-Two tracked files still carry my hardware and will move in a later change:
-
-- `<os>/stow/hypr-host/.config/hypr/host.lua`: monitor EDID, touchpad, dock output.
-- `shared/stow/hypr/.config/hypr/input.lua`: keyboard layout, currently Norwegian.
-
-Fork, edit those two, and you have a working desktop. The theme engine and the Hyprland
-keybinds carry nothing personal.
+Machine hardware has its own layer: `<os>/stow/hypr-host/.config/hypr/host.lua` holds my
+monitors, touchpad, dock output and Norwegian keyboard. It loads after the shared config and
+before your `hypr.lua`, so you can override it without editing it, or drop `hypr-host` from
+the `justfile` list and write your own. The shared config defaults to a US layout.
 
 ## What gets stowed
 
@@ -84,9 +82,12 @@ gitignored. Add a theme by adding a JSON file; `theme` in the shell toggles ligh
 
 ## Packages
 
-`arch/packages/` and `ubuntu/packages/` are snapshots written by the pacman and apt
-post-transaction hooks. They record what my machines have installed; the installer does not
-install them. `server/packages/packages.txt` and `macos/Brewfile` are installed.
+`arch/packages/desktop.txt` and `aur-desktop.txt` are the curated manifests the Arch installer
+installs, grouped and commented; `ubuntu/packages/desktop.txt` is the apt one. The AUR half
+needs `paru` or `yay` and is skipped with a note otherwise. `packages.txt` and `aur.txt` next to them
+are snapshots written by the pacman and apt post-transaction hooks: what my machines have
+installed, never installed by the installer. `server/packages/packages.txt` and
+`macos/Brewfile` are installed as before.
 
 ## Layout
 

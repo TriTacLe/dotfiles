@@ -1,11 +1,11 @@
--- Go utviklingsoppsett
--- Konfigurasjon for Go programmering i Neovim
+-- Go development setup
+-- Go configuration for Neovim
 
 return {
-  -- LazyVim sin Go-støtte gir grunnleggende LSP
+  -- LazyVim's Go extra gives basic LSP
   { import = "lazyvim.plugins.extras.lang.go" },
 
-  -- Gopls (Go språkserver) med gode instillinger
+  -- gopls with tuned settings
   {
     "neovim/nvim-lspconfig",
     opts = {
@@ -13,20 +13,20 @@ return {
         gopls = {
           settings = {
             gopls = {
-              -- Bruk gofumpt som er strengere enn gofmt
+              -- Use gofumpt, which is stricter than gofmt
               gofumpt = true,
-              -- Kodelinser (små knapper i koden)
+              -- Code lenses (small actions in the code)
               codelenses = {
                 gc_details = false,
                 generate = true, -- For generate directives
                 regenerate_cgo = true,
-                run_govulncheck = true, -- Sikkerhetssjekk
-                test = true, -- Kjør test fra koden
+                run_govulncheck = true, -- Security check
+                test = true, -- Run tests from the code
                 tidy = true, -- go mod tidy
-                upgrade_dependency = true, -- Oppgrader pakker
+                upgrade_dependency = true, -- Upgrade packages
                 vendor = true, -- go mod vendor
               },
-              -- Inlay hints - vis typer inline
+              -- Inlay hints: show types inline
               hints = {
                 assignVariableTypes = true,
                 compositeLiteralFields = true,
@@ -36,21 +36,21 @@ return {
                 parameterNames = true,
                 rangeVariableTypes = true,
               },
-              -- Statisk analyse
+              -- Static analysis
               analyses = {
-                fieldalignment = true, -- Sjekk struct størrelse
-                nilness = true, -- Sjekk nil feil
-                unusedparams = true, -- Ubrukte parametere
-                unusedwrite = true, -- Ubrukte skrivinger
-                useany = true, -- Foreslå any istedenfor interface{}
+                fieldalignment = true, -- Check struct size
+                nilness = true, -- Check nil errors
+                unusedparams = true, -- Unused parameters
+                unusedwrite = true, -- Unused writes
+                useany = true, -- Suggest any instead of interface{}
               },
-              -- Sett inn plassholdere for parametere
+              -- Insert placeholders for parameters
               usePlaceholders = true,
-              -- Fullfør imports automatisk
+              -- Complete imports automatically
               completeUnimported = true,
-              -- Kjør staticcheck for bedre analyser
+              -- Run staticcheck for better analysis
               staticcheck = true,
-              -- Ignorer disse mappene
+              -- Ignore these directories
               directoryFilters = { "-node_modules", "-vendor", "-.git" },
               ui = {
                 semanticTokens = true,
@@ -62,19 +62,19 @@ return {
     },
   },
 
-  -- Installer Go-verktøy automatisk
+  -- Install Go tools automatically
   {
     "mason-org/mason.nvim",
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, {
-        "gopls", -- Go språkserver
+        "gopls", -- Go language server
         "delve", -- Debugger
-        "gofumpt", -- Bedre formattering
+        "gofumpt", -- Better formatting
         "goimports", -- Auto-import
-        "gomodifytags", -- Redigere struct tags
-        "impl", -- Generere interface implementations
-        "gotests", -- Generere tester
+        "gomodifytags", -- Edit struct tags
+        "impl", -- Generate interface implementations
+        "gotests", -- Generate tests
         "golangci-lint", -- Linting
         "buf", -- Protocol Buffers
         "protolint", -- Protobuf linting
@@ -82,7 +82,7 @@ return {
     end,
   },
 
-  -- Go filer i treesitter
+  -- Go files in treesitter
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -97,7 +97,7 @@ return {
     end,
   },
 
-  -- Auto-format med gofumpt og organiser imports
+  -- Auto-format with gofumpt and organise imports
   {
     "stevearc/conform.nvim",
     opts = {
@@ -126,32 +126,32 @@ return {
         function()
           require("dap-go").debug_last_test()
         end,
-        desc = "Debug forrige test",
+        desc = "Debug previous test",
         ft = "go",
       },
     },
   },
 
-  -- Verktøy for struct tags (json, db, osv)
+  -- Tools for struct tags (json, db, etc)
   {
     "crispgm/nvim-go",
     ft = "go",
     config = function()
       require("go").setup({
         notify = false,
-        auto_format = false, -- Vi bruker conform istedenfor
+        auto_format = false, -- We use conform instead
         auto_lint = false,
       })
     end,
     keys = {
-      { "<leader>ctg", "<cmd>GoAddTags<cr>", desc = "Legg til struct tags" },
-      { "<leader>ctG", "<cmd>GoRemoveTags<cr>", desc = "Fjern struct tags" },
-      { "<leader>ctf", "<cmd>GoFillStruct<cr>", desc = "Fyll struct" },
-      { "<leader>cti", "<cmd>GoImpl<cr>", desc = "Generer interface" },
+      { "<leader>ctg", "<cmd>GoAddTags<cr>", desc = "Add struct tags" },
+      { "<leader>ctG", "<cmd>GoRemoveTags<cr>", desc = "Remove struct tags" },
+      { "<leader>ctf", "<cmd>GoFillStruct<cr>", desc = "Fill struct" },
+      { "<leader>cti", "<cmd>GoImpl<cr>", desc = "Generate interface" },
     },
   },
 
-  -- Test runner med UI
+  -- Test runner with UI
   {
     "nvim-neotest/neotest",
     dependencies = {
@@ -161,7 +161,7 @@ return {
       adapters = {
         ["neotest-go"] = {
           experimental = {
-            test_table = true, -- Støtte for table-driven tests
+            test_table = true, -- Support for table-driven tests
           },
           args = { "-count=1", "-timeout=60s" },
         },
@@ -169,12 +169,12 @@ return {
     },
   },
 
-  -- Kjør Go kode snippets
+  -- Run Go code snippets
   {
     "michaelb/sniprun",
     build = "bash ./install.sh",
     keys = {
-      { "<leader>rg", "<cmd>SnipRun<cr>", desc = "Kjør Go kodesnipp" },
+      { "<leader>rg", "<cmd>SnipRun<cr>", desc = "Run Go snippet" },
     },
     opts = {
       selected_interpreters = { "Go_original" },

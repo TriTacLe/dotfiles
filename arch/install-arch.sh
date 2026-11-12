@@ -10,10 +10,17 @@ if ! command -v stow &>/dev/null; then
     sudo pacman -S --needed --noconfirm stow
 fi
 
-# theme_apply.sh needs jq before anything reaches for it.
-sudo pacman -S --needed --noconfirm jq
+# Curated desktop manifest. --needed makes a re-run a no-op.
+mapfile -t DESKTOP_PKGS < <(pkgs_from "$DOTFILES/arch/packages/desktop.txt")
+sudo pacman -S --needed --noconfirm "${DESKTOP_PKGS[@]}"
+AUR_HELPER=$(command -v paru || command -v yay || true)
+if [ -n "$AUR_HELPER" ]; then
+    mapfile -t AUR_PKGS < <(pkgs_from "$DOTFILES/arch/packages/aur-desktop.txt")
+    "$AUR_HELPER" -S --needed --noconfirm "${AUR_PKGS[@]}"
+else
+    echo "No AUR helper (paru or yay), skipping arch/packages/aur-desktop.txt." >&2
+fi
 
-command -v just >/dev/null || sudo pacman -S --needed --noconfirm just
 just --justfile "$DOTFILES/justfile" stow arch
 bootstrap_profile "$DOTFILES"
 

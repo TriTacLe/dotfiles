@@ -1,14 +1,14 @@
--- C/C++ utviklingsoppsett
+-- C/C++ development setup
 
 return {
-  -- clangd med gode instillinger
+  -- clangd with tuned settings
   {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
         clangd = {
           keys = {
-            { "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Bytt mellom header og source" },
+            { "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch between header and source" },
           },
           root_dir = function(bufnr, on_dir)
             local root = vim.fs.root(bufnr, {
@@ -59,21 +59,21 @@ return {
     },
   },
 
-  -- Installer C++-verktøy
+  -- Install C++ tools
   {
     "mason-org/mason.nvim",
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      -- clangd + cmake-language-server handtert av LazyVim extras
+      -- clangd + cmake-language-server handled by LazyVim extras
       vim.list_extend(opts.ensure_installed, {
-        "clang-format", -- Formattering
+        "clang-format", -- Formatting
         "codelldb", -- Debugger
-        "cmakelang", -- CMake formattering + lint
+        "cmakelang", -- CMake formatting + lint
       })
     end,
   },
 
-  -- C/C++-filer i treesitter
+  -- C/C++ files in treesitter
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -87,7 +87,7 @@ return {
     end,
   },
 
-  -- clang-format for formattering
+  -- clang-format for formatting
   {
     "stevearc/conform.nvim",
     opts = {
@@ -98,7 +98,7 @@ return {
     },
   },
 
-  -- Debugging med codelldb
+  -- Debugging with codelldb
   {
     "mfussenegger/nvim-dap",
     config = function(_, opts)
@@ -120,7 +120,7 @@ return {
           request = "launch",
           name = "Launch (codelldb)",
           program = function()
-            return vim.fn.input("Sti til binær: ", vim.fn.getcwd() .. "/", "file")
+            return vim.fn.input("Path to binary: ", vim.fn.getcwd() .. "/", "file")
           end,
           cwd = "${workspaceFolder}",
           stopOnEntry = false,

@@ -1,96 +1,61 @@
-# Neovim Plugins
+# Neovim plugins
 
-Dette er mine personlige plugin-konfigurasjoner for Neovim med LazyVim.
+Plugin configuration on top of LazyVim.
 
-## Struktur
+## Layout
 
-```
-lua/plugins/
-├── README.md              # Denne fila
-├── lang/                  # Språk-spesifikt
-│   ├── java.lua          # Java og Spring Boot
-│   ├── go.lua            # Go
-│   └── frontend.lua      # Vue, Next.js, React
-└── tools/                 # Verktøy
-    ├── dap.lua           # Debugging
-    ├── hidden-files.lua  # Vise .env og sånt
-    ├── markdown-preview.lua
-    ├── peek.lua
-    ├── glow.lua
-    └── wakatime.lua      # Tidtaking
+- `lang/`: one file per language. `java.lua` (Java and Spring Boot), `go.lua`, `rust.lua`,
+  `cpp.lua`, `frontend.lua` (Vue, Next.js, React, TypeScript).
+- `tools/`: `dap.lua` (debugging), `hidden-files.lua` (show dotfiles such as `.env`),
+  `markdown-preview.lua`, `peek.lua`, `glow.lua`, `wakatime.lua`.
+- `../utils.lua`: helpers. It lives in `lua/`, not `lua/plugins/`, because LazyVim loads
+  everything under `plugins/` as a plugin spec.
+- `../config/local.lua`: profile overrides, linked by `just profile`, loaded last.
 
-lua/
-└── utils.lua             # Hjelpefunksjoner (ikke i plugins/)
-```
+## Languages
 
-## Hva jeg har satt opp
+### Java (`java.lua`)
 
-### Java (java.lua)
+Spring Boot projects: LSP with completion, debugging, JPA snippets (`findBy` + Tab expands
+to repository method templates), test running and an HTTP client for trying endpoints.
 
-Brukes til Spring Boot-prosjekter. Har:
-- Java LSP med kodefullføring
-- Debugging for å finne bugs
-- JPA snippets (skriv `findBy` + Tab så får du metode-maler)
-- Test-kjøring
-- HTTP client for å teste API-er
+- `<leader>th` runs the HTTP request under the cursor.
+- `<leader>tt` runs tests.
 
-**Snarveier:**
-- `<leader>th` - Kjør HTTP request (bra for Controllers)
-- `<leader>tt` - Kjør tester
-- `findBy` + Tab - Lager repository-metoder automatisk
+### Go (`go.lua`)
 
-### Go (go.lua)
+gopls, Delve, format on save with gofumpt, a test runner and struct tag tools.
 
-For Go-utvikling:
-- Go LSP (gopls)
-- Delve debugger
-- Auto-format når jeg lagrer
-- Test-runner
-- Struct tags (f.eks. JSON tags)
+- `<leader>td` debugs the test under the cursor.
+- `<leader>ctg` adds struct tags.
 
-**Snarveier:**
-- `<leader>td` - Debug test
-- `<leader>ctg` - Legg til struct tags
+### Frontend (`frontend.lua`)
 
-### Frontend (frontend.lua)
+TypeScript and Vue language servers, ESLint, Prettier, Tailwind CSS, and npm package
+versions shown inline in `package.json`.
 
-Vue, Next.js, React, TypeScript:
-- TypeScript og Vue språkservere
-- ESLint for feilsjekking
-- Prettier for formattering
-- Tailwind CSS støtte
-- Se npm-pakkeversjoner i package.json
+- `<leader>ns` shows package versions.
 
-**Snarveier:**
-- `<leader>ns` - Se npm pakkeversjon
+## Tools
 
-### Verktøy
+- `dap.lua`: debugging for Java and Go.
+- `hidden-files.lua`: shows dotfiles such as `.env` in the file explorer. `H` toggles.
+- `markdown-*.lua`: three ways to preview Markdown: browser, floating window, terminal.
+- `wakatime.lua`: time tracking.
 
-**dap.lua** - Debugging for Java og Go
+## Adding a plugin
 
-**hidden-files.lua** - Viser skjulte filer som `.env`. Før så jeg dem ikke, nå gjør jeg det. Trykk `H` i filutforskeren for å toggle.
+1. Create a `.lua` file in the right directory.
+2. Return a table with the plugin spec.
+3. Restart Neovim; lazy.nvim handles the rest.
 
-**markdown-*.lua** - Tre forskjellige måter å preview Markdown:
-- Browser
-- Floating vindu  
-- Terminal
-
-**wakatime.lua** - Tracker tid jeg bruker på koding (bare for moro)
-
-## Hvordan legge til nye plugins
-
-1. Lag ny `.lua` fil i riktig mappe
-2. Returner en tabell med plugin-spesifikasjon
-3. Restart Neovim - Lazy ordner resten
-
-Eksempel:
 ```lua
--- lua/plugins/tools/min-plugin.lua
+-- lua/plugins/tools/my-plugin.lua
 return {
   {
-    "forfatter/navn",
+    "author/name",
     config = function()
-      require("navn").setup()
+      require("name").setup()
     end,
   },
 }
@@ -98,27 +63,17 @@ return {
 
 ## Utils
 
-lua/utils.lua inneholder hjelpefunksjoner. Den ligger i `lua/` ikke `lua/plugins/` fordi LazyVim prøver å laste alt i plugins/ som plugins.
+`lua/utils.lua` provides `has(plugin)`, `git_root()` and `safe_require()`.
 
-- `has(plugin)` - Sjekk om plugin er installert
-- `git_root()` - Finn git rot-mappe
-- `safe_require()` - Trygg require som ikke kræsjer
-
-Bruk dem sånn:
 ```lua
-local utils = require("utils")  -- ikke "plugins.utils"
+local utils = require("utils")  -- not "plugins.utils"
 if utils.has("neo-tree.nvim") then
-  -- gjør noe
+  -- ...
 end
 ```
 
-## Språk-extras
+## Language extras
 
-Disse lastes automatisk fra LazyVim i `lua/config/lazy.lua`:
-- Java
-- TypeScript  
-- Vue
-- Tailwind
-- Go
-
-De gir grunnleggende LSP, og mine konfigurasjoner utvider dem.
+`lua/config/lazy.lua` imports the LazyVim extras for Java, TypeScript, Vue, Tailwind, Go,
+Rust, clangd, CMake, Python and SQL. They give the base LSP setup; the files in `lang/`
+extend them.
