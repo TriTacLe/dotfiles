@@ -76,9 +76,15 @@ jobs:
       - run: |
           pacman -Syu --noconfirm --needed stow just git zsh jq
           mkdir -p "$HOME/stub"
-          printf '#!/bin/sh\nexec "$@"\n' > "$HOME/stub/sudo"
+          cat > "$HOME/stub/sudo" <<'EOF'
+          #!/bin/sh
+          exec "$@"
+          EOF
           for pm in pacman apt-get; do
-            printf '#!/bin/sh\necho "%s $*" >> "$HOME/pm.log"\n' "$pm" > "$HOME/stub/$pm"
+            cat > "$HOME/stub/$pm" <<'EOF'
+          #!/bin/sh
+          echo "$0 $*" >> "$HOME/pm.log"
+          EOF
           done
           chmod +x "$HOME"/stub/*
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
