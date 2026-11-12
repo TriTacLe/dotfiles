@@ -116,7 +116,7 @@ jobs:
           for f in .zshrc .gitconfig .config/git/ignore; do
             test -f "$HOME"/.dotfiles-backup/*/"$f"
           done
-          grep -q ' hyprland' "$HOME/pm.log"
+          grep -q ' waybar' "$HOME/pm.log"
           grep -q 'warn' "$HOME/install.log"
       - name: Arch path warned about the submodule, skipped /etc and generated a theme
         if: matrix.os == 'arch'
@@ -129,9 +129,11 @@ jobs:
       # name and its dependencies must resolve, nothing is downloaded.
       - name: Arch manifest resolves
         if: matrix.os == 'arch'
+        shell: bash
         run: |
           source shared/scripts/config.sh
-          pacman -Sp --needed $(pkgs_from arch/packages/desktop.txt) >/dev/null
+          mapfile -t pkgs < <(pkgs_from arch/packages/desktop.txt)
+          pacman -Sp --needed "${pkgs[@]}" >/dev/null
 
   # Same contract for the apt manifest, on a stock Ubuntu runner.
   apt-manifest:
@@ -140,7 +142,9 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - run: |
+      - shell: bash
+        run: |
           source shared/scripts/config.sh
+          mapfile -t pkgs < <(pkgs_from ubuntu/packages/desktop.txt)
           sudo apt-get update -q
-          sudo apt-get install -y --dry-run $(pkgs_from ubuntu/packages/desktop.txt) >/dev/null
+          sudo apt-get install -y --dry-run "${pkgs[@]}" >/dev/null
