@@ -231,6 +231,21 @@ alias fnd='ls -a | grep -i'
 alias py='python'
 alias o='opencode'
 alias claudd='claude --dangerously-skip-permissions'
+# Claude Code on the local LiteLLM hub (~/.claude/litellm). Shell exports only,
+# because a settings.json env value would move every session off the subscription.
+claude-hub() {
+    ANTHROPIC_BASE_URL=http://127.0.0.1:4000 \
+    ANTHROPIC_AUTH_TOKEN="$LITELLM_MASTER_KEY" \
+    ANTHROPIC_MODEL=coder \
+    ANTHROPIC_DEFAULT_FABLE_MODEL=coder \
+    ANTHROPIC_DEFAULT_OPUS_MODEL=coder \
+    ANTHROPIC_DEFAULT_SONNET_MODEL=coder \
+    ANTHROPIC_DEFAULT_HAIKU_MODEL=fast \
+    CLAUDE_CODE_SUBAGENT_MODEL=coder \
+    CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1 \
+    CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1 \
+    command claude --model coder "$@"
+}
 alias x='claude --dangerously-skip-permissions'
 alias myip='curl -s ifconfig.me'
 alias qrc='qrencode -t UTF8'
