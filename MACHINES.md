@@ -136,6 +136,20 @@ for any open ports, and restic/borg for backups.
 
 ---
 
+## Thin tier devices
+
+Devices that run an agent but not the hooks, hub or services. Installed with
+`bash claude-config/scripts/bootstrap.sh --tier thin`, which builds a real
+`~/.claude` with the instructions, skills, agents and commands and a settings
+file without hooks or sandbox. See `claude-config/rules-manual/platforms/`.
+
+| Device | OS | Installer | Notes |
+|--------|----|-----------|-------|
+| Windows PC | Windows 11 | `bootstrap.sh --tier thin` under Git Bash | WSL2 for the full tier |
+| Phone | Android, Termux | `bootstrap.sh --tier thin` | Claude Code via the community glibc recipe |
+
+---
+
 ## Waybar DPI guide
 
 `style.css` uses fixed pixel values. Adjust `scale` in the host's `host.lua` if bar looks wrong:

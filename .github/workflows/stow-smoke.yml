@@ -19,7 +19,7 @@ jobs:
       matrix:
         # Every value the justfile accepts. Only arch used to be exercised, while
         # the workflow already triggered on ubuntu, macos and server paths.
-        os: [arch, ubuntu, macos, server]
+        os: [arch, ubuntu, server]
     env:
       # One HOME for both steps. The stow step used to export it inline, so the
       # health checks then ran against a home nothing had been stowed into.
@@ -58,6 +58,24 @@ jobs:
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           bash shared/scripts/verify-system.sh
+
+  # The macOS package list, on macOS: the Arch container above never saw BSD userland.
+  stow-macos:
+    runs-on: macos-latest
+    env:
+      HOME: /tmp/home
+    steps:
+      - run: |
+          brew install stow just
+          mkdir -p "$HOME"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: |
+          just stow macos
+          test -L "$HOME/.zshrc"
+          just unstow macos
+          test ! -e "$HOME/.zshrc"
 
   # The installer itself, as a stranger would run it: no SSH key for the private
   # submodule, no --system, and package managers stubbed to log their arguments
