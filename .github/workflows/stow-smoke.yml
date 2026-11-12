@@ -58,3 +58,50 @@ jobs:
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           bash shared/scripts/verify-system.sh
+
+  # The installer itself, as a stranger would run it: no SSH key for the private
+  # submodule, no --system, and package managers stubbed to log their arguments
+  # so the script's own logic runs end to end without downloading a desktop.
+  install:
+    runs-on: ubuntu-latest
+    container: archlinux:latest@sha256:b944cc65c5f28665dfd5fdbf5ed2997c88f5bb4a0aefac7ee8a7ef01893e5ed9
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [arch, ubuntu]
+    env:
+      HOME: /tmp/home
+      OS: ${{ matrix.os }}
+    steps:
+      - run: |
+          pacman -Syu --noconfirm --needed stow just git zsh jq
+          mkdir -p "$HOME/stub"
+          printf '#!/bin/sh\nexec "$@"\n' > "$HOME/stub/sudo"
+          for pm in pacman apt-get; do
+            printf '#!/bin/sh\necho "%s $*" >> "$HOME/pm.log"\n' "$pm" > "$HOME/stub/$pm"
+          done
+          chmod +x "$HOME"/stub/*
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Run the installer
+        run: |
+          set -o pipefail
+          export PATH="$HOME/stub:$PATH"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          case "$OS" in
+            arch)   bash install.sh 2>&1 | tee "$HOME/install.log" ;;
+            ubuntu) bash ubuntu/install-ubuntu.sh 2>&1 | tee "$HOME/install.log" ;;
+          esac
+      - name: Profile and manifest reached their targets
+        run: |
+          test -L "$HOME/.gitconfig.local"
+          grep -q ' hyprland' "$HOME/pm.log"
+          grep -q 'warn' "$HOME/install.log"
+      - name: Arch path warned about the submodule, skipped /etc and generated a theme
+        if: matrix.os == 'arch'
+        run: |
+          grep -q 'could not initialize claude-config submodule' "$HOME/install.log"
+          grep -q 'Skipped system tuning' "$HOME/install.log"
+          test -f "$HOME/.config/hypr/colors.lua"
+          test ! -e /home/swapfile

@@ -2,6 +2,8 @@
 set -e
 
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
+# config.sh otherwise searches a few home paths for the clone; this works anywhere.
+export DOTFILES_DIR="$DOTFILES"
 source "$DOTFILES/shared/scripts/config.sh"
 
 # Homebrew

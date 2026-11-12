@@ -42,6 +42,17 @@ jobs:
           advanced-security: false
           min-severity: medium
 
+  keybindings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      # KEYBINDINGS.md is generated; a stale copy fails here rather than drifting.
+      - run: |
+          shared/scripts/keybindings-md.sh
+          git diff --exit-code -- KEYBINDINGS.md
+
   secrets:
     runs-on: ubuntu-latest
     steps:
