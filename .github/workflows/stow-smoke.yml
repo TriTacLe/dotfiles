@@ -88,7 +88,9 @@ jobs:
         run: |
           set -o pipefail
           export PATH="$HOME/stub:$PATH"
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          # safe.directory through the environment: a --global write would create
+          # ~/.gitconfig in the scratch home and make stowing git conflict.
+          export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0="$GITHUB_WORKSPACE"
           case "$OS" in
             arch)   bash install.sh 2>&1 | tee "$HOME/install.log" ;;
             ubuntu) bash ubuntu/install-ubuntu.sh 2>&1 | tee "$HOME/install.log" ;;
