@@ -125,3 +125,22 @@ jobs:
           grep -q 'Skipped system tuning' "$HOME/install.log"
           test -f "$HOME/.config/hypr/colors.lua"
           test ! -e /home/swapfile
+      # The real pacman, against the synced db from the first step: every manifest
+      # name and its dependencies must resolve, nothing is downloaded.
+      - name: Arch manifest resolves
+        if: matrix.os == 'arch'
+        run: |
+          source shared/scripts/config.sh
+          pacman -Sp --needed $(pkgs_from arch/packages/desktop.txt) >/dev/null
+
+  # Same contract for the apt manifest, on a stock Ubuntu runner.
+  apt-manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: |
+          source shared/scripts/config.sh
+          sudo apt-get update -q
+          sudo apt-get install -y --dry-run $(pkgs_from ubuntu/packages/desktop.txt) >/dev/null
