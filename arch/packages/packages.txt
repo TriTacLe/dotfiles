@@ -253,6 +253,7 @@ python-pynvim
 python-pyserial
 python-requests
 qemu-base
+qemu-user
 qqc2-breeze-style
 qt5-wayland
 qt6ct
