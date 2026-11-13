@@ -50,7 +50,18 @@ local function sync_dock()
     end
 end
 
-for _, event in ipairs({ "hyprland.start", "window.open", "window.close", "window.active", "window.title", "workspace.active" }) do
+for _, event in ipairs({ "hyprland.start", "window.open", "window.active", "window.title", "workspace.active" }) do
     hl.on(event, sync_dock)
+end
+
+-- A closing window still counts until its fade-out ends, and nothing fires
+-- after that, so poll briefly for the workspace to empty.
+local recheck = "for i in 1 2 3 4 5 6 7 8 9 10; do "
+    .. "[ \"$(hyprctl activeworkspace -j | jq .windows)\" = 0 ] && exec " .. dock .. "; "
+    .. "sleep 0.3; done"
+for _, event in ipairs({ "window.close", "window.destroy" }) do
+    hl.on(event, function()
+        hl.exec_cmd("setsid sh -c '" .. recheck .. "' >/dev/null 2>&1 &")
+    end)
 end
 
