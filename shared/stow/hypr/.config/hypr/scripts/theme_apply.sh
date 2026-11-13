@@ -492,8 +492,9 @@ restart() {
 # waybar and swaync only re-read CSS on start.
 restart waybar waybar
 restart swaync swaync
+# Same lock as the host.lua sync, so the two can never start a second dock.
 # No output flag: host.lua owns the dock command line and picks the monitor.
-restart nwg-dock-hyprla nwg-dock-hyprland -i 32 -nolauncher -l top -p bottom
+restart nwg-dock-hyprla flock -n "${XDG_RUNTIME_DIR:-/tmp}/nwg-dock.lock" nwg-dock-hyprland -i 32 -nolauncher -l top -p bottom
 
 notify-send -a "Theme" "Theme applied" "$(jq -r '._meta.name // empty' "$SRC")" 2>/dev/null || true
 echo "Applied $mode."

@@ -33,27 +33,24 @@ hl.config({
 --
 -- It rests on waybar at the bottom, so any window on the workspace sits under
 -- it. Run it only while the workspace is empty: start it when the last window
--- goes, kill it when the first one arrives. Focus changes re-run the check so a
--- missed open or move cannot leave it sitting over a window.
+-- goes, kill it when the first one arrives. Focus and title changes re-run the
+-- check: XWayland windows are counted late, so the open event alone can miss.
 --
--- Only act on a state change: a second launch while one is starting makes
--- nwg-dock toggle the first instance instead of exiting.
-local dock = "nwg-dock-hyprland -i 32 -nolauncher -l top -p bottom -o eDP-1"
-local dock_up = nil
+-- flock -n makes a second launch a no-op. Without it a second nwg-dock sends a
+-- toggle to the first one instead of exiting. The kill is idempotent anyway.
+local lock = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/nwg-dock.lock"
+local dock = "flock -n " .. lock .. " nwg-dock-hyprland -i 32 -nolauncher -l top -p bottom -o eDP-1"
 local function sync_dock()
     local ws = hl.get_active_workspace()
-    if not ws then return end
-    local want = ws.windows == 0
-    if want == dock_up then return end
-    dock_up = want
-    if want then
-        hl.exec_cmd("pgrep -x nwg-dock-hyprla >/dev/null || setsid " .. dock .. " >/dev/null 2>&1 &")
+    if not ws or ws.id < 0 then return end
+    if ws.windows == 0 then
+        hl.exec_cmd("setsid " .. dock .. " >/dev/null 2>&1 &")
     else
         hl.exec_cmd("pkill -x nwg-dock-hyprla")
     end
 end
 
-for _, event in ipairs({ "hyprland.start", "window.open", "window.close", "window.active", "workspace.active" }) do
+for _, event in ipairs({ "hyprland.start", "window.open", "window.close", "window.active", "window.title", "workspace.active" }) do
     hl.on(event, sync_dock)
 end
 
