@@ -46,6 +46,8 @@ profile's `hypr.lua`.
 | SUPER + CTRL + SHIFT + SPACE | `run ("scripts/switch_layout.sh")` |
 | SUPER + CTRL + SHIFT + 7 | `run ("scripts/speaker_toggle.sh")` |
 | SUPER + SHIFT + R | Rename workspace |
+| SUPER + oslash | Next wallpaper |
+| SUPER + aring | Previous wallpaper |
 | Menu | `run ('wtype "~"')` |
 | Print | `run ('wtype "~"')` |
 | CTRL + ALT + 2 | `run ("wtype @")` |
