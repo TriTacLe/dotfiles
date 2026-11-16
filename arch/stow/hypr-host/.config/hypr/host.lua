@@ -31,7 +31,7 @@ hl.config({
 
 -- Dock (nwg-dock works correctly on Arch, use wlr/taskbar in waybar on Ubuntu instead)
 --
--- It rests on waybar at the bottom, so any window on the workspace sits under
+-- -mb pulls it down through waybar's zone into the bar, so any window sits under
 -- it. Run it only while the workspace is empty: start it when the last window
 -- goes, kill it when the first one arrives. Focus and title changes re-run the
 -- check: XWayland windows are counted late, so the open event alone can miss.
@@ -39,7 +39,7 @@ hl.config({
 -- flock -n makes a second launch a no-op. Without it a second nwg-dock sends a
 -- toggle to the first one instead of exiting. The kill is idempotent anyway.
 local lock = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/nwg-dock.lock"
-local dock = "flock -n " .. lock .. " nwg-dock-hyprland -i 32 -nolauncher -l top -p bottom -o eDP-1"
+local dock = "flock -n " .. lock .. " nwg-dock-hyprland -i 31 -nolauncher -l top -p bottom -mb -44 -o eDP-1"
 local function sync_dock()
     local ws = hl.get_active_workspace()
     if not ws or ws.id < 0 then return end

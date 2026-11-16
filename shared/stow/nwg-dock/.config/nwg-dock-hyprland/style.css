@@ -11,7 +11,7 @@ window {
 
 #box {
   /* Define attributes of the box surrounding icons here */
-  padding: 3px;
+  padding: 1px;
 }
 
 #active {
@@ -30,7 +30,7 @@ image {
 }
 
 button {
-  padding: 4px;
+  padding: 1px;
   margin-left: 4px;
   margin-right: 4px;
   color: @text_primary;
