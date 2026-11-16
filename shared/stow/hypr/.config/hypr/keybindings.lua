@@ -98,6 +98,8 @@ hl.bind(mod .. " + SHIFT + S", hl.dsp.exec_cmd(scripts .. "/screenshot_macos_sty
 hl.bind(mod .. " + CTRL + SHIFT + SPACE", hl.dsp.exec_cmd(scripts .. "/switch_layout.sh"))
 hl.bind(mod .. " + CTRL + SHIFT + 7", hl.dsp.exec_cmd(scripts .. "/speaker_toggle.sh"))
 hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(scripts .. "/rename_workspace.sh"))      -- Rename workspace
+hl.bind(mod .. " + oslash", hl.dsp.exec_cmd(scripts .. "/wallpaper-slideshow.sh next")) -- Next wallpaper
+hl.bind(mod .. " + aring", hl.dsp.exec_cmd(scripts .. "/wallpaper-slideshow.sh prev"))  -- Previous wallpaper
 
 
 -- Special character input
