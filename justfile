@@ -2,9 +2,9 @@
 
 dotfiles := justfile_directory()
 
-shared_desktop := "git nvim lazygit backgrounds zsh mise tmux alacritty ghostty kitty hypr waybar swaync wofi nwg-dock nwg-look wlogout scripts ipython zathura gtk"
-shared_macos := "git nvim lazygit backgrounds zsh mise scripts ipython"
-shared_cli := "git nvim lazygit zsh mise tmux scripts ipython"
+shared_desktop := "git nvim lazygit backgrounds zsh mise tmux alacritty ghostty kitty hypr waybar swaync wofi nwg-dock nwg-look wlogout scripts ipython zathura gtk wakatime r"
+shared_macos := "git nvim lazygit backgrounds zsh mise scripts ipython wakatime r"
+shared_cli := "git nvim lazygit zsh mise tmux scripts ipython wakatime"
 arch_pkgs := "zsh fastfetch hypr-host pacseek systemd"
 ubuntu_pkgs := "zsh rofi swaylock fontconfig systemd hypr-host sway"
 macos_pkgs := "zsh tmux alacritty ghostty kitty neofetch starship"
@@ -67,6 +67,18 @@ _stow os flag:
         backup_conflicts -d "{{dotfiles}}/$dir/stow" -t ~ --no-folding -R $pkgs
     fi
     stow -d "{{dotfiles}}/$dir/stow" -t ~ --no-folding {{flag}} $pkgs
+    # ~/.wakatime.cfg stays a real file because plugins write the API key into it.
+    # It only imports the stowed shared settings.
+    if [ "{{flag}}" = "-R" ] && [ -f ~/.config/wakatime/shared.cfg ]; then
+        line="import_cfg = $HOME/.config/wakatime/shared.cfg"
+        touch ~/.wakatime.cfg
+        if ! grep -qxF "$line" ~/.wakatime.cfg; then
+            grep -q '^\[settings\]' ~/.wakatime.cfg || printf '[settings]\n' >> ~/.wakatime.cfg
+            awk -v l="$line" '{print} /^\[settings\]/{print l}' ~/.wakatime.cfg > ~/.wakatime.cfg.tmp
+            mv ~/.wakatime.cfg.tmp ~/.wakatime.cfg
+            chmod 600 ~/.wakatime.cfg
+        fi
+    fi
     # ~/.claude is one symlink to the active Claude config, not a stow tree.
     # link_claude_config guards real directories and applies the profile files.
     if [ "{{flag}}" = "-R" ]; then
